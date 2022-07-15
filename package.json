@@ -1,0 +1,23 @@
+{
+  "name": "cmdk",
+  "version": "0.1.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src",
+    "dev": "tsup src --watch",
+    "publish": "yarn publish"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "0.1.7",
+    "tinykeys": "1.4.0"
+  }
+}
