@@ -57,7 +57,7 @@ Animate height using the `--cmdk-list-height` CSS variable.
 
 ### Item `[cmdk-item]` `[aria-disabled?]` `[aria-selected?]`
 
-Item that becomes active on pointer enter
+Item that becomes active on pointer enter.
 
 ### Group `[cmdk-group]`
 
