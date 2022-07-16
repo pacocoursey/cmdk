@@ -443,12 +443,21 @@ function Item(props: ItemProps) {
   const context = React.useContext(CommandContext)
   const [render, setRender] = React.useState(true)
   const [selected, setSelected] = React.useState(false)
-  const value = typeof props.children === 'string' ? props.children.toLowerCase() : props.value?.toLowerCase()
-
   const propsRef = useAsRef(props)
+  const value = useLazyRef<string>(() =>
+    typeof props.children === 'string' ? props.children.toLowerCase() : props.value?.toLowerCase()
+  )
 
   useLayoutEffect(() => {
-    return context.item(value!, propsRef.current)
+    // Couldn't figure out a value from the given props, use `textContent`
+    if (!value.current && ref.current) {
+      value.current = ref.current.textContent?.trim() ?? random()
+      // Manually update the attribute so that the parent effects will read the correct value
+      // the next re-render of this item will transfer control of that attr back to React (will match anyways)
+      ref.current.setAttribute('data-value', value.current)
+    }
+
+    return context.item(value.current, propsRef.current)
   }, [])
 
   useLayoutEffect(() => {
@@ -461,8 +470,8 @@ function Item(props: ItemProps) {
   useLayoutEffect(() => {
     return context.subscribe((state) => {
       if (!state.search) setRender(true)
-      else setRender(state.filtered.items.has(value))
-      setSelected(state.selectedValue === value)
+      else setRender(state.filtered.items.has(value.current))
+      setSelected(state.selectedValue === value.current)
     })
   }, [])
 
@@ -471,7 +480,7 @@ function Item(props: ItemProps) {
   }
 
   function select() {
-    context.set.setSelectedValue(value!)
+    context.set.setSelectedValue(value.current)
   }
 
   if (!render) return null
@@ -483,7 +492,7 @@ function Item(props: ItemProps) {
       role="option"
       aria-disabled={props.disabled || undefined}
       aria-selected={selected || undefined}
-      data-value={value}
+      data-value={value.current}
       onPointerMove={props.disabled ? undefined : select}
       onClick={props.disabled ? undefined : props.onSelect}
     >
@@ -724,4 +733,8 @@ function useLazyRef<T>(fn: () => T) {
   }
 
   return ref as React.MutableRefObject<T>
+}
+
+function random() {
+  return Math.random().toString(16).slice(2)
 }
