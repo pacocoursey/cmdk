@@ -9,7 +9,7 @@ export function VercelCMDK() {
         <Command.Input autoFocus placeholder="What do you need?" />
         <Command.List>
           <Command.Empty>No results found.</Command.Empty>
-          <Command.Group heading="Letters">
+          <Command.Group heading="Integrations">
             <Command.Item value="Linear">
               <Logo>
                 <LinearIcon />

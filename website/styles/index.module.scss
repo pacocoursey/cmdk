@@ -9,7 +9,7 @@
   &:before {
     background: radial-gradient(circle, rgba(2, 0, 36, 0) 0, var(--gray1) 100%);
     position: absolute;
-    content: "";
+    content: '';
     z-index: 2;
     width: 100%;
     height: 100%;
@@ -17,8 +17,8 @@
   }
 
   &:after {
-    content: "";
-    background-image: url("/grid.svg");
+    content: '';
+    background-image: url('/grid.svg');
     z-index: -1;
     position: absolute;
     width: 100%;
@@ -46,7 +46,6 @@
     margin-top: 8px;
     font-size: 16px;
   }
-
 }
 
 .content {
@@ -62,9 +61,8 @@
       radial-gradient(at 97% 96%, hsla(38, 60%, 74%, 1) 0px, transparent 50%),
       radial-gradient(at 33% 50%, hsla(222, 67%, 73%, 1) 0px, transparent 50%),
       radial-gradient(at 79% 53%, hsla(343, 68%, 79%, 1) 0px, transparent 50%);
-    ;
     position: absolute;
-    content: "";
+    content: '';
     z-index: 2;
     width: 100%;
     height: 100%;
@@ -72,7 +70,7 @@
     z-index: -1;
     top: 80px;
     opacity: 0.15;
-
+    transform: translateZ(0);
 
     @media (prefers-color-scheme: dark) {
       opacity: 0.1;
@@ -86,7 +84,6 @@
   justify-content: space-between;
   margin-bottom: 48px;
 }
-
 
 .buttons {
   display: flex;
@@ -107,7 +104,6 @@
   transition-property: background, color, transform;
   transition-timing-function: ease-in;
 }
-
 
 .githubButton {
   width: 177px;
@@ -223,7 +219,7 @@
       height: 14px;
     }
 
-    &[data-selected=true] {
+    &[data-selected='true'] {
       color: var(--gray12);
 
       &:hover .activeTheme {
@@ -247,7 +243,7 @@
     width: 100%;
     top: 0;
     position: absolute;
-    lefT: 0;
+    left: 0;
   }
 
   .arrow {
@@ -283,7 +279,7 @@
     }
 
     &[aria-selected] {
-      background: #FFFFFF;
+      background: #ffffff;
       color: var(--gray12);
       box-shadow: 0px 2px 5px -2px rgb(0 0 0 / 15%), 0 1px 3px -1px rgb(0 0 0 / 20%);
     }
@@ -305,7 +301,6 @@
   @media (prefers-color-scheme: dark) {
     background: var(--grayA2);
   }
-
 }
 
 .codeBlock {
@@ -325,7 +320,6 @@
   color: var(--gray11);
   font-size: 13px;
   z-index: 3;
-
 
   a {
     display: inline-flex;
@@ -377,7 +371,7 @@
   --gradient: linear-gradient(to top, var(--gray1), var(--gray7));
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     border-radius: inherit;
@@ -385,6 +379,7 @@
     background: linear-gradient(to top, var(--gray1), var(--gray7));
     mask: linear-gradient(black, black) content-box, linear-gradient(black, black);
     mask-composite: exclude;
+    transform: translateZ(0);
 
     @media (prefers-color-scheme: dark) {
       mask: none;
@@ -394,7 +389,6 @@
     }
   }
 }
-
 
 .raunoSignature,
 .pacoSignature {

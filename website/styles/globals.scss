@@ -14,8 +14,8 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
+    Helvetica Neue, sans-serif;
 }
 
 body {
@@ -53,57 +53,48 @@ a {
 }
 
 :root {
-  --font-sans: --apple-system,
-    BlinkMacSystemFont,
-    Segoe UI,
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    Fira Sans,
-    Droid Sans,
-    Helvetica Neue,
-    sans-serif;
-  --lowContrast: #FFFFFF;
+  --font-sans: --apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
+    Helvetica Neue, sans-serif;
+  --lowContrast: #ffffff;
   --highContrast: #000000;
-  --app-bg: #FFFFFF;
-  --cmdk-bg: #FFFFFF;
+  --app-bg: #ffffff;
+  --cmdk-bg: #ffffff;
   --cmdk-radius: 8px;
   --cmdk-input-font-size: 16px;
   --cmdk-shadow: 0 16px 70px rgb(0 0 0 / 20%);
-  --gray1: hsl(0, 0%, 99.0%);
+  --gray1: hsl(0, 0%, 99%);
   --gray2: hsl(0, 0%, 97.3%);
   --gray3: hsl(0, 0%, 95.1%);
-  --gray4: hsl(0, 0%, 93.0%);
+  --gray4: hsl(0, 0%, 93%);
   --gray5: hsl(0, 0%, 90.9%);
   --gray6: hsl(0, 0%, 88.7%);
   --gray7: hsl(0, 0%, 85.8%);
-  --gray8: hsl(0, 0%, 78.0%);
+  --gray8: hsl(0, 0%, 78%);
   --gray9: hsl(0, 0%, 56.1%);
   --gray10: hsl(0, 0%, 52.3%);
   --gray11: hsl(0, 0%, 43.5%);
-  --gray12: hsl(0, 0%, 9.0%);
+  --gray12: hsl(0, 0%, 9%);
 
   --grayA1: hsla(0, 0%, 0%, 0.012);
   --grayA2: hsla(0, 0%, 0%, 0.027);
   --grayA3: hsla(0, 0%, 0%, 0.047);
   --grayA4: hsla(0, 0%, 0%, 0.071);
-  --grayA5: hsla(0, 0%, 0%, 0.090);
+  --grayA5: hsla(0, 0%, 0%, 0.09);
   --grayA6: hsla(0, 0%, 0%, 0.114);
   --grayA7: hsla(0, 0%, 0%, 0.141);
-  --grayA8: hsla(0, 0%, 0%, 0.220);
+  --grayA8: hsla(0, 0%, 0%, 0.22);
   --grayA9: hsla(0, 0%, 0%, 0.439);
   --grayA10: hsla(0, 0%, 0%, 0.478);
   --grayA11: hsla(0, 0%, 0%, 0.565);
-  --grayA12: hsla(0, 0%, 0%, 0.910);
+  --grayA12: hsla(0, 0%, 0%, 0.91);
 }
 
 .dark {
   --lowContrast: #000000;
-  --highContrast: #FFFFFF;
+  --highContrast: #ffffff;
 
   --gray1: hsl(0, 0%, 8.5%);
-  --gray2: hsl(0, 0%, 11.0%);
+  --gray2: hsl(0, 0%, 11%);
   --gray3: hsl(0, 0%, 13.6%);
   --gray4: hsl(0, 0%, 15.8%);
   --gray5: hsl(0, 0%, 17.9%);
@@ -113,7 +104,7 @@ a {
   --gray9: hsl(0, 0%, 43.9%);
   --gray10: hsl(0, 0%, 49.4%);
   --gray11: hsl(0, 0%, 62.8%);
-  --gray12: hsl(0, 0%, 93.0%);
+  --gray12: hsl(0, 0%, 93%);
 
   --grayA1: hsla(0, 0%, 100%, 0);
   --grayA2: hsla(0, 0%, 100%, 0.026);
