@@ -11,6 +11,33 @@
     @media (prefers-color-scheme: dark) {
         background: var(--grayA2);
     }
+
+    button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: var(--grayA3);
+        border-radius: 8px;
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        color: var(--gray11);
+        cursor: copy;
+        transition: color 150ms ease, background 150ms ease, transform 150ms ease;
+
+        &:hover {
+            color: var(--gray12);
+            background: var(--grayA4);
+        }
+
+        &:active {
+            color: var(--gray12);
+            background: var(--grayA5);
+            transform: scale(0.96);
+        }
+    }
 }
 
 .shine {
