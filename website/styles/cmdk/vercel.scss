@@ -2,11 +2,11 @@
     [cmdk-root] {
         width: 640px;
         padding: 8px;
-        background: rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.9);
         border-radius: 12px;
         overflow: hidden;
         font-family: var(--cmdk-font);
-        border: 1px solid var(--gray5);
+        border: 1px solid var(--gray6);
         box-shadow: var(--cmdk-shadow);
 
         .dark & {
@@ -23,7 +23,7 @@
         outline: none;
         background: var(--bg);
         color: var(--gray12);
-        border-bottom: 1px solid var(--gray5);
+        border-bottom: 1px solid var(--gray6);
         margin-bottom: 16px;
 
         &::placeholder {

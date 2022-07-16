@@ -2,7 +2,7 @@ import styles from 'styles/index.module.scss';
 import React from 'react';
 import { AnimatePresence, motion, MotionProps } from 'framer-motion';
 import {
-  XCodeCMDK,
+  FramerCMDK,
   LinearCMDK,
   LinearIcon,
   VercelCMDK,
@@ -11,6 +11,7 @@ import {
   RaycastIcon,
   FigmaIcon,
   CopyIcon,
+  FramerIcon,
   GitHubIcon,
 } from 'components';
 import packageJSON from '../../package.json';
@@ -20,7 +21,7 @@ type TTheme = {
   setTheme: Function;
 };
 
-type Themes = 'linear' | 'raycast' | 'vercel' | 'xcode';
+type Themes = 'linear' | 'raycast' | 'vercel' | 'framer';
 
 const ThemeContext = React.createContext<TTheme>({} as TTheme);
 
@@ -29,8 +30,6 @@ export default function Index() {
 
   return (
     <>
-      <header className={styles.header}></header>
-
       <main className={styles.main}>
         <div className={styles.content}>
           <div className={styles.meta}>
@@ -47,9 +46,9 @@ export default function Index() {
           </div>
 
           <AnimatePresence exitBeforeEnter initial={false}>
-            {theme === 'xcode' && (
-              <CMDKWrapper key="xcode">
-                <XCodeCMDK />
+            {theme === 'framer' && (
+              <CMDKWrapper key="framer">
+                <FramerCMDK />
               </CMDKWrapper>
             )}
             {theme === 'vercel' && (
@@ -68,7 +67,6 @@ export default function Index() {
               </CMDKWrapper>
             )}
           </AnimatePresence>
-
           <ThemeContext.Provider value={{ theme, setTheme }}>
             <ThemeSwitcher />
           </ThemeContext.Provider>
@@ -119,20 +117,20 @@ function GitHubButton() {
 
 const themes = [
   {
-    icon: <LinearIcon />,
-    key: 'linear',
+    icon: <RaycastIcon />,
+    key: 'raycast',
   },
   {
-    icon: <FigmaIcon />,
-    key: 'xcode',
+    icon: <LinearIcon />,
+    key: 'linear',
   },
   {
     icon: <VercelIcon />,
     key: 'vercel',
   },
   {
-    icon: <RaycastIcon />,
-    key: 'raycast',
+    icon: <FramerIcon />,
+    key: 'framer',
   },
 ];
 

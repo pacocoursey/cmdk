@@ -1,37 +1,44 @@
 import { Command } from 'cmdk';
 
-export function XCodeCMDK() {
+export function FramerCMDK() {
   return (
-    <div className="xcode">
+    <div className="framer">
       <Command>
-        <Command.Input autoFocus placeholder="Search for components..." />
+        <div cmdk-framer-header="">
+          <SearchIcon />
+          <Command.Input autoFocus placeholder="Find components, packages, and interactions..." />
+        </div>
         <Command.List>
           <Command.Empty>No results found.</Command.Empty>
-          <div xcode-cmdk-items="">
-            <div xcode-cmdk-left="">
-              <Item value="Button">
-                <ButtonIcon />
-              </Item>
-              <Item value="Input">
-                <InputIcon />
-              </Item>
-              <Item value="Radio Button">
-                <RadioIcon />
-              </Item>
-              <Item value="Slider">
-                <SliderIcon />
-              </Item>
-              <Item value="Toggle Button">
-                <ToggleIcon />
-              </Item>
-              <Item value="Avatar">
-                <AvatarIcon />
-              </Item>
-              <Item value="Container">
-                <ContainerIcon />
-              </Item>
+          <div cmdk-framer-items="">
+            <div cmdk-framer-left="">
+              <Command.Group heading="Components">
+                <Item value="Button" subtitle="Load random images">
+                  <ButtonIcon />
+                </Item>
+                <Item value="Input" subtitle="Load random images">
+                  <InputIcon />
+                </Item>
+                <Item value="Radio Button" subtitle="Load random images">
+                  <RadioIcon />
+                </Item>
+                <Item value="Slider" subtitle="Load random images">
+                  <SliderIcon />
+                </Item>
+                <Item value="Toggle Button" subtitle="Load random images">
+                  <ToggleIcon />
+                </Item>
+                <Item value="Avatar" subtitle="Load random images">
+                  <AvatarIcon />
+                </Item>
+                <Item value="Container" subtitle="Load random images">
+                  <ContainerIcon />
+                </Item>
+              </Command.Group>
             </div>
-            <div xcode-cmdk-right=""></div>
+            <div cmdk-framer-right="">
+              <button>Primary</button>
+            </div>
           </div>
         </Command.List>
       </Command>
@@ -39,11 +46,14 @@ export function XCodeCMDK() {
   );
 }
 
-function Item({ children, value }: { children: React.ReactNode; value: string }) {
+function Item({ children, value, subtitle }: { children: React.ReactNode; value: string; subtitle: string }) {
   return (
     <Command.Item value={value}>
-      {children}
-      {value}
+      <div cmdk-framer-icon-wrapper="">{children}</div>
+      <div cmdk-framer-item-meta="">
+        {value}
+        <span cmdk-framer-item-subtitle="">{subtitle}</span>
+      </div>
     </Command.Item>
   );
 }
@@ -135,6 +145,21 @@ function ContainerIcon() {
         fillRule="evenodd"
         clipRule="evenodd"
       ></path>
+    </svg>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.5}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
     </svg>
   );
 }

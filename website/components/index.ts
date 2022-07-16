@@ -1,4 +1,4 @@
-export * from './cmdk/xcode';
+export * from './cmdk/framer';
 export * from './cmdk/linear';
 export * from './cmdk/vercel';
 export * from './cmdk/raycast';

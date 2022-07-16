@@ -5,7 +5,7 @@
   overflow: hidden;
   display: flex;
   justify-content: center;
-  align-items: center;
+  padding-top: 120px;
 
   &:before {
     background: radial-gradient(circle, rgba(2, 0, 36, 0) 0, var(--gray1) 100%);
@@ -44,13 +44,14 @@
 
   p {
     color: var(--gray11);
-    margin-top: 12px;
+    margin-top: 8px;
     font-size: 16px;
   }
 
 }
 
 .content {
+  height: fit-content;
   position: relative;
   z-index: 3;
 
@@ -70,7 +71,7 @@
     height: 100%;
     filter: blur(100px) saturate(150%);
     z-index: -1;
-    top: 100px;
+    top: 80px;
     opacity: 0.2;
 
 
@@ -93,7 +94,7 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 12px;
-  transform: translateY(16px);
+  transform: translateY(12px);
 }
 
 .githubButton,
@@ -101,7 +102,7 @@
 .switcher button {
   height: 40px;
   color: var(--gray12);
-  border-radius: 8px;
+  border-radius: 9999px;
   font-size: 14px;
   transition-duration: 150ms;
   transition-property: background, color, transform;
@@ -134,7 +135,6 @@
 }
 
 .installButton {
-  border-radius: 8px;
   background: var(--grayA3);
   display: flex;
   align-items: center;
@@ -173,7 +173,7 @@
     justify-content: center;
     margin-left: auto;
     background: var(--gray5);
-    border-radius: 6px;
+    border-radius: 9999px;
     transition: background 150ms ease;
 
     svg {
@@ -193,6 +193,7 @@
 
   button {
     height: 32px;
+    line-height: 32px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -248,6 +249,41 @@
   }
 }
 
+.header {
+  position: absolute;
+  left: 0;
+  top: -64px;
+  gap: 8px;
+  background: var(--gray3);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  border-radius: 9999px;
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+    border-radius: 9999px;
+    color: var(--gray11);
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &[aria-selected] {
+      background: #FFFFFF;
+      color: var(--gray12);
+      box-shadow: 0px 2px 5px -2px rgb(0 0 0 / 15%), 0 1px 3px -1px rgb(0 0 0 / 20%);
+    }
+  }
+}
+
+
 .versionBadge {
   display: inline-flex;
   align-items: center;
@@ -291,16 +327,5 @@
     height: 20px;
     border: 1px solid var(--gray5);
     border-radius: 9999px;
-  }
-}
-
-
-.header {
-  position: absolute;
-  padding: 64px;
-
-  svg {
-    width: 64px;
-    height: 64px;
   }
 }
