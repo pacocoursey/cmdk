@@ -20,61 +20,132 @@
 
 
   h1 {
-    font-size: 48px;
+    font-size: 40px;
     color: var(--gray12);
     font-style: italic;
     font-family: 'Magnat Head';
     font-weight: 600;
     letter-spacing: -2px;
+    line-height: 40px;
   }
 
   p {
     color: var(--gray11);
-    margin-top: 16px;
-    margin-bottom: 32px;
-    font-size: 18px;
+    margin-top: 12px;
+    font-size: 16px;
   }
 
-  .content {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    position: relative;
-    z-index: 1;
-  }
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 48px;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.githubButton,
+.installButton,
+.switcher button {
+  transition-duration: 150ms;
+  transition-property: background, color, transform;
+  transition-timing-function: ease-in;
 }
 
 
-.button {
+.githubButton {
   font-family: var(--font-sans);
   color: var(--gray12);
   font-size: 500;
   height: 40px;
-  padding: 0 8px;
+  padding: 0 12px;
+  font-size: 14px;
   border-radius: 6px;
   display: inline-flex;
   align-items: center;
-  margin-top: 16px;
-  margin-bottom: 48px;
+
+  &:hover {
+    background: var(--gray3);
+  }
+
+  &:active {
+    background: var(--gray5);
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: 0;
+    outline: 2px solid var(--gray7);
+  }
 }
 
-.install {
-  border-radius: 9999px;
-  background: var(--grayA3);
+.installButton {
+  border-radius: 8px;
+  background: var(--gray3);
   display: flex;
   align-items: center;
-  padding: 0 16px;
+  gap: 16px;
+  padding: 0px 8px 0 16px;
   height: 40px;
   font-size: 14px;
-  font-family: Menlo, monospace;
   color: var(--gray12);
+  cursor: copy;
+
+  &:hover {
+    background: var(--gray4);
+
+    span {
+      background: var(--gray5);
+
+      svg {
+        color: var(--gray12);
+      }
+    }
+  }
+
+  &:focus-visible {
+    outline: 0;
+    outline: 2px solid var(--gray7);
+    outline-offset: 2px;
+  }
+
+  &:active {
+    background: var(--gray5);
+    transform: scale(0.97);
+  }
+
+  span {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    background: var(--gray5);
+    border-radius: 6px;
+    transition: background 150ms ease;
+
+    svg {
+      size: 16px;
+      color: var(--gray11);
+      transition: color 150ms ease;
+    }
+  }
 }
 
 .switcher {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  margin-top: 32px;
+  margin-top: 48px;
 
   button {
     height: 32px;
@@ -88,9 +159,6 @@
     cursor: pointer;
     user-select: none;
     text-transform: capitalize;
-    transition-duration: 150ms;
-    transition-property: background, color, transform;
-    transition-timing-function: ease-in;
 
     &:hover {
       color: var(--gray12);
@@ -129,10 +197,30 @@
       display: none;
     }
   }
+
+  .arrow {
+    color: var(--gray11);
+    user-select: none;
+  }
+}
+
+.versionBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mint11);
+  background: var(--mint2);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 8px;
 }
 
 .footer {
   position: fixed;
+  display: flex;
+  align-items: center;
+  gap: 4px;
   bottom: 24px;
   transform: translate(-50%, -50%);
   left: 50%;
@@ -140,8 +228,18 @@
   font-size: 13px;
 
   a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     color: var(--gray12);
     font-weight: 500;
+  }
+
+  img {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--gray5);
+    border-radius: 9999px;
   }
 }
 

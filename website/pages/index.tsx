@@ -1,6 +1,6 @@
 import styles from "styles/index.module.scss";
 import React from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, MotionProps } from "framer-motion";
 import {
   XCodeCMDK,
   LinearCMDK,
@@ -10,7 +10,9 @@ import {
   RaycastCMDK,
   RaycastIcon,
   FigmaIcon,
+  CopyIcon,
 } from "components";
+import packageJSON from "../../package.json";
 
 type TTheme = {
   theme: "linear" | "raycast" | "vercel" | "xcode";
@@ -31,12 +33,18 @@ export default function Index() {
       <header className={styles.header}></header>
       <main className={styles.main}>
         <div className={styles.content}>
-          <h1>cmdk</h1>
-          <p>Blazing fast, composable command menu for React.</p>
+          <div className={styles.meta}>
+            <div className={styles.info}>
+              <VersionBadge />
+              <h1>cmdk</h1>
+              <p>Fast, composable, unstyled command menu for React.</p>
+            </div>
 
-          <Install />
-
-          <Button>GitHub →</Button>
+            <div className={styles.buttons}>
+              <InstallButton />
+              <GitHubButton />
+            </div>
+          </div>
 
           <AnimatePresence exitBeforeEnter>
             {theme === "xcode" && (
@@ -72,7 +80,7 @@ export default function Index() {
   );
 }
 
-function CMDKWrapper(props) {
+function CMDKWrapper(props: MotionProps & { children: React.ReactNode }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -84,46 +92,133 @@ function CMDKWrapper(props) {
   );
 }
 
-function Install() {
-  return <div className={styles.install}>npm install cmdk</div>;
+function InstallButton() {
+  return (
+    <button className={styles.installButton}>
+      npm install cmdk
+      <span>
+        <CopyIcon />
+      </span>
+    </button>
+  );
 }
 
-function Button({ children }: { children: string }) {
+function GitHubButton() {
   return (
-    <a href="https://github.com/pacocoursey/cmdk" className={styles.button}>
-      {children}
+    <a
+      href="https://github.com/pacocoursey/cmdk"
+      target="_blank"
+      rel="noopener noreferrer"
+      className={styles.githubButton}
+    >
+      GitHub →
     </a>
   );
 }
 
+const themes = [
+  {
+    icon: <LinearIcon />,
+    key: "linear",
+  },
+  {
+    icon: <FigmaIcon />,
+    key: "xcode",
+  },
+  {
+    icon: <VercelIcon />,
+    key: "vercel",
+  },
+  {
+    icon: <RaycastIcon />,
+    key: "raycast",
+  },
+];
+
 function ThemeSwitcher() {
   const { theme, setTheme } = React.useContext(ThemeContext);
+  const ref = React.useRef<HTMLButtonElement | null>(null);
+  const [showArrowKeyHint, setShowArrowKeyHint] = React.useState(false);
+
+  React.useEffect(() => {
+    function listener(e: KeyboardEvent) {
+      const current = document.activeElement?.getAttribute("data-theme-switch");
+
+      if (!current) {
+        return;
+      }
+
+      const themeNames = themes.map((t) => t.key);
+
+      if (e.key === "ArrowRight") {
+        const currentIndex = themeNames.indexOf(current);
+        const nextIndex = (currentIndex + 1) % themeNames.length;
+        const nextItem = themeNames[nextIndex];
+
+        if (nextItem) {
+          const nextNode: HTMLElement | null = document.querySelector(
+            `[data-theme-switch=${nextItem}`
+          );
+          nextNode?.focus();
+          nextNode?.click();
+        }
+      }
+
+      if (e.key === "ArrowLeft") {
+        const currentIndex = themeNames.indexOf(current);
+        const prevIndex =
+          (currentIndex - 1 + themeNames.length) % themeNames.length;
+        const prevItem = themeNames[prevIndex];
+        if (prevItem) {
+          const prevNode: HTMLElement | null = document.querySelector(
+            `[data-theme-switch=${prevItem}`
+          );
+          prevNode?.focus();
+          prevNode?.click();
+        }
+      }
+    }
+
+    document.addEventListener("keydown", listener);
+
+    return () => {
+      document.removeEventListener("keydown", listener);
+    };
+  }, []);
+
   return (
     <div className={styles.switcher}>
-      {[
-        {
-          icon: <LinearIcon />,
-          key: "linear",
-        },
-        {
-          icon: <FigmaIcon />,
-          key: "xcode",
-        },
-        {
-          icon: <VercelIcon />,
-          key: "vercel",
-        },
-        {
-          icon: <RaycastIcon />,
-          key: "raycast",
-        },
-      ].map(({ key, icon }) => {
+      <motion.span
+        className={styles.arrow}
+        initial={false}
+        animate={{
+          opacity: showArrowKeyHint ? 1 : 0,
+          x: showArrowKeyHint ? -24 : 0,
+        }}
+      >
+        ←
+      </motion.span>
+      {themes.map(({ key, icon }) => {
         return (
           <button
+            data-theme-switch={key}
+            ref={ref}
             key={key}
             className={theme === key ? styles.activeTheme : ""}
             onClick={() => {
               setTheme(key);
+              if (showArrowKeyHint === false) {
+                setShowArrowKeyHint(true);
+              }
+            }}
+            onBlur={() => {
+              setTimeout(() => {
+                if (
+                  !document?.activeElement?.getAttribute("data-theme-switch")
+                ) {
+                  setShowArrowKeyHint(false);
+                }
+              });
             }}
           >
             {icon}
@@ -131,19 +226,35 @@ function ThemeSwitcher() {
           </button>
         );
       })}
+      <motion.span
+        className={styles.arrow}
+        initial={false}
+        animate={{
+          opacity: showArrowKeyHint ? 1 : 0,
+          x: showArrowKeyHint ? 24 : 0,
+        }}
+      >
+        →
+      </motion.span>
     </div>
   );
+}
+
+function VersionBadge() {
+  return <span className={styles.versionBadge}>v{packageJSON.version}</span>;
 }
 
 function Footer() {
   return (
     <footer className={styles.footer}>
-      Built with care by{" "}
+      Crafted by{" "}
       <a href="https://paco.me" target="_blank" rel="noopener noreferrer">
+        <img src="/paco.png" alt="Avatar of Paco" />
         Paco
       </a>{" "}
       and{" "}
       <a href="https://rauno.me" target="_blank" rel="noopener noreferrer">
+        <img src="/rauno.jpeg" alt="Avatar of Rauno" />
         Rauno
       </a>
     </footer>
