@@ -1,12 +1,5 @@
-import { Command } from "cmdk";
-import {
-  Logo,
-  LinearIcon,
-  FigmaIcon,
-  SlackIcon,
-  YouTubeIcon,
-  RaycastIcon,
-} from "components";
+import { Command } from 'cmdk';
+import { Logo, LinearIcon, FigmaIcon, SlackIcon, YouTubeIcon, RaycastIcon } from 'components';
 
 export function LinearCMDK() {
   return (
@@ -38,38 +31,38 @@ export function LinearCMDK() {
 const items = [
   {
     icon: <AssignToIcon />,
-    label: "Assign to...",
-    shortcut: ["A"],
+    label: 'Assign to...',
+    shortcut: ['A'],
   },
   {
     icon: <AssignToMeIcon />,
-    label: "Assign to me",
-    shortcut: ["I"],
+    label: 'Assign to me',
+    shortcut: ['I'],
   },
   {
     icon: <ChangeStatusIcon />,
-    label: "Change status...",
-    shortcut: ["S"],
+    label: 'Change status...',
+    shortcut: ['S'],
   },
   {
     icon: <ChangePriorityIcon />,
-    label: "Change priority...",
-    shortcut: ["P"],
+    label: 'Change priority...',
+    shortcut: ['P'],
   },
   {
     icon: <ChangeLabelsIcon />,
-    label: "Change labels...",
-    shortcut: ["L"],
+    label: 'Change labels...',
+    shortcut: ['L'],
   },
   {
     icon: <RemoveLabelIcon />,
-    label: "Remove label...",
-    shortcut: ["⇧", "L"],
+    label: 'Remove label...',
+    shortcut: ['⇧', 'L'],
   },
   {
     icon: <SetDueDateIcon />,
-    label: "Set due date...",
-    shortcut: ["⇧", "D"],
+    label: 'Set due date...',
+    shortcut: ['⇧', 'D'],
   },
 ];
 

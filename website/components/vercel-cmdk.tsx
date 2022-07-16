@@ -1,12 +1,5 @@
-import { Command } from "cmdk";
-import {
-  Logo,
-  LinearIcon,
-  FigmaIcon,
-  SlackIcon,
-  YouTubeIcon,
-  RaycastIcon,
-} from "components";
+import { Command } from 'cmdk';
+import { Logo, LinearIcon, FigmaIcon, SlackIcon, YouTubeIcon, RaycastIcon } from 'components';
 
 export function VercelCMDK() {
   return (

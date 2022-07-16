@@ -1,13 +1,6 @@
-import React from "react";
-import { Command } from "cmdk";
-import {
-  Logo,
-  LinearIcon,
-  FigmaIcon,
-  SlackIcon,
-  YouTubeIcon,
-  RaycastIcon,
-} from "components";
+import React from 'react';
+import { Command } from 'cmdk';
+import { Logo, LinearIcon, FigmaIcon, SlackIcon, YouTubeIcon, RaycastIcon } from 'components';
 
 export function RaycastCMDK() {
   return (
@@ -56,13 +49,7 @@ export function RaycastCMDK() {
   );
 }
 
-function Item({
-  children,
-  value,
-}: {
-  children: React.ReactNode;
-  value: string;
-}) {
+function Item({ children, value }: { children: React.ReactNode; value: string }) {
   return (
     <Command.Item value={value}>
       {children}

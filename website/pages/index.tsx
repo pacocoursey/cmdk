@@ -1,6 +1,6 @@
-import styles from "styles/index.module.scss";
-import React from "react";
-import { AnimatePresence, motion, MotionProps } from "framer-motion";
+import styles from 'styles/index.module.scss';
+import React from 'react';
+import { AnimatePresence, motion, MotionProps } from 'framer-motion';
 import {
   XCodeCMDK,
   LinearCMDK,
@@ -11,21 +11,21 @@ import {
   RaycastIcon,
   FigmaIcon,
   CopyIcon,
-} from "components";
-import packageJSON from "../../package.json";
+} from 'components';
+import packageJSON from '../../package.json';
 
 type TTheme = {
-  theme: "linear" | "raycast" | "vercel" | "xcode";
+  theme: 'linear' | 'raycast' | 'vercel' | 'xcode';
   setTheme: Function;
 };
 
 const ThemeContext = React.createContext<TTheme>({} as TTheme);
 
 export default function Index() {
-  const [theme, setTheme] = React.useState("raycast");
+  const [theme, setTheme] = React.useState('raycast');
 
   React.useEffect(() => {
-    document.body.classList.add("dark");
+    document.body.classList.add('dark');
   }, []);
 
   return (
@@ -47,22 +47,22 @@ export default function Index() {
           </div>
 
           <AnimatePresence exitBeforeEnter>
-            {theme === "xcode" && (
+            {theme === 'xcode' && (
               <CMDKWrapper key="xcode">
                 <XCodeCMDK />
               </CMDKWrapper>
             )}
-            {theme === "vercel" && (
+            {theme === 'vercel' && (
               <CMDKWrapper key="vercel">
                 <VercelCMDK />
               </CMDKWrapper>
             )}
-            {theme === "linear" && (
+            {theme === 'linear' && (
               <CMDKWrapper key="linear">
                 <LinearCMDK />
               </CMDKWrapper>
             )}
-            {theme === "raycast" && (
+            {theme === 'raycast' && (
               <CMDKWrapper key="raycast">
                 <RaycastCMDK />
               </CMDKWrapper>
@@ -119,19 +119,19 @@ function GitHubButton() {
 const themes = [
   {
     icon: <LinearIcon />,
-    key: "linear",
+    key: 'linear',
   },
   {
     icon: <FigmaIcon />,
-    key: "xcode",
+    key: 'xcode',
   },
   {
     icon: <VercelIcon />,
-    key: "vercel",
+    key: 'vercel',
   },
   {
     icon: <RaycastIcon />,
-    key: "raycast",
+    key: 'raycast',
   },
 ];
 
@@ -142,7 +142,7 @@ function ThemeSwitcher() {
 
   React.useEffect(() => {
     function listener(e: KeyboardEvent) {
-      const current = document.activeElement?.getAttribute("data-theme-switch");
+      const current = document.activeElement?.getAttribute('data-theme-switch');
 
       if (!current) {
         return;
@@ -150,39 +150,34 @@ function ThemeSwitcher() {
 
       const themeNames = themes.map((t) => t.key);
 
-      if (e.key === "ArrowRight") {
+      if (e.key === 'ArrowRight') {
         const currentIndex = themeNames.indexOf(current);
         const nextIndex = (currentIndex + 1) % themeNames.length;
         const nextItem = themeNames[nextIndex];
 
         if (nextItem) {
-          const nextNode: HTMLElement | null = document.querySelector(
-            `[data-theme-switch=${nextItem}`
-          );
+          const nextNode: HTMLElement | null = document.querySelector(`[data-theme-switch=${nextItem}`);
           nextNode?.focus();
           nextNode?.click();
         }
       }
 
-      if (e.key === "ArrowLeft") {
+      if (e.key === 'ArrowLeft') {
         const currentIndex = themeNames.indexOf(current);
-        const prevIndex =
-          (currentIndex - 1 + themeNames.length) % themeNames.length;
+        const prevIndex = (currentIndex - 1 + themeNames.length) % themeNames.length;
         const prevItem = themeNames[prevIndex];
         if (prevItem) {
-          const prevNode: HTMLElement | null = document.querySelector(
-            `[data-theme-switch=${prevItem}`
-          );
+          const prevNode: HTMLElement | null = document.querySelector(`[data-theme-switch=${prevItem}`);
           prevNode?.focus();
           prevNode?.click();
         }
       }
     }
 
-    document.addEventListener("keydown", listener);
+    document.addEventListener('keydown', listener);
 
     return () => {
-      document.removeEventListener("keydown", listener);
+      document.removeEventListener('keydown', listener);
     };
   }, []);
 
@@ -204,7 +199,7 @@ function ThemeSwitcher() {
             data-theme-switch={key}
             ref={ref}
             key={key}
-            className={theme === key ? styles.activeTheme : ""}
+            className={theme === key ? styles.activeTheme : ''}
             onClick={() => {
               setTheme(key);
               if (showArrowKeyHint === false) {
@@ -213,9 +208,7 @@ function ThemeSwitcher() {
             }}
             onBlur={() => {
               setTimeout(() => {
-                if (
-                  !document?.activeElement?.getAttribute("data-theme-switch")
-                ) {
+                if (!document?.activeElement?.getAttribute('data-theme-switch')) {
                   setShowArrowKeyHint(false);
                 }
               });
@@ -247,12 +240,12 @@ function VersionBadge() {
 function Footer() {
   return (
     <footer className={styles.footer}>
-      Crafted by{" "}
+      Crafted by{' '}
       <a href="https://paco.me" target="_blank" rel="noopener noreferrer">
         <img src="/paco.png" alt="Avatar of Paco" />
         Paco
-      </a>{" "}
-      and{" "}
+      </a>{' '}
+      and{' '}
       <a href="https://rauno.me" target="_blank" rel="noopener noreferrer">
         <img src="/rauno.jpeg" alt="Avatar of Rauno" />
         Rauno
