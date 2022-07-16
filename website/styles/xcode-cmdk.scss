@@ -39,15 +39,17 @@
         font-size: 14px;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 12px;
+        height: 40px;
+        color: var(--gray11);
         padding: 0 16px;
         margin-right: 8px;
         transition: all 150ms ease;
         transition-property: none;
 
         &[aria-selected='true'] {
-            background: var(--gray3);
-            color: var(--gray12);
+            background: var(--mint3);
+            color: var(--mint11);
         }
 
         &[aria-disabled='true'] {
@@ -57,21 +59,16 @@
 
         &:active {
             transition-property: background;
-            background: var(--gray4);
+            background: var(--mint5);
         }
-
-        &:first-child {
-            margin-top: 8px;
-        }
-
 
         &+[cmdk-item] {
             margin-top: 4px;
         }
 
         svg {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
         }
     }
 
@@ -86,13 +83,13 @@
     [xcode-cmdk-right] {
         background: var(--gray3);
         border-radius: 8px;
-        height: 300px;
+        height: auto;
         width: 70%;
     }
 
     [cmdk-list] {
         padding-bottom: 4px;
-        height: min(300px, calc(var(--cmdk-list-height) + 16px));
+        min-height: 308px;
         max-height: 400px;
         overflow: auto;
         overscroll-behavior: contain;

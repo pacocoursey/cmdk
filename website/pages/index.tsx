@@ -15,14 +15,16 @@ import {
 import packageJSON from '../../package.json';
 
 type TTheme = {
-  theme: 'linear' | 'raycast' | 'vercel' | 'xcode';
+  theme: Themes;
   setTheme: Function;
 };
+
+type Themes = 'linear' | 'raycast' | 'vercel' | 'xcode';
 
 const ThemeContext = React.createContext<TTheme>({} as TTheme);
 
 export default function Index() {
-  const [theme, setTheme] = React.useState('raycast');
+  const [theme, setTheme] = React.useState<Themes>('raycast');
 
   React.useEffect(() => {
     document.body.classList.add('dark');
@@ -31,6 +33,7 @@ export default function Index() {
   return (
     <>
       <header className={styles.header}></header>
+
       <main className={styles.main}>
         <div className={styles.content}>
           <div className={styles.meta}>
@@ -142,34 +145,25 @@ function ThemeSwitcher() {
 
   React.useEffect(() => {
     function listener(e: KeyboardEvent) {
-      const current = document.activeElement?.getAttribute('data-theme-switch');
-
-      if (!current) {
-        return;
-      }
-
       const themeNames = themes.map((t) => t.key);
 
       if (e.key === 'ArrowRight') {
-        const currentIndex = themeNames.indexOf(current);
+        const currentIndex = themeNames.indexOf(theme);
         const nextIndex = (currentIndex + 1) % themeNames.length;
         const nextItem = themeNames[nextIndex];
 
         if (nextItem) {
-          const nextNode: HTMLElement | null = document.querySelector(`[data-theme-switch=${nextItem}`);
-          nextNode?.focus();
-          nextNode?.click();
+          setTheme(nextItem);
         }
       }
 
       if (e.key === 'ArrowLeft') {
-        const currentIndex = themeNames.indexOf(current);
+        const currentIndex = themeNames.indexOf(theme);
         const prevIndex = (currentIndex - 1 + themeNames.length) % themeNames.length;
         const prevItem = themeNames[prevIndex];
+
         if (prevItem) {
-          const prevNode: HTMLElement | null = document.querySelector(`[data-theme-switch=${prevItem}`);
-          prevNode?.focus();
-          prevNode?.click();
+          setTheme(prevItem);
         }
       }
     }
@@ -179,7 +173,7 @@ function ThemeSwitcher() {
     return () => {
       document.removeEventListener('keydown', listener);
     };
-  }, []);
+  }, [theme]);
 
   return (
     <div className={styles.switcher}>
@@ -196,7 +190,6 @@ function ThemeSwitcher() {
       {themes.map(({ key, icon }) => {
         return (
           <button
-            data-theme-switch={key}
             ref={ref}
             key={key}
             className={theme === key ? styles.activeTheme : ''}
@@ -205,13 +198,6 @@ function ThemeSwitcher() {
               if (showArrowKeyHint === false) {
                 setShowArrowKeyHint(true);
               }
-            }}
-            onBlur={() => {
-              setTimeout(() => {
-                if (!document?.activeElement?.getAttribute('data-theme-switch')) {
-                  setShowArrowKeyHint(false);
-                }
-              });
             }}
           >
             {icon}

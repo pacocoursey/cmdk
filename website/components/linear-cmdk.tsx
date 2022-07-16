@@ -6,7 +6,7 @@ export function LinearCMDK() {
     <div className="linear">
       <Command>
         <div linear-cmdk-badge="">Issue - FUN-343</div>
-        <Command.Input placeholder="Type a command or search..." />
+        <Command.Input autoFocus placeholder="Type a command or search..." />
         <Command.List>
           <Command.Empty>No results found.</Command.Empty>
           {items.map(({ icon, label, shortcut }) => {

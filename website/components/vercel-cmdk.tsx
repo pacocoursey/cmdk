@@ -5,7 +5,7 @@ export function VercelCMDK() {
   return (
     <div className="vercel">
       <Command>
-        <Command.Input placeholder="What do you need?" />
+        <Command.Input autoFocus placeholder="What do you need?" />
         <Command.List>
           <Command.Empty>No results found.</Command.Empty>
           <Command.Group heading="Letters">
@@ -39,14 +39,6 @@ export function VercelCMDK() {
               </Logo>
               Raycast
             </Command.Item>
-            <Command.Item>Pear</Command.Item>
-            <Command.Item>Orange</Command.Item>
-            <Command.Item>Blueberry</Command.Item>
-            <Command.Item>fds</Command.Item>
-            <Command.Item>asd</Command.Item>
-            <Command.Item>gfd</Command.Item>
-            <Command.Item>123</Command.Item>
-            <Command.Item>fgdfdd</Command.Item>
           </Command.Group>
 
           <Command.Item>Ungrouped</Command.Item>

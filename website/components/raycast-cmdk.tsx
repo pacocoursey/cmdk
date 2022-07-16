@@ -6,7 +6,7 @@ export function RaycastCMDK() {
   return (
     <div className="raycast">
       <Command>
-        <Command.Input placeholder="Search for apps or commands..." />
+        <Command.Input autoFocus placeholder="Search for apps or commands..." />
         <hr cmdk-raycast-loader="" />
         <Command.List>
           <Command.Empty>No results found.</Command.Empty>
