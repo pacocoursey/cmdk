@@ -1,0 +1,120 @@
+.xcode {
+    [cmdk-root] {
+        width: 640px;
+        padding: 8px;
+        background: var(--cmdk-bg);
+        border-radius: var(--cmdk-radius);
+        overflow: hidden;
+        font-family: var(--cmdk-font);
+        border: 1px solid var(--gray5);
+        box-shadow: var(--cmdk-shadow);
+
+        .dark & {
+            background: var(--gray2);
+        }
+    }
+
+    [cmdk-input] {
+        font-family: var(--cmdk-font);
+        border: none;
+        width: 100%;
+        font-size: 17px;
+        padding: 8px 8px 16px 8px;
+        outline: none;
+        background: var(--bg);
+        color: var(--gray12);
+        border-bottom: 1px solid var(--gray5);
+        margin-bottom: 8px;
+
+        &::placeholder {
+            color: var(--gray9);
+        }
+    }
+
+    [cmdk-item] {
+        content-visibility: auto;
+
+        cursor: pointer;
+        border-radius: 8px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 16px;
+        margin-right: 8px;
+        transition: all 150ms ease;
+        transition-property: none;
+
+        &[aria-selected='true'] {
+            background: var(--gray3);
+            color: var(--gray12);
+        }
+
+        &[aria-disabled='true'] {
+            color: var(--gray8);
+            cursor: not-allowed;
+        }
+
+        &:active {
+            transition-property: background;
+            background: var(--gray4);
+        }
+
+        &:first-child {
+            margin-top: 8px;
+        }
+
+
+        &+[cmdk-item] {
+            margin-top: 4px;
+        }
+
+        svg {
+            width: 18px;
+            height: 18px;
+        }
+    }
+
+    [xcode-cmdk-items] {
+        display: flex;
+    }
+
+    [xcode-cmdk-left] {
+        width: 30%;
+    }
+
+    [xcode-cmdk-right] {
+        background: var(--gray3);
+        border-radius: 8px;
+        height: 300px;
+        width: 70%;
+    }
+
+    [cmdk-list] {
+        padding-bottom: 4px;
+        height: min(300px, calc(var(--cmdk-list-height) + 16px));
+        max-height: 400px;
+        overflow: auto;
+        overscroll-behavior: contain;
+        scroll-padding-block-start: 32px;
+        scroll-padding-block-end: 8px;
+        transition: var(--transition-fast);
+        transition-property: height;
+    }
+
+    [cmdk-separator] {
+        height: 1px;
+        width: 100%;
+        background: var(--gray5);
+        margin: 4px 0;
+    }
+
+    [cmdk-group-heading] {
+        user-select: none;
+        font-size: 12px;
+        color: var(--gray11);
+        padding: 0 8px;
+        display: flex;
+        align-items: center;
+    }
+}

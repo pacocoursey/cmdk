@@ -1,0 +1,157 @@
+.main {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  // &:after {
+  //   background: radial-gradient(circle, rgba(2, 0, 36, 0) 0, var(--gray2) 100%);
+  //   position: absolute;
+  //   content: "";
+  //   z-index: 2;
+  //   width: 100%;
+  //   height: 100%;
+  //   top: 0;
+  //   opacity: 0.5;
+  // }
+
+
+  h1 {
+    font-size: 48px;
+    color: var(--gray12);
+    font-style: italic;
+    font-family: 'Magnat Head';
+    font-weight: 600;
+    letter-spacing: -2px;
+  }
+
+  p {
+    color: var(--gray11);
+    margin-top: 16px;
+    margin-bottom: 32px;
+    font-size: 18px;
+  }
+
+  .content {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+
+.button {
+  font-family: var(--font-sans);
+  color: var(--gray12);
+  font-size: 500;
+  height: 40px;
+  padding: 0 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 16px;
+  margin-bottom: 48px;
+}
+
+.install {
+  border-radius: 9999px;
+  background: var(--grayA3);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 40px;
+  font-size: 14px;
+  font-family: Menlo, monospace;
+  color: var(--gray12);
+}
+
+.switcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 32px;
+
+  button {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    border-radius: 9999px;
+    color: var(--gray11);
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+    text-transform: capitalize;
+    transition-duration: 150ms;
+    transition-property: background, color, transform;
+    transition-timing-function: ease-in;
+
+    &:hover {
+      color: var(--gray12);
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+
+    &:focus-visible {
+      outline: 0;
+      outline: 2px solid var(--gray7);
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    &.activeTheme {
+      background: var(--gray5);
+      color: var(--gray12);
+
+      &:hover {
+        background: var(--gray6);
+      }
+
+      &:active {
+        background: var(--gray7);
+        transform: scale(0.96);
+      }
+    }
+
+    input {
+      appearance: none;
+      display: none;
+    }
+  }
+}
+
+.footer {
+  position: fixed;
+  bottom: 24px;
+  transform: translate(-50%, -50%);
+  left: 50%;
+  color: var(--gray11);
+  font-size: 13px;
+
+  a {
+    color: var(--gray12);
+    font-weight: 500;
+  }
+}
+
+
+.header {
+  position: absolute;
+  padding: 64px;
+
+  svg {
+    width: 64px;
+    height: 64px;
+  }
+}
