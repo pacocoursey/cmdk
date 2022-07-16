@@ -72,11 +72,11 @@
     filter: blur(100px) saturate(150%);
     z-index: -1;
     top: 80px;
-    opacity: 0.2;
+    opacity: 0.15;
 
 
     @media (prefers-color-scheme: dark) {
-      opacity: 0.12;
+      opacity: 0.1;
     }
   }
 }
