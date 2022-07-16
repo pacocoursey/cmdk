@@ -2,15 +2,15 @@
     [cmdk-root] {
         width: 640px;
         padding: 8px;
-        background: var(--cmdk-bg);
-        border-radius: var(--cmdk-radius);
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 12px;
         overflow: hidden;
         font-family: var(--cmdk-font);
         border: 1px solid var(--gray5);
         box-shadow: var(--cmdk-shadow);
 
         .dark & {
-            background: var(--gray2);
+            background: rgba(22, 22, 22, 0.7);
         }
     }
 
@@ -31,6 +31,19 @@
         }
     }
 
+    [cmdk-vercel-badge] {
+        height: 20px;
+        background: var(--grayA3);
+        display: inline-flex;
+        align-items: center;
+        padding: 0 8px;
+        font-size: 12px;
+        color: var(--grayA11);
+        border-radius: 4px;
+        margin: 4px 0 4px 4px;
+        user-select: none;
+    }
+
     [cmdk-item] {
         content-visibility: auto;
 
@@ -49,7 +62,7 @@
         transition-property: none;
 
         &[aria-selected='true'] {
-            background: var(--gray3);
+            background: var(--grayA3);
             color: var(--gray12);
         }
 

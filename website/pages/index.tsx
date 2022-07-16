@@ -11,6 +11,7 @@ import {
   RaycastIcon,
   FigmaIcon,
   CopyIcon,
+  GitHubIcon,
 } from 'components';
 import packageJSON from '../../package.json';
 
@@ -27,7 +28,7 @@ export default function Index() {
   const [theme, setTheme] = React.useState<Themes>('raycast');
 
   React.useEffect(() => {
-    document.body.classList.add('dark');
+    // document.body.classList.add('dark');
   }, []);
 
   return (
@@ -49,7 +50,7 @@ export default function Index() {
             </div>
           </div>
 
-          <AnimatePresence exitBeforeEnter>
+          <AnimatePresence exitBeforeEnter initial={false}>
             {theme === 'xcode' && (
               <CMDKWrapper key="xcode">
                 <XCodeCMDK />
@@ -88,8 +89,8 @@ function CMDKWrapper(props: MotionProps & { children: React.ReactNode }) {
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.25 }}
+      exit={{ opacity: 0, scale: 0.96 }}
+      transition={{ duration: 0.2 }}
       {...props}
     />
   );
@@ -114,7 +115,8 @@ function GitHubButton() {
       rel="noopener noreferrer"
       className={styles.githubButton}
     >
-      GitHub →
+      <GitHubIcon />
+      pacocoursey/cmdk
     </a>
   );
 }

@@ -5,6 +5,7 @@ export function VercelCMDK() {
   return (
     <div className="vercel">
       <Command>
+        <div cmdk-vercel-badge="">Home</div>
         <Command.Input autoFocus placeholder="What do you need?" />
         <Command.List>
           <Command.Empty>No results found.</Command.Empty>
@@ -40,8 +41,6 @@ export function VercelCMDK() {
               Raycast
             </Command.Item>
           </Command.Group>
-
-          <Command.Item>Ungrouped</Command.Item>
         </Command.List>
       </Command>
     </div>

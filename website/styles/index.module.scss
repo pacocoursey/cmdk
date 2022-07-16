@@ -7,22 +7,35 @@
   justify-content: center;
   align-items: center;
 
-  // &:after {
-  //   background: radial-gradient(circle, rgba(2, 0, 36, 0) 0, var(--gray2) 100%);
-  //   position: absolute;
-  //   content: "";
-  //   z-index: 2;
-  //   width: 100%;
-  //   height: 100%;
-  //   top: 0;
-  //   opacity: 0.5;
-  // }
+  &:before {
+    background: radial-gradient(circle, rgba(2, 0, 36, 0) 0, var(--gray1) 100%);
+    position: absolute;
+    content: "";
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    top: 0;
+  }
 
+  &:after {
+    content: "";
+    background-image: url("/grid.svg");
+    z-index: -1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    opacity: 0.2;
+    filter: invert(1);
+
+    @media (prefers-color-scheme: dark) {
+      filter: unset;
+    }
+  }
 
   h1 {
     font-size: 40px;
     color: var(--gray12);
-    font-style: italic;
     font-family: 'Magnat Head';
     font-weight: 600;
     letter-spacing: -2px;
@@ -37,6 +50,36 @@
 
 }
 
+.content {
+  position: relative;
+  z-index: 3;
+
+  &:after {
+    background-image: radial-gradient(at 27% 37%, hsla(215, 98%, 61%, 1) 0px, transparent 50%),
+      radial-gradient(at 97% 21%, hsla(256, 98%, 72%, 1) 0px, transparent 50%),
+      radial-gradient(at 52% 99%, hsla(354, 98%, 61%, 1) 0px, transparent 50%),
+      radial-gradient(at 10% 29%, hsla(133, 96%, 67%, 1) 0px, transparent 50%),
+      radial-gradient(at 97% 96%, hsla(38, 60%, 74%, 1) 0px, transparent 50%),
+      radial-gradient(at 33% 50%, hsla(222, 67%, 73%, 1) 0px, transparent 50%),
+      radial-gradient(at 79% 53%, hsla(343, 68%, 79%, 1) 0px, transparent 50%);
+    ;
+    position: absolute;
+    content: "";
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    filter: blur(100px) saturate(150%);
+    z-index: -1;
+    top: 100px;
+    opacity: 0.2;
+
+
+    @media (prefers-color-scheme: dark) {
+      opacity: 0.12;
+    }
+  }
+}
+
 .meta {
   display: flex;
   align-items: center;
@@ -49,11 +92,16 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 12px;
+  transform: translateY(16px);
 }
 
 .githubButton,
 .installButton,
 .switcher button {
+  height: 40px;
+  color: var(--gray12);
+  border-radius: 8px;
+  font-size: 14px;
   transition-duration: 150ms;
   transition-property: background, color, transform;
   transition-timing-function: ease-in;
@@ -61,22 +109,20 @@
 
 
 .githubButton {
-  font-family: var(--font-sans);
-  color: var(--gray12);
+  width: 177px;
   font-size: 500;
-  height: 40px;
   padding: 0 12px;
-  font-size: 14px;
-  border-radius: 6px;
   display: inline-flex;
   align-items: center;
+  gap: 8px;
+  font-weight: 500;
 
   &:hover {
-    background: var(--gray3);
+    background: var(--grayA3);
   }
 
   &:active {
-    background: var(--gray5);
+    background: var(--grayA5);
     transform: scale(0.97);
   }
 
@@ -88,21 +134,18 @@
 
 .installButton {
   border-radius: 8px;
-  background: var(--gray3);
+  background: var(--grayA3);
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 0px 8px 0 16px;
-  height: 40px;
-  font-size: 14px;
-  color: var(--gray12);
   cursor: copy;
 
   &:hover {
-    background: var(--gray4);
+    background: var(--grayA4);
 
     span {
-      background: var(--gray5);
+      background: var(--grayA5);
 
       svg {
         color: var(--gray12);
@@ -179,15 +222,15 @@
     }
 
     &.activeTheme {
-      background: var(--gray5);
+      background: var(--grayA5);
       color: var(--gray12);
 
       &:hover {
-        background: var(--gray6);
+        background: var(--grayA6);
       }
 
       &:active {
-        background: var(--gray7);
+        background: var(--grayA7);
         transform: scale(0.96);
       }
     }
@@ -209,11 +252,16 @@
   align-items: center;
   justify-content: center;
   color: var(--mint11);
-  background: var(--mint2);
+  background: var(--mint3);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 14px;
   margin-bottom: 8px;
+
+  @media (prefers-color-scheme: dark) {
+    background: var(--mint2);
+  }
+
 }
 
 .footer {
@@ -226,6 +274,8 @@
   left: 50%;
   color: var(--gray11);
   font-size: 13px;
+  z-index: 3;
+
 
   a {
     display: inline-flex;

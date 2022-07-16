@@ -1,28 +1,34 @@
 .raycast {
     [cmdk-root] {
         width: 640px;
-        background: #FFFFFF;
+        background: var(--gray1);
         border-radius: 8px;
         padding: 8px;
         font-family: var(--cmdk-font);
         box-shadow: var(--cmdk-shadow);
+        border: 1px solid var(--gray6);
         position: relative;
-
-        &:after {
-            content: "";
-            background: linear-gradient(90deg, #383838, #2e2e2e);
-            z-index: -1;
-            position: absolute;
-            border-radius: 8px;
-            top: -1px;
-            left: -1px;
-            width: calc(100% + 2px);
-            height: calc(100% + 2px);
-        }
 
 
         .dark & {
             background: var(--gray2);
+            border: 0;
+            box-shadow: 0 0 0 1px transparent;
+            animation: border 0.5s ease forwards 0.9s;
+
+            &:after {
+                content: "";
+                background: linear-gradient(to right, var(--gray6) 20%, var(--gray6) 40%, var(--gray10) 50%, var(--gray10) 55%, var(--gray6) 70%, var(--gray6) 100%);
+                z-index: -1;
+                position: absolute;
+                border-radius: 8px;
+                top: -1px;
+                left: -1px;
+                width: calc(100% + 2px);
+                height: calc(100% + 2px);
+                animation: shine 3s ease forwards 0.1s;
+                background-size: 200% auto;
+            }
         }
     }
 
@@ -43,7 +49,7 @@
     }
 
     [cmdk-raycast-loader] {
-        --loader-color: var(--gray10);
+        --loader-color: var(--gray9);
         border: 0;
         width: 100%;
         width: calc(100% + 16px);
@@ -68,13 +74,11 @@
             top: -1px;
             opacity: 0;
             animation-duration: 1.5s;
+            animation-delay: 1s;
             animation-timing-function: ease;
             animation-name: loading;
         }
 
-        &[data-loading='true']::after {
-            animation-name: loading;
-        }
     }
 
     [cmdk-item] {
@@ -132,8 +136,7 @@
 
     [cmdk-list] {
         padding-bottom: 4px;
-        height: min(300px, calc(var(--cmdk-list-height) + 16px));
-        max-height: 400px;
+        height: 400px;
         overflow: auto;
         overscroll-behavior: contain;
         scroll-padding-block-start: 32px;
@@ -262,7 +265,7 @@
 
 @keyframes loading {
     0% {
-        opacity: 1;
+        opacity: 0;
         transform: translateX(0);
     }
 
@@ -272,7 +275,20 @@
     }
 
     100% {
-        opacity: 1;
+        opacity: 0;
         transform: translateX(0);
+    }
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% center;
+        opacity: 0;
+    }
+}
+
+@keyframes border {
+    to {
+        box-shadow: 0 0 0 1px var(--gray6);
     }
 }
