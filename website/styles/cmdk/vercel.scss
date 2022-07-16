@@ -2,7 +2,7 @@
     [cmdk-root] {
         width: 640px;
         padding: 8px;
-        background: rgba(255, 255, 255, 0.9);
+        background: #FFFFFF;
         border-radius: 12px;
         overflow: hidden;
         font-family: var(--cmdk-font);
@@ -126,5 +126,6 @@
         justify-content: center;
         height: 48px;
         white-space: pre-wrap;
+        color: var(--gray11);
     }
 }

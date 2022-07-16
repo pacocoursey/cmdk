@@ -36,6 +36,7 @@ export function FramerCMDK() {
                 </Item>
               </Command.Group>
             </div>
+            <hr cmdk-framer-separator="" />
             <div cmdk-framer-right="">
               <button>Primary</button>
             </div>

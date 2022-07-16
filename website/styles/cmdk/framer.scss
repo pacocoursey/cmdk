@@ -117,7 +117,13 @@
 
     [cmdk-framer-left] {
         width: 40%;
-        border-right: 1px solid var(--gray6);
+    }
+
+    [cmdk-framer-separator] {
+        width: 1px;
+        border: 0;
+        margin-right: 8px;
+        background: var(--gray6);
     }
 
     [cmdk-framer-right] {
@@ -158,5 +164,11 @@
         display: flex;
         align-items: center;
         margin-bottom: 8px;
+    }
+
+    [cmdk-empty] {
+        padding: 32px;
+        white-space: pre-wrap;
+        color: var(--gray11);
     }
 }

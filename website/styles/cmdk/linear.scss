@@ -122,13 +122,6 @@
         transition-property: height;
     }
 
-    [cmdk-separator] {
-        height: 1px;
-        width: 100%;
-        background: var(--gray5);
-        margin: 4px 0;
-    }
-
     [cmdk-group-heading] {
         user-select: none;
         font-size: 12px;
@@ -139,86 +132,12 @@
 
     }
 
-    [cmdk-overlay] {
-        opacity: 0;
-        background: rgba(0, 0, 0, 0.4);
-        position: fixed;
-        inset: 0;
-        z-index: var(--layer-overlay);
-        animation: opacityIn var(--transition-fast) forwards;
-
-        &[data-state='closed'] {
-            animation: opacityOut var(--transition-fast) forwards;
-        }
-    }
-
-    [cmdk-dialog] {
-        z-index: var(--layer-portal);
-        position: fixed;
-        left: 50%;
-        top: var(--page-top);
-        transform: translateX(-50%);
-
-        [cmdk] {
-            width: 640px;
-            transform-origin: center center;
-            animation: dialogIn var(--transition-fast) forwards;
-        }
-
-        &[data-state='closed'] [cmdk] {
-            animation: dialogOut var(--transition-fast) forwards;
-        }
-    }
-
-    @keyframes opacityIn {
-        from {
-            opacity: 0;
-        }
-
-        to {
-            opacity: 1;
-        }
-    }
-
-    @keyframes opacityOut {
-        from {
-            opacity: 1;
-        }
-
-        to {
-            opacity: 0;
-        }
-    }
-
-    @keyframes dialogIn {
-        from {
-            transform: scale(0.95);
-            opacity: 0;
-        }
-
-        to {
-            transform: none;
-            opacity: 1;
-        }
-    }
-
-    @keyframes dialogOut {
-        from {
-            transform: none;
-            opacity: 1;
-        }
-
-        to {
-            transform: scale(0.95);
-            opacity: 0;
-        }
-    }
-
     [cmdk-empty] {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 48px;
+        height: 64px;
         white-space: pre-wrap;
+        color: var(--gray11);
     }
 }

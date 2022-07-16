@@ -112,7 +112,6 @@
 
 .githubButton {
   width: 177px;
-  font-size: 500;
   padding: 0 12px;
   display: inline-flex;
   align-items: center;
@@ -141,6 +140,7 @@
   gap: 16px;
   padding: 0px 8px 0 16px;
   cursor: copy;
+  font-weight: 500;
 
   &:hover {
     background: var(--grayA4);
@@ -203,6 +203,7 @@
     font-size: 14px;
     cursor: pointer;
     user-select: none;
+    position: relative;
     text-transform: capitalize;
 
     &:hover {
@@ -223,24 +224,31 @@
       height: 14px;
     }
 
-    &.activeTheme {
-      background: var(--grayA5);
+    &[data-selected=true] {
       color: var(--gray12);
 
-      &:hover {
+      &:hover .activeTheme {
         background: var(--grayA6);
       }
 
       &:active {
-        background: var(--grayA7);
         transform: scale(0.96);
+
+        .activeTheme {
+          background: var(--grayA7);
+        }
       }
     }
+  }
 
-    input {
-      appearance: none;
-      display: none;
-    }
+  .activeTheme {
+    background: var(--grayA5);
+    border-radius: 9999px;
+    height: 32px;
+    width: 100%;
+    top: 0;
+    position: absolute;
+    lefT: 0;
   }
 
   .arrow {
@@ -283,20 +291,24 @@
   }
 }
 
+.codeBlock {
+  margin-top: 72px;
+}
 
 .versionBadge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--mint11);
-  background: var(--mint3);
+  color: var(--grayA11);
+  background: var(--grayA3);
   padding: 4px 8px;
   border-radius: 4px;
+  font-weight: 500;
   font-size: 14px;
   margin-bottom: 8px;
 
   @media (prefers-color-scheme: dark) {
-    background: var(--mint2);
+    background: var(--grayA2);
   }
 
 }
@@ -306,7 +318,8 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  bottom: 24px;
+  width: fit-content;
+  bottom: 32px;
   transform: translate(-50%, -50%);
   left: 50%;
   color: var(--gray11);
@@ -327,5 +340,69 @@
     height: 20px;
     border: 1px solid var(--gray5);
     border-radius: 9999px;
+  }
+}
+
+.line {
+  height: 1px;
+  width: 180px;
+  margin: 64px auto;
+  background: var(--gray8);
+  mask-image: linear-gradient(90deg, transparent, #fff 4rem, #fff calc(100% - 4rem), transparent);
+}
+
+.raunoSignature,
+.pacoSignature {
+  position: absolute;
+  height: fit-content;
+  color: var(--gray11);
+}
+
+.raunoSignature {
+  width: 120px;
+  stroke-dashoffset: 1011;
+  stroke-dasharray: 1010;
+  right: -48px;
+
+  path {
+    animation: drawRaunoSignature 1.5s ease forwards 1s;
+  }
+}
+
+.pacoSignature {
+  width: 120px;
+  stroke-dashoffset: -1097;
+  stroke-dasharray: 1140;
+  left: -20px;
+
+  path {
+    animation: drawPacoSignature 1.5s linear forwards 1s;
+  }
+}
+
+.footerText {
+  display: flex;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  animation: showFooter 1s linear forwards 3.5s;
+}
+
+@keyframes drawPacoSignature {
+  100% {
+    stroke-dashoffset: -2279;
+  }
+}
+
+@keyframes drawRaunoSignature {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes showFooter {
+  100% {
+    opacity: 1;
   }
 }
