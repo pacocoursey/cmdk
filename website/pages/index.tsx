@@ -27,10 +27,6 @@ const ThemeContext = React.createContext<TTheme>({} as TTheme);
 export default function Index() {
   const [theme, setTheme] = React.useState<Themes>('raycast');
 
-  React.useEffect(() => {
-    // document.body.classList.add('dark');
-  }, []);
-
   return (
     <>
       <header className={styles.header}></header>

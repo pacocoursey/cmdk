@@ -99,7 +99,7 @@
         overscroll-behavior: contain;
         scroll-padding-block-start: 32px;
         scroll-padding-block-end: 8px;
-        transition: var(--transition-fast);
+        transition: 100ms ease;
         transition-property: height;
     }
 
