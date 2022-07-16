@@ -22,18 +22,50 @@ const initialState = {
 }
 
 type Children = { children?: React.ReactNode }
-type LoadingProps = Children & { progress?: number }
-type EmptyProps = Children & {}
-type SeparatorProps = { alwaysRender?: boolean }
-type DialogProps = RadixDialog.DialogProps & { label?: string }
-type ListProps = Children & {}
-type ItemProps = Children & { disabled?: boolean; onSelect?: (e?: unknown) => void; value?: string }
-type GroupProps = Children & { heading?: React.ReactNode; value?: string }
-type InputProps = {}
+type DivProps = React.HTMLAttributes<HTMLDivElement>
+
+type LoadingProps = Children & {
+  /** Estimated progress of loading asynchronous options. */
+  progress?: number
+}
+type EmptyProps = Children & DivProps & {}
+type SeparatorProps = DivProps & {
+  /** Whether this separator should always be rendered. Useful if you disable automatic filtering. */
+  alwaysRender?: boolean
+}
+type DialogProps = RadixDialog.DialogProps & CommandProps
+type ListProps = Children & DivProps & {}
+type ItemProps = Children & {
+  /** Whether this item is currently disabled. */
+  disabled?: boolean
+  /** Event handler for when this item is selected, either via click or keyboard selection. */
+  onSelect?: (e?: unknown) => void
+  /**
+   * A unique value for this item.
+   * If no value is provided, it will be inferred from `children` or the rendered `textContent`. If your `textContent` changes between renders, you _must_ provide a stable, unique `value`.
+   */
+  value?: string
+}
+type GroupProps = Children & {
+  /** Optional heading to render for this group. */
+  heading?: React.ReactNode
+  /** If no heading is provided, you must provie a value that is unique for this group. */
+  value?: string
+}
+type InputProps = React.HTMLAttributes<HTMLInputElement> & {}
 type CommandProps = Children & {
+  /**
+   * Accessible label for this command menu.
+   */
   label?: string
-  selectFirstItem?: boolean
+  /**
+   * Whether the items should be filtered automatically.
+   * If `false`, you must conditionally render valid items based on the search query yourself.
+   */
   filter?: boolean
+  /**
+   * Event handler called when the state of the menu changes.
+   */
   onValueChange?: (v: string) => void
 }
 
@@ -134,7 +166,7 @@ function Command(props: CommandProps) {
         },
       },
       itemRenderComplete: () => {
-        if (propsRef.current.selectFirstItem !== false) selectFirstItem()
+        selectFirstItem()
       },
       label: props.label || props['aria-label'],
       listId,
@@ -323,21 +355,22 @@ function Command(props: CommandProps) {
     }
   }, [])
 
-  const { label, children, ...rest } = props
+  const { label, children, ...etc } = props
 
   return (
-    <div ref={ref} cmdk-root="" {...rest}>
+    <div ref={ref} {...etc} cmdk-root="">
       <label cmdk-label="" craft-sr-only="" htmlFor={context.inputId} id={context.labelId}>
         {props.label}
       </label>
       <CommandContext.Provider value={context}>
         {props.children}
-        {propsRef.current.selectFirstItem !== false && <Notifier />}
+        <Notifier />
       </CommandContext.Provider>
     </div>
   )
 }
 
+/** @private */
 function Notifier() {
   const context = React.useContext(CommandContext)
 
@@ -356,7 +389,12 @@ function Notifier() {
   return null
 }
 
+/**
+ * Contains `Item`, `Group`, and `Separator`.
+ * Use the `--cmdk-list-height` CSS variable to animate height based on the number of results.
+ */
 function List(props: ListProps) {
+  const { children, ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const height = React.useRef<HTMLDivElement>(null)
   const context = React.useContext(CommandContext)
@@ -381,6 +419,7 @@ function List(props: ListProps) {
   return (
     <div
       ref={ref}
+      {...etc}
       cmdk-list=""
       role="listbox"
       aria-label="Suggestions"
@@ -388,12 +427,17 @@ function List(props: ListProps) {
       aria-labelledby={context.inputId}
     >
       <div ref={height} cmdk-list-sizer="">
-        {props.children}
+        {children}
       </div>
     </div>
   )
 }
 
+/**
+ * Command menu item. Becomes active on pointer enter or through keyboard navigation.
+ * Preferably pass a `value`, otherwise the value will be inferred from `children` or
+ * the rendered item's `textContent`.
+ */
 function Item(props: ItemProps) {
   const ref = React.useRef<HTMLDivElement>(null)
   const context = React.useContext(CommandContext)
@@ -448,6 +492,10 @@ function Item(props: ItemProps) {
   )
 }
 
+/**
+ * Command menu input.
+ * All props are forwarded to the underyling `input` element.
+ */
 function Input(props: InputProps) {
   const [search, setSearch] = React.useState('')
   const context = React.useContext(CommandContext)
@@ -475,7 +523,12 @@ function Input(props: InputProps) {
   )
 }
 
+/**
+ * Group command menu items together with a heading.
+ * Grouped items are always shown together.
+ */
 function Group(props: GroupProps) {
+  const { heading, children, ...etc } = props
   const groupId = React.useId()
   const headingId = React.useId()
   const context = React.useContext(CommandContext)
@@ -490,20 +543,25 @@ function Group(props: GroupProps) {
   }, [])
 
   return (
-    <div cmdk-group="" data-value={value} role="presentation" hidden={render ? undefined : true}>
-      {props.heading && (
+    <div {...etc} cmdk-group="" data-value={value} role="presentation" hidden={render ? undefined : true}>
+      {heading && (
         <div cmdk-group-heading="" aria-hidden id={headingId}>
-          {props.heading}
+          {heading}
         </div>
       )}
-      <div key={groupId} role="group" aria-labelledby={props.heading ? headingId : undefined}>
-        {props.children}
+      <div key={groupId} role="group" aria-labelledby={heading ? headingId : undefined}>
+        {children}
       </div>
     </div>
   )
 }
 
+/**
+ * A visual and semantic separator between items or groups.
+ * Visible when the search query is empty or `alwaysRender` is true, hidden otherwise.
+ */
 function Separator(props: SeparatorProps) {
+  const { alwaysRender, ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const context = React.useContext(CommandContext)
   const [render, setRender] = React.useState(true)
@@ -514,24 +572,30 @@ function Separator(props: SeparatorProps) {
     })
   }, [])
 
-  if (!props.alwaysRender && !render) return null
-
-  return <div ref={ref} cmdk-separator="" role="separator" />
+  if (!alwaysRender && !render) return null
+  return <div ref={ref} {...etc} cmdk-separator="" role="separator" />
 }
 
+/**
+ * Renders the command menu in a Radix Dialog.
+ */
 function Dialog(props: DialogProps) {
+  const { open, onOpenChange, ...etc } = props
   return (
-    <RadixDialog.Root open={props.open} onOpenChange={props.onOpenChange}>
+    <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <RadixDialog.Portal>
         <RadixDialog.Overlay cmdk-overlay="" />
         <RadixDialog.Content aria-label={props.label} cmdk-dialog="">
-          <Command {...props} />
+          <Command {...etc} />
         </RadixDialog.Content>
       </RadixDialog.Portal>
     </RadixDialog.Root>
   )
 }
 
+/**
+ * Automatically renders when there are no results for the search query.
+ */
 function Empty(props: EmptyProps) {
   const [render, setRender] = React.useState(false)
   const context = React.useContext(CommandContext)
@@ -543,25 +607,26 @@ function Empty(props: EmptyProps) {
   }, [])
 
   if (!render) return null
-
-  return (
-    <div cmdk-empty="" role="presentation">
-      {props.children}
-    </div>
-  )
+  return <div {...props} cmdk-empty="" role="presentation" />
 }
 
+/**
+ * You should conditionally render this with `progress` while loading asynchronous items.
+ */
 function Loading(props: LoadingProps) {
+  const { progress, children, ...etc } = props
+
   return (
     <div
+      {...etc}
       cmdk-loading=""
       role="progressbar"
-      aria-valuenow={props.progress}
+      aria-valuenow={progress}
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label="Loading..."
     >
-      <div aria-hidden>{props.children}</div>
+      <div aria-hidden>{children}</div>
     </div>
   )
 }
