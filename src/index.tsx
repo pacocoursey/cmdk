@@ -52,21 +52,39 @@ type GroupProps = Children & {
   /** If no heading is provided, you must provie a value that is unique for this group. */
   value?: string
 }
-type InputProps = React.HTMLAttributes<HTMLInputElement> & {}
+type InputProps = Omit<React.HTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> & {
+  /**
+   * Optional controlled state for the value of the search input.
+   */
+  value?: string
+  /**
+   * Event handler called when the search value changes.
+   */
+  onValueChange?: (search: string) => void
+}
 type CommandProps = Children & {
   /**
-   * Accessible label for this command menu.
+   * Accessible label for this command menu. Not shown visibly.
    */
   label?: string
   /**
-   * Whether the items should be filtered automatically.
+   * Optionally set to `false` to turn off the automatic filtering and sorting.
    * If `false`, you must conditionally render valid items based on the search query yourself.
    */
-  filter?: boolean
+  shouldFilter?: boolean
   /**
-   * Event handler called when the state of the menu changes.
+   * Custom filter function for whether each command menu item should matches the given search query.
+   * By default, uses a simple `String.includes` filter.
    */
-  onValueChange?: (v: string) => void
+  filter?: (value: string, search: string) => boolean
+  /**
+   * Optional controlled state of the selected command menu item.
+   */
+  value?: string
+  /**
+   * Event handler called when the selected item of the menu changes.
+   */
+  onValueChange?: (value: string) => void
 }
 
 type Context = {
@@ -92,9 +110,11 @@ const GROUP_SELECTOR = `[cmdk-group]`
 const GROUP_HEADING_SELECTOR = `[cmdk-group-heading]`
 const ITEM_SELECTOR = `[cmdk-item]`
 const VALID_ITEM_SELECTOR = `${ITEM_SELECTOR}:not([aria-disabled="true"])`
-const SELECT_EVENT = `craft-item-select`
+const SELECT_EVENT = `cmdk-item-select`
 // @ts-ignore
+/** @private */
 const CommandContext = React.createContext<Context>(undefined)
+const defaultFilter: CommandProps['filter'] = (value, search) => value.includes(search)
 
 function Command(props: CommandProps) {
   const ref = React.useRef<HTMLDivElement>(null)
@@ -108,6 +128,21 @@ function Command(props: CommandProps) {
   const labelId = React.useId()
   const inputId = React.useId()
 
+  /** Controlled mode `value` handling. */
+  useLayoutEffect(() => {
+    state.current.selectedValue = props.value
+    scrollSelectedIntoView()
+    emit()
+  }, [props.value])
+
+  // The order of these `useTriggerLayoutEffect`s matter!
+  // Filtering should happen before emitting, otherwise filtered will be out of date
+  // and the wrong items could show.
+
+  const filterEffect = useTriggerLayoutEffect(() => {
+    filterItems()
+  })
+
   // Emit to items. This is _batched_, regardless of how many items re-rendered or state changes
   // If 200 items have mounted, we should still only emit once (at the end, hence layout effect)
   const emit = useTriggerLayoutEffect<string>((data) => {
@@ -116,10 +151,6 @@ function Command(props: CommandProps) {
         listener(state.current, data)
       }
     })
-  })
-
-  const filterEffect = useTriggerLayoutEffect(() => {
-    filterItems()
   })
 
   const context: Context = React.useMemo(
@@ -155,14 +186,19 @@ function Command(props: CommandProps) {
         setSearch: (value) =>
           updateState('search', value, () => {
             filterItems()
-            propsRef.current.onValueChange?.(value)
             emit('search')
           }),
         setSelectedValue: (value) => {
-          updateState('selectedValue', value, () => {
-            scrollSelectedIntoView()
-            emit()
-          })
+          // If controlled, just call the callback instead of updating state internally
+          if (propsRef.current?.value != null) {
+            propsRef.current.onValueChange?.(value)
+          } else {
+            updateState('selectedValue', value, () => {
+              scrollSelectedIntoView()
+              emit()
+              propsRef.current.onValueChange?.(value)
+            })
+          }
         },
       },
       itemRenderComplete: () => {
@@ -189,7 +225,7 @@ function Command(props: CommandProps) {
     if (
       !state.current.search ||
       // Explicitly false, because true | undefined is the default
-      propsRef.current.filter === false
+      propsRef.current.shouldFilter === false
     ) {
       state.current.filtered = {
         items: allItems.current,
@@ -203,7 +239,9 @@ function Command(props: CommandProps) {
 
     // Check which items should be included
     for (const item of allItems.current) {
-      if (item.includes(state.current.search)) {
+      const filter = propsRef.current?.filter ?? defaultFilter
+
+      if (filter(item, state.current.search)) {
         items.add(item)
       }
     }
@@ -217,6 +255,12 @@ function Command(props: CommandProps) {
         }
       }
     }
+
+    // No results...
+    // TODO
+    // if (items.size === 0) {
+    //   state.current.selectedValue = undefined
+    // }
 
     state.current.filtered = { items, groups }
   }
@@ -355,11 +399,27 @@ function Command(props: CommandProps) {
     }
   }, [])
 
-  const { label, children, ...etc } = props
+  const { label, children, value: _, onValueChange: __, filter: ___, ...etc } = props
 
   return (
     <div ref={ref} {...etc} cmdk-root="">
-      <label cmdk-label="" craft-sr-only="" htmlFor={context.inputId} id={context.labelId}>
+      <label
+        cmdk-label=""
+        htmlFor={context.inputId}
+        id={context.labelId}
+        // Screen reader only
+        style={{
+          position: 'absolute',
+          width: '1px',
+          height: '1px',
+          padding: '0',
+          margin: '-1px',
+          overflow: 'hidden',
+          clip: 'rect(0, 0, 0, 0)',
+          whiteSpace: 'nowrap',
+          borderWidth: '0',
+        }}
+      >
         {props.label}
       </label>
       <CommandContext.Provider value={context}>
@@ -506,12 +566,14 @@ function Item(props: ItemProps) {
  * All props are forwarded to the underyling `input` element.
  */
 function Input(props: InputProps) {
+  const { onValueChange, ...etc } = props
+  const isControlled = props.value != null
   const [search, setSearch] = React.useState('')
   const context = React.useContext(CommandContext)
 
   return (
     <input
-      {...props}
+      {...etc}
       cmdk-input=""
       autoComplete="off"
       autoCorrect="off"
@@ -523,10 +585,11 @@ function Input(props: InputProps) {
       aria-labelledby={context.labelId}
       id={context.inputId}
       type="text"
-      value={search}
+      value={isControlled ? props.value : search}
       onChange={(e) => {
         context.set.setSearch(e.target.value)
         setSearch(e.target.value)
+        onValueChange?.(e.target.value)
       }}
     />
   )
@@ -640,6 +703,14 @@ function Loading(props: LoadingProps) {
   )
 }
 
+// Command.displayName = 'Command'
+// List.displayName = 'CommandList'
+// Item.displayName = 'CommandItem'
+// Group.displayName = 'CommandGroup'
+// Separator.displayName = 'CommandSeparator'
+// Dialog.displayName = 'CommandDialog'
+// Empty.displayName = 'CommandEmpty'
+// Loading.displayName = 'CommandLoading'
 const pkg = Object.assign(Command, {
   List,
   Item,
