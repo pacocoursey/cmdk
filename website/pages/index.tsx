@@ -265,6 +265,8 @@ function Codeblock() {
 
   return (
     <div className={styles.codeBlock}>
+      <div className={styles.line2} aria-hidden />
+      <div className={styles.line3} aria-hidden />
       <Code>{code}</Code>
     </div>
   );

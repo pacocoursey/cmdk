@@ -291,10 +291,6 @@
   }
 }
 
-.codeBlock {
-  margin-top: 72px;
-}
-
 .versionBadge {
   display: inline-flex;
   align-items: center;
@@ -311,6 +307,11 @@
     background: var(--grayA2);
   }
 
+}
+
+.codeBlock {
+  margin-top: 72px;
+  position: relative;
 }
 
 .footer {
@@ -344,12 +345,60 @@
 }
 
 .line {
-  height: 1px;
+  height: 20px;
   width: 180px;
   margin: 64px auto;
-  background: var(--gray8);
+  // background: var(--gray8);
+  background-image: url('/line.svg');
+  filter: invert(1);
+  mask-image: linear-gradient(90deg, transparent, #fff 4rem, #fff calc(100% - 4rem), transparent);
+
+  @media (prefers-color-scheme: dark) {
+    filter: unset;
+  }
+}
+
+.line2 {
+  height: 1px;
+  width: 300px;
+  background: var(--gray7);
+  position: absolute;
+  top: 0;
   mask-image: linear-gradient(90deg, transparent, #fff 4rem, #fff calc(100% - 4rem), transparent);
 }
+
+.line3 {
+  height: 300px;
+  width: calc(100% + 32px);
+  // background: red;
+  position: absolute;
+  top: -16px;
+  left: -16px;
+  // border-image: linear-gradient(90deg, transparent, #fff 4rem, #fff calc(100% - 4rem), transparent);
+
+  border-radius: 16px 16px 0 0;
+  --size: 1px;
+  --gradient: linear-gradient(to top, var(--gray1), var(--gray7));
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: var(--size);
+    background: linear-gradient(to top, var(--gray1), var(--gray7));
+    mask: linear-gradient(black, black) content-box, linear-gradient(black, black);
+    mask-composite: exclude;
+
+    @media (prefers-color-scheme: dark) {
+      mask: none;
+      mask-composite: none;
+      opacity: 0.2;
+      backdrop-filter: blur(20px);
+    }
+  }
+}
+
 
 .raunoSignature,
 .pacoSignature {
