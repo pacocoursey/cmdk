@@ -1,9 +1,11 @@
 import 'styles/globals.scss';
-import 'styles/vercel.scss';
-import 'styles/linear.scss';
-import 'styles/raycast.scss';
-import 'styles/figma.scss';
-import 'styles/xcode-cmdk.scss';
+
+import 'styles/cmdk/vercel.scss';
+import 'styles/cmdk/linear.scss';
+import 'styles/cmdk/raycast.scss';
+import 'styles/cmdk/xcode.scss';
+import 'styles/cmdk/combobox.scss';
+
 import type { AppProps } from 'next/app';
 import { ThemeProvider } from 'next-themes';
 

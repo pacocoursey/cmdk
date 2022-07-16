@@ -5,8 +5,8 @@ import { Logo, LinearIcon, FigmaIcon, SlackIcon, YouTubeIcon, RaycastIcon } from
 export function RaycastCMDK() {
   return (
     <div className="raycast">
-      <div cmdk-raycast-top-shine="" />
       <Command>
+        <div cmdk-raycast-top-shine="" />
         <Command.Input autoFocus placeholder="Search for apps or commands..." />
         <hr cmdk-raycast-loader="" />
         <Command.List>
