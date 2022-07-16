@@ -348,7 +348,6 @@
   height: 20px;
   width: 180px;
   margin: 64px auto;
-  // background: var(--gray8);
   background-image: url('/line.svg');
   filter: invert(1);
   mask-image: linear-gradient(90deg, transparent, #fff 4rem, #fff calc(100% - 4rem), transparent);
@@ -370,11 +369,9 @@
 .line3 {
   height: 300px;
   width: calc(100% + 32px);
-  // background: red;
   position: absolute;
   top: -16px;
   left: -16px;
-  // border-image: linear-gradient(90deg, transparent, #fff 4rem, #fff calc(100% - 4rem), transparent);
 
   border-radius: 16px 16px 0 0;
   --size: 1px;
