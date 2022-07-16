@@ -215,7 +215,7 @@ function ThemeSwitcher() {
                   transition={{
                     type: 'spring',
                     stiffness: 250,
-                    damping: 25,
+                    damping: 27,
                     mass: 1,
                   }}
                   className={styles.activeTheme}
