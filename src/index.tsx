@@ -389,17 +389,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         htmlFor={context.inputId}
         id={context.labelId}
         // Screen reader only
-        style={{
-          position: 'absolute',
-          width: '1px',
-          height: '1px',
-          padding: '0',
-          margin: '-1px',
-          overflow: 'hidden',
-          clip: 'rect(0, 0, 0, 0)',
-          whiteSpace: 'nowrap',
-          borderWidth: '0',
-        }}
+        style={srOnlyStyles}
       >
         {props.label}
       </label>
@@ -791,3 +781,15 @@ function getValue(parts: (string | React.ReactNode | React.RefObject<HTMLElement
     }
   }
 }
+
+const srOnlyStyles = {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  padding: '0',
+  margin: '-1px',
+  overflow: 'hidden',
+  clip: 'rect(0, 0, 0, 0)',
+  whiteSpace: 'nowrap',
+  borderWidth: '0',
+} as const
