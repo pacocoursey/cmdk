@@ -116,7 +116,7 @@ const SELECT_EVENT = `cmdk-item-select`
 const CommandContext = React.createContext<Context>(undefined)
 const defaultFilter: CommandProps['filter'] = (value, search) => value.toLowerCase().includes(search.toLowerCase())
 
-function Command(props: CommandProps) {
+const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const state = useLazyRef<State>(() => initialState)
   const allItems = useLazyRef<Set<any>>(() => new Set())
@@ -402,7 +402,7 @@ function Command(props: CommandProps) {
   const { label, children, value: _, onValueChange: __, filter: ___, ...etc } = props
 
   return (
-    <div ref={ref} {...etc} cmdk-root="">
+    <div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-root="">
       <label
         cmdk-label=""
         htmlFor={context.inputId}
@@ -428,7 +428,7 @@ function Command(props: CommandProps) {
       </CommandContext.Provider>
     </div>
   )
-}
+})
 
 /** @private */
 function Notifier() {
@@ -453,7 +453,7 @@ function Notifier() {
  * Contains `Item`, `Group`, and `Separator`.
  * Use the `--cmdk-list-height` CSS variable to animate height based on the number of results.
  */
-function List(props: ListProps) {
+const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) => {
   const { children, ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const height = React.useRef<HTMLDivElement>(null)
@@ -478,7 +478,7 @@ function List(props: ListProps) {
 
   return (
     <div
-      ref={ref}
+      ref={mergeRefs([ref, forwardedRef])}
       {...etc}
       cmdk-list=""
       role="listbox"
@@ -491,14 +491,14 @@ function List(props: ListProps) {
       </div>
     </div>
   )
-}
+})
 
 /**
  * Command menu item. Becomes active on pointer enter or through keyboard navigation.
  * Preferably pass a `value`, otherwise the value will be inferred from `children` or
  * the rendered item's `textContent`.
  */
-function Item(props: ItemProps) {
+const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const context = React.useContext(CommandContext)
   const [render, setRender] = React.useState(true)
@@ -557,7 +557,7 @@ function Item(props: ItemProps) {
 
   return (
     <div
-      ref={ref}
+      ref={mergeRefs([ref, forwardedRef])}
       cmdk-item=""
       role="option"
       aria-disabled={props.disabled || undefined}
@@ -569,13 +569,13 @@ function Item(props: ItemProps) {
       {props.children}
     </div>
   )
-}
+})
 
 /**
  * Command menu input.
  * All props are forwarded to the underyling `input` element.
  */
-function Input(props: InputProps) {
+const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRef) => {
   const { onValueChange, ...etc } = props
   const isControlled = props.value != null
   const [search, setSearch] = React.useState('')
@@ -583,6 +583,7 @@ function Input(props: InputProps) {
 
   return (
     <input
+      ref={forwardedRef}
       {...etc}
       cmdk-input=""
       autoComplete="off"
@@ -603,13 +604,13 @@ function Input(props: InputProps) {
       }}
     />
   )
-}
+})
 
 /**
  * Group command menu items together with a heading.
  * Grouped items are always shown together.
  */
-function Group(props: GroupProps) {
+const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef) => {
   const { heading, children, ...etc } = props
   const groupId = React.useId()
   const headingId = React.useId()
@@ -625,7 +626,14 @@ function Group(props: GroupProps) {
   }, [])
 
   return (
-    <div {...etc} cmdk-group="" data-value={value} role="presentation" hidden={render ? undefined : true}>
+    <div
+      ref={forwardedRef}
+      {...etc}
+      cmdk-group=""
+      data-value={value}
+      role="presentation"
+      hidden={render ? undefined : true}
+    >
       {heading && (
         <div cmdk-group-heading="" aria-hidden id={headingId}>
           {heading}
@@ -636,13 +644,13 @@ function Group(props: GroupProps) {
       </div>
     </div>
   )
-}
+})
 
 /**
  * A visual and semantic separator between items or groups.
  * Visible when the search query is empty or `alwaysRender` is true, hidden otherwise.
  */
-function Separator(props: SeparatorProps) {
+const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>((props, forwardedRef) => {
   const { alwaysRender, ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const context = React.useContext(CommandContext)
@@ -655,30 +663,30 @@ function Separator(props: SeparatorProps) {
   }, [])
 
   if (!alwaysRender && !render) return null
-  return <div ref={ref} {...etc} cmdk-separator="" role="separator" />
-}
+  return <div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-separator="" role="separator" />
+})
 
 /**
  * Renders the command menu in a Radix Dialog.
  */
-function Dialog(props: DialogProps) {
+const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRef) => {
   const { open, onOpenChange, ...etc } = props
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <RadixDialog.Portal>
         <RadixDialog.Overlay cmdk-overlay="" />
         <RadixDialog.Content aria-label={props.label} cmdk-dialog="">
-          <Command {...etc} />
+          <Command ref={forwardedRef} {...etc} />
         </RadixDialog.Content>
       </RadixDialog.Portal>
     </RadixDialog.Root>
   )
-}
+})
 
 /**
  * Automatically renders when there are no results for the search query.
  */
-function Empty(props: EmptyProps) {
+const Empty = React.forwardRef<HTMLDivElement, EmptyProps>((props, forwardedRef) => {
   const [render, setRender] = React.useState(false)
   const context = React.useContext(CommandContext)
 
@@ -689,17 +697,18 @@ function Empty(props: EmptyProps) {
   }, [])
 
   if (!render) return null
-  return <div {...props} cmdk-empty="" role="presentation" />
-}
+  return <div ref={forwardedRef} {...props} cmdk-empty="" role="presentation" />
+})
 
 /**
  * You should conditionally render this with `progress` while loading asynchronous items.
  */
-function Loading(props: LoadingProps) {
+const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwardedRef) => {
   const { progress, children, ...etc } = props
 
   return (
     <div
+      ref={forwardedRef}
       {...etc}
       cmdk-loading=""
       role="progressbar"
@@ -711,7 +720,7 @@ function Loading(props: LoadingProps) {
       <div aria-hidden>{children}</div>
     </div>
   )
-}
+})
 
 // Command.displayName = 'Command'
 // List.displayName = 'CommandList'
@@ -816,9 +825,23 @@ function useLazyRef<T>(fn: () => T) {
   return ref as React.MutableRefObject<T>
 }
 
+const idReplacer = /:/g
 const useHTMLId = () => {
   const id = React.useId()
-  return id.replace(x, '_')
+  return id.replace(idReplacer, '_')
 }
 
-const x = /:/g
+// ESM is still a nightmare with Next.js so I'm just gonna copy the package code in
+// https://github.com/gregberge/react-merge-refs
+// Copyright (c) 2020 Greg Bergé
+function mergeRefs<T = any>(refs: Array<React.MutableRefObject<T> | React.LegacyRef<T>>): React.RefCallback<T> {
+  return (value) => {
+    refs.forEach((ref) => {
+      if (typeof ref === 'function') {
+        ref(value)
+      } else if (ref != null) {
+        ;(ref as React.MutableRefObject<T | null>).current = value
+      }
+    })
+  }
+}
