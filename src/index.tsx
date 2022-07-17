@@ -3,16 +3,7 @@ import * as RadixDialog from '@radix-ui/react-dialog'
 import * as React from 'react'
 
 function useCommand() {
-  const [state, setState] = React.useState(initialState)
-  const context = React.useContext(CommandContext)
-
-  React.useEffect(() => {
-    return context.subscribe((state) => {
-      setState({ ...state })
-    })
-  }, [])
-
-  return state
+  return useSelector((state) => state)
 }
 
 const initialState = {
@@ -39,7 +30,7 @@ type ItemProps = Children & {
   /** Whether this item is currently disabled. */
   disabled?: boolean
   /** Event handler for when this item is selected, either via click or keyboard selection. */
-  onSelect?: (e?: unknown) => void
+  onSelect?: (value: string) => void
   /**
    * A unique value for this item.
    * If no value is provided, it will be inferred from `children` or the rendered `textContent`. If your `textContent` changes between renders, you _must_ provide a stable, unique `value`.
@@ -88,13 +79,9 @@ type CommandProps = Children & {
 }
 
 type Context = {
-  item: (value: string, props: ItemProps) => () => void
-  subscribe: (cb: (state: State, data: any) => void) => void
-  itemRenderComplete: () => void
-  set: {
-    setSearch: (search: string) => void
-    setSelectedValue: (value: string) => void
-  }
+  item: (value: string) => () => void
+  group: (group: HTMLDivElement, value: string) => () => void
+  label: string
   // Ids
   listId: string
   labelId: string
@@ -105,104 +92,109 @@ type State = {
   selectedValue: string
   filtered: { items: Set<any>; groups: Set<any> }
 }
+type Store = {
+  subscribe: (callback: () => void) => () => void
+  snapshot: () => State
+  setState: (key: keyof State, value: any) => void
+  emit: () => void
+}
 
 const GROUP_SELECTOR = `[cmdk-group]`
 const GROUP_HEADING_SELECTOR = `[cmdk-group-heading]`
 const ITEM_SELECTOR = `[cmdk-item]`
 const VALID_ITEM_SELECTOR = `${ITEM_SELECTOR}:not([aria-disabled="true"])`
 const SELECT_EVENT = `cmdk-item-select`
-// @ts-ignore
-/** @private */
-const CommandContext = React.createContext<Context>(undefined)
 const defaultFilter: CommandProps['filter'] = (value, search) => value.toLowerCase().includes(search.toLowerCase())
+
+// @ts-ignore
+const CommandContext = React.createContext<Context>(undefined)
+// @ts-ignore
+const StoreContext = React.createContext<Store>(undefined)
 
 const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const state = useLazyRef<State>(() => initialState)
   const allItems = useLazyRef<Set<any>>(() => new Set())
-  const allGroups = useLazyRef<Map<string, any>>(() => new Map())
-  const listeners = useLazyRef<Set<(state: State, data: any) => void>>(() => new Set())
+  const allGroups = useLazyRef<Map<string, string[]>>(() => new Map()) // groupValue → [...itemValues]
+  const listeners = useLazyRef<Set<() => void>>(() => new Set())
   const propsRef = useAsRef(props)
 
   const listId = React.useId()
   const labelId = React.useId()
   const inputId = React.useId()
 
-  /** Controlled mode `value` handling. */
-  useLayoutEffect(() => {
-    state.current.selectedValue = props.value
-    scrollSelectedIntoView()
-    emit()
-  }, [props.value])
+  const scheduleSelectFirstItem = useTriggerLayoutEffect(selectFirstItem)
+  const scheduleScrollIntoView = useTriggerLayoutEffect(scrollSelectedIntoView)
 
-  // The order of these `useTriggerLayoutEffect`s matter!
-  // Filtering should happen before emitting, otherwise filtered will be out of date
-  // and the wrong items could show.
-
-  const filterEffect = useTriggerLayoutEffect(() => {
-    filterItems()
-  })
-
-  // Emit to items. This is _batched_, regardless of how many items re-rendered or state changes
-  // If 200 items have mounted, we should still only emit once (at the end, hence layout effect)
-  const emit = useTriggerLayoutEffect<string>((data) => {
-    React.startTransition(() => {
-      for (const listener of listeners.current) {
-        listener(state.current, data)
-      }
-    })
-  })
-
-  const context: Context = React.useMemo(
-    () => ({
-      item: (value, props) => {
-        allItems.current.add(value)
-
-        // Nothing is currently selected, select this one
-        if (!state.current.selectedValue && !props.disabled) {
-          state.current.selectedValue = value
-        }
-
-        // Item was added, so we should filter and notify
-        filterEffect()
-        emit()
-
-        return () => {
-          allItems.current.delete(value)
-
-          // Removed item was the selected one
-          if (value === state.current.selectedValue) {
-            updateSelectedByChange(1)
-          }
-
-          emit()
-        }
-      },
+  const store: Store = React.useMemo(() => {
+    return {
       subscribe: (cb) => {
         listeners.current.add(cb)
         return () => listeners.current.delete(cb)
       },
-      set: {
-        setSearch: (value) =>
-          updateState('search', value, () => {
-            filterItems()
-            emit('search')
-          }),
-        setSelectedValue: (value) => {
-          // If controlled, just call the callback instead of updating state internally
-          if (propsRef.current?.value != null) {
-            propsRef.current.onValueChange?.(value)
-          } else {
-            updateState('selectedValue', value, () => {
-              scrollSelectedIntoView()
-              emit()
-              propsRef.current.onValueChange?.(value)
-            })
-          }
-        },
+      snapshot: () => {
+        return state.current
       },
-      itemRenderComplete: () => {
-        selectFirstItem()
+      setState: (key, value) => {
+        if (Object.is(state.current[key], value)) return
+        state.current[key] = value
+
+        if (key === 'search') {
+          // Filter synchronously before emitting back to children
+          filterItems()
+
+          // Schedule a layout effect for after the children have finished rendering
+          // but before paint so that we read up-to-date DOM state
+          scheduleSelectFirstItem()
+        } else if (key === 'selectedValue') {
+          // Schedule a layout effect for after the children have finished rendering
+          // to scroll the selected item into view
+          scheduleScrollIntoView()
+        }
+
+        // Notify subscribers that state has changed
+        store.emit()
+      },
+      emit: () => {
+        React.startTransition(() => {
+          listeners.current.forEach((l) => l())
+        })
+      },
+    }
+  }, [])
+
+  const context: Context = React.useMemo(
+    () => ({
+      item: (value) => {
+        // Called before value could resolve, ignore
+        if (!value) {
+          return
+        }
+
+        allItems.current.add(value)
+
+        return () => {
+          // The item removed could have been the selected one,
+          // so selection should be moved to the next valid
+          scheduleSelectFirstItem(false)
+          allItems.current.delete(value)
+        }
+      },
+      group: (group, value) => {
+        // Called before vlue could resolve, ignore
+        if (!group || !value) {
+          return
+        }
+
+        console.log('group mounted', group, value)
+        const items = Array.from(group.querySelectorAll(ITEM_SELECTOR))
+        const itemValues = items.map((item) => item.getAttribute('data-value'))
+        allGroups.current.set(value, itemValues)
+
+        return () => {
+          console.log('REMOVED group', group, value)
+          allGroups.current.delete(value)
+        }
       },
       label: props.label || props['aria-label'],
       listId,
@@ -212,15 +204,19 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     []
   )
 
-  // Focus the first valid item
-  function selectFirstItem() {
-    const item = getValidItems()[0]
+  function selectFirstItem(overwrite: boolean = true) {
+    const selected = state.current.selectedValue
 
-    if (item) {
-      context.set.setSelectedValue(item.getAttribute('data-value')!)
+    // Do not override existing, selected value is still valid
+    if (!overwrite && selected && state.current.filtered.items.has(selected)) {
+      return
     }
+
+    const item = getValidItems().find((item) => !item.ariaDisabled)
+    store.setState('selectedValue', item?.getAttribute('data-value') ?? undefined)
   }
 
+  /** Filters the current items. */
   function filterItems() {
     if (
       !state.current.search ||
@@ -240,8 +236,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     // Check which items should be included
     for (const item of allItems.current) {
       const filter = propsRef.current?.filter ?? defaultFilter
+      const score = filter(item, state.current.search)
 
-      if (filter(item, state.current.search)) {
+      if (score) {
         items.add(item)
       }
     }
@@ -255,12 +252,6 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         }
       }
     }
-
-    // No results...
-    // TODO
-    // if (items.size === 0) {
-    //   state.current.selectedValue = undefined
-    // }
 
     state.current.filtered = { items, groups }
   }
@@ -298,18 +289,11 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   /** Setters */
 
-  function updateState(key: keyof State, value: any, cb?: () => void) {
-    if (Object.is(state.current[key], value)) return
-    state.current[key] = value
-    cb?.()
-  }
-
   function updateSelectedToIndex(index: number) {
     const items = getValidItems()
     const item = items[index]
     if (!item) return
-    const selectedValue = item.getAttribute('data-value')!
-    context.set.setSelectedValue(selectedValue)
+    store.setState('selectedValue', item.getAttribute('data-value'))
   }
 
   function updateSelectedByChange(change: number) {
@@ -328,49 +312,24 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     // Get item at this index
     const newSelected = items[index + change]
     if (!newSelected) return
-
-    const newSelectedValue = newSelected.getAttribute('data-value')!
-    context.set.setSelectedValue(newSelectedValue)
+    store.setState('selectedValue', newSelected.getAttribute('data-value'))
   }
 
   function updateSelectedToGroup(change: number) {
     const selected = getSelectedItem()
     let group = selected?.closest(GROUP_SELECTOR)
 
-    if (!group) return updateSelectedToIndex(change)
+    if (!group) return updateSelectedByChange(change)
 
-    let item
+    let item: HTMLElement
 
     while (group && !item) {
       group = change > 0 ? findNextSibling(group, GROUP_SELECTOR) : findPreviousSibling(group, GROUP_SELECTOR)
       item = group?.querySelector(VALID_ITEM_SELECTOR)
     }
 
-    const value = item?.getAttribute('data-value')
-    if (value) context.set.setSelectedValue(value)
+    store.setState('selectedValue', item.getAttribute('data-value'))
   }
-
-  /** Effects */
-
-  // Cache all items and groups
-  useLayoutEffect(() => {
-    if (!ref.current) return
-
-    const data = new Map()
-    const groups = Array.from(ref.current.querySelectorAll(GROUP_SELECTOR))
-
-    for (const group of groups) {
-      const value = group.getAttribute('data-value')
-      const items = Array.from(group.querySelectorAll(ITEM_SELECTOR))
-      const itemValues = items.map((item) => item.getAttribute('data-value'))
-      data.set(value, itemValues)
-    }
-
-    allGroups.current = data
-    allItems.current = new Set(
-      Array.from(ref.current.querySelectorAll(ITEM_SELECTOR)).map((item) => item.getAttribute('data-value'))
-    )
-  }, [])
 
   useLayoutEffect(() => {
     if (ref.current) {
@@ -403,6 +362,17 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   return (
     <div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-root="">
+      <button
+        onClick={() => {
+          console.log({
+            state: state.current,
+            items: allItems.current,
+            groups: allGroups.current,
+          })
+        }}
+      >
+        Print state
+      </button>
       <label
         cmdk-label=""
         htmlFor={context.inputId}
@@ -422,32 +392,12 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       >
         {props.label}
       </label>
-      <CommandContext.Provider value={context}>
-        {props.children}
-        <Notifier />
-      </CommandContext.Provider>
+      <StoreContext.Provider value={store}>
+        <CommandContext.Provider value={context}>{props.children}</CommandContext.Provider>
+      </StoreContext.Provider>
     </div>
   )
 })
-
-/** @private */
-function Notifier() {
-  const context = React.useContext(CommandContext)
-
-  const trigger = useTriggerLayoutEffect(() => {
-    context.itemRenderComplete()
-  })
-
-  useLayoutEffect(() => {
-    return context.subscribe((_, value) => {
-      if (value === 'search') {
-        trigger()
-      }
-    })
-  }, [])
-
-  return null
-}
 
 /**
  * Contains `Item`, `Group`, and `Separator`.
@@ -501,56 +451,35 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
 const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const context = React.useContext(CommandContext)
-  const [render, setRender] = React.useState(true)
-  const [selected, setSelected] = React.useState(false)
   const propsRef = useAsRef(props)
-  const valueId = useHTMLId()
+  const value = React.useRef<string>()
 
-  const value = React.useMemo(() => {
-    if (typeof props.children === 'string') {
-      return props.children.toLowerCase()
-    }
-
-    if (props.value) {
-      return props.value.toLowerCase()
-    }
-
-    if (ref.current) {
-      return ref.current?.textContent?.trim().toLowerCase()
-    }
-
-    return valueId
-  }, [props.children, props.value, valueId])
+  const store = useStore()
+  const selected = useSelector((state) => state.selectedValue && state.selectedValue === value.current)
+  const render = useSelector((state) => (!state.search ? true : state.filtered.items.has(value.current)))
 
   useLayoutEffect(() => {
-    if (ref.current) {
-      ref.current.setAttribute('data-value', value)
-    }
-
-    return context.item(value, propsRef.current)
-  }, [value])
+    value.current = getValue(props.value, props.children, ref)
+    ref.current?.setAttribute('data-value', value.current)
+  }, [props.value, props.children, render])
 
   useLayoutEffect(() => {
-    return context.subscribe((state) => {
-      if (!state.search) setRender(true)
-      else setRender(state.filtered.items.has(value))
-      setSelected(state.selectedValue === value)
-    })
-  }, [value])
+    return context.item(value.current)
+  }, [])
 
-  useLayoutEffect(() => {
+  React.useEffect(() => {
     const element = ref.current
     if (!element || props.disabled) return
     element.addEventListener(SELECT_EVENT, onSelect)
     return () => element.removeEventListener(SELECT_EVENT, onSelect)
-  }, [props.onSelect, props.disabled])
+  }, [render, props.onSelect, props.disabled])
 
   function onSelect() {
-    propsRef.current.onSelect?.()
+    propsRef.current.onSelect?.(value.current)
   }
 
   function select() {
-    context.set.setSelectedValue(value)
+    store.setState('selectedValue', value.current)
   }
 
   if (!render) return null
@@ -562,9 +491,8 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       role="option"
       aria-disabled={props.disabled || undefined}
       aria-selected={selected || undefined}
-      // data-value={value}
       onPointerMove={props.disabled ? undefined : select}
-      onClick={props.disabled ? undefined : props.onSelect}
+      onClick={props.disabled ? undefined : () => props.onSelect(value.current)}
     >
       {props.children}
     </div>
@@ -578,7 +506,8 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRef) => {
   const { onValueChange, ...etc } = props
   const isControlled = props.value != null
-  const [search, setSearch] = React.useState('')
+  const store = useStore()
+  const search = useSelector((state) => state.search)
   const context = React.useContext(CommandContext)
 
   return (
@@ -598,13 +527,24 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
       type="text"
       value={isControlled ? props.value : search}
       onChange={(e) => {
-        context.set.setSearch(e.target.value)
-        setSearch(e.target.value)
+        store.setState('search', e.target.value)
         onValueChange?.(e.target.value)
       }}
     />
   )
 })
+
+function getValue(...parts: (string | React.ReactNode | React.RefObject<HTMLElement>)[]) {
+  for (const part of parts) {
+    if (typeof part === 'string') {
+      return part.trim().toLowerCase()
+    }
+
+    if (typeof part === 'object' && 'current' in part && part.current) {
+      return part.current.textContent?.trim().toLowerCase()
+    }
+  }
+}
 
 /**
  * Group command menu items together with a heading.
@@ -612,34 +552,36 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
  */
 const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef) => {
   const { heading, children, ...etc } = props
-  const groupId = React.useId()
+  const ref = React.useRef<HTMLDivElement>(null)
+  const headingRef = React.useRef<HTMLDivElement>(null)
   const headingId = React.useId()
   const context = React.useContext(CommandContext)
-  const [render, setRender] = React.useState(true)
-  const value = typeof props.heading === 'string' ? props.heading.toLowerCase() : props.value?.toLowerCase()
+  const value = React.useRef<string>()
+  const render = useSelector((state) => (!state.search ? true : state.filtered.groups.has(value)))
 
   useLayoutEffect(() => {
-    return context.subscribe((state) => {
-      if (!state.search) setRender(true)
-      else setRender(state.filtered.groups.has(value))
-    })
+    value.current = getValue(props.value, props.heading, headingRef)
+    ref.current?.setAttribute('data-value', value.current)
   }, [])
+
+  useLayoutEffect(() => {
+    return context.group(ref.current, value.current)
+  }, [value])
 
   return (
     <div
-      ref={forwardedRef}
+      ref={mergeRefs([ref, forwardedRef])}
       {...etc}
       cmdk-group=""
-      data-value={value}
       role="presentation"
       hidden={render ? undefined : true}
     >
       {heading && (
-        <div cmdk-group-heading="" aria-hidden id={headingId}>
+        <div ref={headingRef} cmdk-group-heading="" aria-hidden id={headingId}>
           {heading}
         </div>
       )}
-      <div key={groupId} role="group" aria-labelledby={heading ? headingId : undefined}>
+      <div role="group" aria-labelledby={heading ? headingId : undefined}>
         {children}
       </div>
     </div>
@@ -653,14 +595,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
 const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>((props, forwardedRef) => {
   const { alwaysRender, ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
-  const context = React.useContext(CommandContext)
-  const [render, setRender] = React.useState(true)
-
-  useLayoutEffect(() => {
-    return context.subscribe((state) => {
-      setRender(!state.search)
-    })
-  }, [])
+  const render = useSelector((state) => !state.search)
 
   if (!alwaysRender && !render) return null
   return <div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-separator="" role="separator" />
@@ -687,14 +622,7 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRe
  * Automatically renders when there are no results for the search query.
  */
 const Empty = React.forwardRef<HTMLDivElement, EmptyProps>((props, forwardedRef) => {
-  const [render, setRender] = React.useState(false)
-  const context = React.useContext(CommandContext)
-
-  useLayoutEffect(() => {
-    return context.subscribe((state) => {
-      setRender(Boolean(state.search) && state.filtered.items.size === 0)
-    })
-  }, [])
+  const render = useSelector((state) => Boolean(state.search) && state.filtered.items.size === 0)
 
   if (!render) return null
   return <div ref={forwardedRef} {...props} cmdk-empty="" role="presentation" />
@@ -722,14 +650,14 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwarded
   )
 })
 
-// Command.displayName = 'Command'
-// List.displayName = 'CommandList'
-// Item.displayName = 'CommandItem'
-// Group.displayName = 'CommandGroup'
-// Separator.displayName = 'CommandSeparator'
-// Dialog.displayName = 'CommandDialog'
-// Empty.displayName = 'CommandEmpty'
-// Loading.displayName = 'CommandLoading'
+Command.displayName = 'Command'
+List.displayName = 'CommandList'
+Item.displayName = 'CommandItem'
+Group.displayName = 'CommandGroup'
+Separator.displayName = 'CommandSeparator'
+Dialog.displayName = 'CommandDialog'
+Empty.displayName = 'CommandEmpty'
+Loading.displayName = 'CommandLoading'
 const pkg = Object.assign(Command, {
   List,
   Item,
@@ -799,6 +727,10 @@ function useAsRef<T>(data: T) {
 
 function noop() {}
 
+/**
+ * Runs the given function on the _next_ tick inside of a layout effect.
+ * Multiple calls to this function are automatically batched by React.
+ */
 function useTriggerLayoutEffect<T>(effect: (data?: T) => void = noop) {
   const [value, rerender] = React.useState<{}>()
   const argsRef = React.useRef<IArguments>()
@@ -844,4 +776,17 @@ function mergeRefs<T = any>(refs: Array<React.MutableRefObject<T> | React.Legacy
       }
     })
   }
+}
+
+const useStore = () => React.useContext(StoreContext)
+
+/** Run a selector against the store state. */
+function useSelector(selector: (state: State) => any) {
+  const store = useStore()
+
+  return React.useSyncExternalStore(
+    store.subscribe,
+    () => selector(store.snapshot()),
+    () => selector(store.snapshot())
+  )
 }
