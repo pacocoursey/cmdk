@@ -88,7 +88,7 @@ type CommandProps = Children & {
 }
 
 type Context = {
-  item: (value: string, props: ItemProps) => void
+  item: (value: string, props: ItemProps) => () => void
   subscribe: (cb: (state: State, data: any) => void) => void
   itemRenderComplete: () => void
   set: {
@@ -114,7 +114,7 @@ const SELECT_EVENT = `cmdk-item-select`
 // @ts-ignore
 /** @private */
 const CommandContext = React.createContext<Context>(undefined)
-const defaultFilter: CommandProps['filter'] = (value, search) => value.includes(search)
+const defaultFilter: CommandProps['filter'] = (value, search) => value.toLowerCase().includes(search.toLowerCase())
 
 function Command(props: CommandProps) {
   const ref = React.useRef<HTMLDivElement>(null)
@@ -504,21 +504,39 @@ function Item(props: ItemProps) {
   const [render, setRender] = React.useState(true)
   const [selected, setSelected] = React.useState(false)
   const propsRef = useAsRef(props)
-  const value = useLazyRef<string>(() =>
-    typeof props.children === 'string' ? props.children.toLowerCase() : props.value?.toLowerCase()
-  )
+  const valueId = useHTMLId()
 
-  useLayoutEffect(() => {
-    // Couldn't figure out a value from the given props, use `textContent`
-    if (!value.current && ref.current) {
-      value.current = ref.current.textContent?.trim() ?? random()
-      // Manually update the attribute so that the parent effects will read the correct value
-      // the next re-render of this item will transfer control of that attr back to React (will match anyways)
-      ref.current.setAttribute('data-value', value.current)
+  const value = React.useMemo(() => {
+    if (typeof props.children === 'string') {
+      return props.children.toLowerCase()
     }
 
-    return context.item(value.current, propsRef.current)
-  }, [])
+    if (props.value) {
+      return props.value.toLowerCase()
+    }
+
+    if (ref.current) {
+      return ref.current?.textContent?.trim().toLowerCase()
+    }
+
+    return valueId
+  }, [props.children, props.value, valueId])
+
+  useLayoutEffect(() => {
+    if (ref.current) {
+      ref.current.setAttribute('data-value', value)
+    }
+
+    return context.item(value, propsRef.current)
+  }, [value])
+
+  useLayoutEffect(() => {
+    return context.subscribe((state) => {
+      if (!state.search) setRender(true)
+      else setRender(state.filtered.items.has(value))
+      setSelected(state.selectedValue === value)
+    })
+  }, [value])
 
   useLayoutEffect(() => {
     const element = ref.current
@@ -527,20 +545,12 @@ function Item(props: ItemProps) {
     return () => element.removeEventListener(SELECT_EVENT, onSelect)
   }, [props.onSelect, props.disabled])
 
-  useLayoutEffect(() => {
-    return context.subscribe((state) => {
-      if (!state.search) setRender(true)
-      else setRender(state.filtered.items.has(value.current))
-      setSelected(state.selectedValue === value.current)
-    })
-  }, [])
-
   function onSelect() {
     propsRef.current.onSelect?.()
   }
 
   function select() {
-    context.set.setSelectedValue(value.current)
+    context.set.setSelectedValue(value)
   }
 
   if (!render) return null
@@ -552,7 +562,7 @@ function Item(props: ItemProps) {
       role="option"
       aria-disabled={props.disabled || undefined}
       aria-selected={selected || undefined}
-      data-value={value.current}
+      // data-value={value}
       onPointerMove={props.disabled ? undefined : select}
       onClick={props.disabled ? undefined : props.onSelect}
     >
@@ -806,6 +816,9 @@ function useLazyRef<T>(fn: () => T) {
   return ref as React.MutableRefObject<T>
 }
 
-function random() {
-  return Math.random().toString(16).slice(2)
+const useHTMLId = () => {
+  const id = React.useId()
+  return id.replace(x, '_')
 }
+
+const x = /:/g
