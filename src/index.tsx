@@ -646,14 +646,14 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwarded
   )
 })
 
-Command.displayName = 'Command'
-List.displayName = 'CommandList'
-Item.displayName = 'CommandItem'
-Group.displayName = 'CommandGroup'
-Separator.displayName = 'CommandSeparator'
-Dialog.displayName = 'CommandDialog'
-Empty.displayName = 'CommandEmpty'
-Loading.displayName = 'CommandLoading'
+// Command.displayName = 'Command'
+// List.displayName = 'CommandList'
+// Item.displayName = 'CommandItem'
+// Group.displayName = 'CommandGroup'
+// Separator.displayName = 'CommandSeparator'
+// Dialog.displayName = 'CommandDialog'
+// Empty.displayName = 'CommandEmpty'
+// Loading.displayName = 'CommandLoading'
 const pkg = Object.assign(Command, {
   List,
   Item,
