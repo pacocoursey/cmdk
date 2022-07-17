@@ -91,6 +91,10 @@ You should conditionally render this with `progress` while loading asynchronous 
 
 **Hydration mismatch?** Yes. Only render when mounted on client, or use [Dialog](#dialog) which handles this automatically.
 
+**React strict mode safe?** Yes, as far as I can tell. Proceed with caution.
+
+**Weird/wrong behavior?** Make sure your `Command.Item` have a `key` and unique `value`.
+
 ## History
 
 Written in 2019 by Paco ([@pacocoursey](https://twitter.com/pacocoursey)) to see if a composable combobox API was possible. Used for the Vercel command menu and autocomplete by Rauno ([@raunofreiberg](https://twitter.com/raunofreiberg)) in 2020. Re-written independently in 2022 with a simpler and more performant approach. Ideas from Shu ([@shuding\_](https://twitter.com/shuding_)).
