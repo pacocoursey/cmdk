@@ -123,13 +123,12 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const labelId = React.useId()
   const inputId = React.useId()
 
-  const scheduleFilter = useTriggerLayoutEffect(() => {
-    filterItems()
-    store.emit()
-    scheduleSelectFirstItem()
-  })
-  const scheduleSelectFirstItem = useTriggerLayoutEffect(selectFirstItem)
-  const scheduleScrollIntoView = useTriggerLayoutEffect(scrollSelectedIntoView)
+  const scheduled = useLazyRef(() => new Map())
+  const schedule = (id: string, cb: () => void) => {
+    const existing = scheduled.current.get(id)
+    clearTimeout(existing)
+    scheduled.current.set(id, setTimeout(cb, 1))
+  }
 
   const store: Store = React.useMemo(() => {
     return {
@@ -148,13 +147,26 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           // Filter synchronously before emitting back to children
           filterItems()
 
-          // Schedule a layout effect for after the children have finished rendering
-          // but before paint so that we read up-to-date DOM state
-          scheduleSelectFirstItem()
+          // Defer this update because it can be huge!
+          // Okay to have 1 frame between the input updating and the items
+          schedule('searchChange', () => {
+            store.emit()
+
+            // Schedule a layout effect for after the children have finished rendering
+            // but before paint so that we read up-to-date DOM state
+            schedule('afterSearchChange', () => {
+              selectFirstItem(true)
+            })
+          })
+
+          return
         } else if (key === 'selectedValue') {
           // Schedule a layout effect for after the children have finished rendering
           // to scroll the selected item into view
-          scheduleScrollIntoView()
+          schedule('selectedValueChange', () => {
+            scrollSelectedIntoView()
+          })
+          // scheduleScrollIntoView()
         }
 
         // Notify subscribers that state has changed
@@ -174,12 +186,22 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         // Consider the search query is "3"
         // then a new item is rendered with a value that matches "3"
         // We need to filter to ensure that item is shown
-        scheduleFilter()
+        schedule('itemAdd', () => {
+          filterItems()
+          store.emit()
+
+          schedule('afterItemAdd', () => {
+            selectFirstItem(false)
+          })
+        })
 
         return () => {
           // The item removed could have been the selected one,
           // so selection should be moved to the next valid
-          scheduleSelectFirstItem(false)
+          schedule('itemRemove', () => {
+            selectFirstItem(false)
+          })
+
           allItems.current.delete(value)
         }
       },
@@ -398,7 +420,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
   const height = React.useRef<HTMLDivElement>(null)
   const context = React.useContext(CommandContext)
 
-  useLayoutEffect(() => {
+  React.useEffect(() => {
     if (height.current && ref.current) {
       const el = height.current
       const wrapper = ref.current
@@ -407,7 +429,10 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
           const box = entry.contentBoxSize?.[0] || entry.contentBoxSize || entry.contentRect
           // @ts-ignore
           const height = box?.blockSize ?? box?.heightblockSize
-          wrapper.style.setProperty(`--cmdk-list-height`, height + 'px')
+
+          requestAnimationFrame(() => {
+            wrapper.style.setProperty(`--cmdk-list-height`, height + 'px')
+          })
         }
       })
       observer.observe(el, { box: 'border-box' })
@@ -694,26 +719,6 @@ function useAsRef<T>(data: T) {
   })
 
   return ref
-}
-
-function noop() {}
-
-/**
- * Runs the given function on the _next_ tick inside of a layout effect.
- * Multiple calls to this function are automatically batched by React.
- */
-function useTriggerLayoutEffect<T>(effect: (data?: T) => void = noop) {
-  const [value, rerender] = React.useState<{}>()
-  const argsRef = React.useRef<IArguments>()
-
-  useLayoutEffect(() => {
-    return effect.apply(null, argsRef.current)
-  }, [value])
-
-  return React.useCallback<(data?: T) => void>(function () {
-    argsRef.current = arguments
-    rerender({})
-  }, [])
 }
 
 const useLayoutEffect = typeof window === 'undefined' ? React.useEffect : React.useLayoutEffect
