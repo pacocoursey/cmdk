@@ -1,15 +1,16 @@
 import tinykeys from 'tinykeys'
 import * as RadixDialog from '@radix-ui/react-dialog'
 import * as React from 'react'
+import commandScore from 'command-score'
 
 function useCommand() {
   return useSelector((state) => state)
 }
 
-const initialState = {
+const initialState: State = {
   search: '',
   selectedValue: '',
-  filtered: { items: new Set(), groups: new Set() },
+  filtered: { items: new Map(), groups: new Set() },
 }
 
 type Children = { children?: React.ReactNode }
@@ -65,9 +66,10 @@ type CommandProps = Children & {
   shouldFilter?: boolean
   /**
    * Custom filter function for whether each command menu item should matches the given search query.
-   * By default, uses a simple `String.includes` filter.
+   * It should return a number between 0 and 1, with 1 being the best match and 0 being hidden entirely.
+   * By default, uses the `command-score` library.
    */
-  filter?: (value: string, search: string) => boolean
+  filter?: (value: string, search: string) => number
   /**
    * Optional controlled state of the selected command menu item.
    */
@@ -90,7 +92,7 @@ type Context = {
 type State = {
   search: string
   selectedValue: string
-  filtered: { items: Set<any>; groups: Set<any> }
+  filtered: { items: Map<string, number>; groups: Set<string> }
 }
 type Store = {
   subscribe: (callback: () => void) => () => void
@@ -104,7 +106,7 @@ const GROUP_HEADING_SELECTOR = `[cmdk-group-heading]`
 const ITEM_SELECTOR = `[cmdk-item]`
 const VALID_ITEM_SELECTOR = `${ITEM_SELECTOR}:not([aria-disabled="true"])`
 const SELECT_EVENT = `cmdk-item-select`
-const defaultFilter: CommandProps['filter'] = (value, search) => value.toLowerCase().includes(search.toLowerCase())
+const defaultFilter: CommandProps['filter'] = (value, search) => commandScore(value, search)
 
 // @ts-ignore
 const CommandContext = React.createContext<Context>(undefined)
@@ -145,7 +147,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
         if (key === 'search') {
           // Filter synchronously before emitting back to children
-          filterItems()
+          filterItems(true)
 
           // Defer this update because it can be huge!
           // Okay to have 1 frame between the input updating and the items
@@ -155,6 +157,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
             // Schedule a layout effect for after the children have finished rendering
             // but before paint so that we read up-to-date DOM state
             schedule('afterSearchChange', () => {
+              sort()
               selectFirstItem(true)
             })
           })
@@ -182,6 +185,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     () => ({
       item: (value) => {
         allItems.current.add(value)
+        state.current.filtered.items.set(value, score(value))
 
         // Consider the search query is "3"
         // then a new item is rendered with a value that matches "3"
@@ -191,6 +195,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           store.emit()
 
           schedule('afterItemAdd', () => {
+            sort()
             selectFirstItem(false)
           })
         })
@@ -203,6 +208,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           })
 
           allItems.current.delete(value)
+          state.current.filtered.items.delete(value)
         }
       },
       group: (group, value) => {
@@ -222,6 +228,62 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     []
   )
 
+  function score(value: string) {
+    const filter = propsRef.current?.filter ?? defaultFilter
+    return filter(value, state.current.search)
+  }
+
+  /** Sorts items by score, and groups by highest item score. */
+  function sort() {
+    if (!state.current.search) {
+      return
+    }
+
+    const scores = state.current.filtered.items
+
+    // Sort the groups
+    const x: [string, number][] = []
+    state.current.filtered.groups.forEach((value) => {
+      const items = allGroups.current.get(value)
+
+      // Get the maximum score of the group's items
+      let max = 0
+      items.forEach((item) => {
+        const score = scores.get(item)
+        max = Math.max(score, max)
+      })
+
+      x.push([value, max])
+    })
+
+    x.sort((a, b) => {
+      console.log({ a, b })
+      return b[1] - a[1]
+    }).forEach((group) => {
+      const element = ref.current.querySelector(`${GROUP_SELECTOR}[data-value="${group[0]}"]`)
+      console.log(element)
+      element?.parentElement.appendChild(element)
+    })
+
+    // Sort the items
+    getValidItems()
+      .sort((a, b) => {
+        const valueA = a.getAttribute('data-value')
+        const valueB = b.getAttribute('data-value')
+        return (scores.get(valueB) ?? 0) - (scores.get(valueA) ?? 0)
+      })
+      .forEach((item) => {
+        const list = item.closest(`[cmdk-list-sizer=""]`)
+        const group = item.closest(`[cmdk-group-items=""]`)
+
+        if (group) {
+          group.appendChild(item.parentElement === group ? item : item.closest(`[cmdk-group-items=""] > *`))
+        } else {
+          list.appendChild(item.parentElement === list ? item : item.closest(`[cmdk-list-sizer=""] > *`))
+        }
+      })
+  }
+
   function selectFirstItem(overwrite: boolean = true) {
     const selected = state.current.selectedValue
 
@@ -239,43 +301,37 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }
 
   /** Filters the current items. */
-  function filterItems() {
+  function filterItems(updateItems = false) {
     if (
       !state.current.search ||
       // Explicitly false, because true | undefined is the default
       propsRef.current.shouldFilter === false
     ) {
-      state.current.filtered = {
-        items: allItems.current,
-        groups: new Set(Object.keys(allGroups.current)),
-      }
+      // Do nothing, each item will know to show itself because search is empty
       return
     }
 
-    const items = new Set()
-    const groups = new Set()
+    // Reset the groups
+    state.current.filtered.groups = new Set()
 
     // Check which items should be included
-    for (const item of allItems.current) {
-      const filter = propsRef.current?.filter ?? defaultFilter
-      const score = filter(item, state.current.search)
-
-      if (score) {
-        items.add(item)
+    if (updateItems) {
+      for (const item of allItems.current) {
+        state.current.filtered.items.set(item, score(item))
       }
     }
 
     // Check which groups have at least 1 item shown
     for (const [name, group] of allGroups.current) {
       for (const value of group) {
-        if (items.has(value)) {
-          groups.add(name)
+        if (state.current.filtered.items.get(value) > 0) {
+          state.current.filtered.groups.add(name)
           break
         }
       }
     }
 
-    state.current.filtered = { items, groups }
+    // state.current.filtered = { items, groups }
   }
 
   function scrollSelectedIntoView() {
@@ -350,7 +406,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       item = group?.querySelector(VALID_ITEM_SELECTOR)
     }
 
-    store.setState('selectedValue', item.getAttribute('data-value'))
+    if (item) {
+      store.setState('selectedValue', item.getAttribute('data-value'))
+    }
   }
 
   useLayoutEffect(() => {
@@ -460,7 +518,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 
   const store = useStore()
   const selected = useSelector((state) => state.selectedValue && state.selectedValue === value)
-  const render = useSelector((state) => (!state.search ? true : state.filtered.items.has(value)))
+  const render = useSelector((state) => (!state.search ? true : state.filtered.items.get(value) > 0))
 
   useLayoutEffect(() => {
     if (value) {
@@ -567,7 +625,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
           {heading}
         </div>
       )}
-      <div role="group" aria-labelledby={heading ? headingId : undefined}>
+      <div cmdk-group-items="" role="group" aria-labelledby={heading ? headingId : undefined}>
         {children}
       </div>
     </div>
