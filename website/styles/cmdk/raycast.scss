@@ -3,7 +3,7 @@
         width: 640px;
         background: var(--gray1);
         border-radius: 8px;
-        padding: 8px;
+        padding: 8px 0;
         font-family: var(--cmdk-font);
         box-shadow: var(--cmdk-shadow);
         border: 1px solid var(--gray6);
@@ -47,7 +47,7 @@
         border: none;
         width: 100%;
         font-size: 15px;
-        padding: 4px 8px;
+        padding: 8px 16px;
         outline: none;
         background: var(--bg);
         color: var(--gray12);
@@ -74,8 +74,8 @@
         --loader-color: var(--gray9);
         border: 0;
         width: 100%;
-        width: calc(100% + 16px);
-        left: -8px;
+        width: 100%;
+        left: 0;
         height: 1px;
         background: var(--gray6);
         position: relative;
@@ -107,7 +107,7 @@
 
         cursor: pointer;
         height: 40px;
-        border-radius: 6px;
+        border-radius: 8px;
         font-size: 14px;
         display: flex;
         align-items: center;
@@ -156,7 +156,7 @@
     }
 
     [cmdk-list] {
-        padding-bottom: 4px;
+        padding: 0 8px;
         height: 400px;
         overflow: auto;
         overscroll-behavior: contain;
@@ -169,20 +169,16 @@
     [cmdk-raycast-subcommand-trigger] {
         display: flex;
         align-items: center;
-        gap: 12px;
-        position: absolute;
+        gap: 4px;
         right: 8px;
         bottom: 8px;
-        background: var(--gray4);
-        color: var(--gray12);
-        border: 1px solid var(--gray6);
-        padding: 0px 12px;
+        color: var(--gray11);
+        padding: 0px 4px;
         border-radius: 6px;
         font-weight: 500;
-        font-size: 14px;
+        font-size: 12px;
         height: 28px;
         letter-spacing: -0.25px;
-        box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 10%);
 
         svg {
             width: 14px;
@@ -194,6 +190,27 @@
             background: var(--gray6);
             border: 0;
             width: 1px;
+        }
+
+        kbd {
+            font-family: var(--font-sans);
+            background: var(--gray3);
+            color: var(--gray11);
+            height: 24px;
+            width: 24px;
+            border-radius: 4px;
+            padding: 0 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:first-of-type {
+                margin-left: 8px;
+            }
+        }
+
+        &[aria-expanded="true"] {
+            background: var(--gray5);
         }
 
     }
@@ -212,8 +229,26 @@
         padding: 0 8px;
         display: flex;
         align-items: center;
-
     }
+
+    [cmdk-raycast-footer] {
+        display: flex;
+        height: 40px;
+        align-items: center;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        padding: 8px;
+        border-top: 1px solid var(--gray6);
+
+        svg {
+            width: 20px;
+            height: 20px;
+            filter: grayscale(1);
+            margin-right: auto;
+        }
+    }
+
 
     [cmdk-dialog] {
         z-index: var(--layer-portal);
@@ -320,5 +355,66 @@
 @keyframes showTopShine {
     to {
         opacity: 1;
+    }
+}
+
+.raycast-submenu {
+
+    [cmdk-root] {
+        display: flex;
+        flex-direction: column;
+        width: 350px;
+        height: 240px;
+        border: 1px solid var(--gray6);
+        background: var(--gray3);
+        border-radius: 8px;
+    }
+
+    [cmdk-input] {
+        padding: 12px;
+        font-family: var(--font-sans);
+        border: 0;
+        border-top: 1px solid var(--gray6);
+        background: transparent;
+        margin-top: auto;
+        width: 100%;
+        outline: 0;
+    }
+
+    animation-duration: 0.2s;
+    animation-timing-function: ease;
+    animation-fill-mode: forwards;
+    transform-origin: var(--radix-popover-content-transform-origin);
+
+    &[data-state="open"] {
+        animation-name: slideIn;
+    }
+
+    &[data-side="closed"] {
+        animation-name: slideOut;
+    }
+}
+
+@keyframes slideIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.9);
     }
 }
