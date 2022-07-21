@@ -125,6 +125,16 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const labelId = React.useId()
   const inputId = React.useId()
 
+  /** Controlled mode `value` handling. */
+  useLayoutEffect(() => {
+    if (props.value !== undefined) {
+      const value = props.value.trim().toLowerCase()
+      state.current.selectedValue = value
+      scrollSelectedIntoView()
+      store.emit()
+    }
+  }, [props.value])
+
   const scheduled = useLazyRef(() => new Map())
   const schedule = (id: string, cb: () => void) => {
     const existing = scheduled.current.get(id)
@@ -164,12 +174,14 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
           return
         } else if (key === 'selectedValue') {
-          // Schedule a layout effect for after the children have finished rendering
-          // to scroll the selected item into view
-          schedule('selectedValueChange', () => {
+          if (propsRef.current?.value !== undefined) {
+            // If controlled, just call the callback instead of updating state internally
+            propsRef.current.onValueChange?.(value)
+            return
+          } else {
+            // Scroll the selected item into view
             scrollSelectedIntoView()
-          })
-          // scheduleScrollIntoView()
+          }
         }
 
         // Notify subscribers that state has changed
@@ -241,8 +253,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
     const scores = state.current.filtered.items
 
+    // TODO: non-grouped items need to be placed correctly in the order
+
     // Sort the groups
-    const x: [string, number][] = []
+    const groups: [string, number][] = []
     state.current.filtered.groups.forEach((value) => {
       const items = allGroups.current.get(value)
 
@@ -253,17 +267,17 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         max = Math.max(score, max)
       })
 
-      x.push([value, max])
+      groups.push([value, max])
     })
 
-    x.sort((a, b) => {
-      console.log({ a, b })
-      return b[1] - a[1]
-    }).forEach((group) => {
-      const element = ref.current.querySelector(`${GROUP_SELECTOR}[data-value="${group[0]}"]`)
-      console.log(element)
-      element?.parentElement.appendChild(element)
-    })
+    groups
+      .sort((a, b) => {
+        return b[1] - a[1]
+      })
+      .forEach((group) => {
+        const element = ref.current.querySelector(`${GROUP_SELECTOR}[data-value="${group[0]}"]`)
+        element?.parentElement.appendChild(element)
+      })
 
     // Sort the items
     getValidItems()
@@ -330,8 +344,6 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         }
       }
     }
-
-    // state.current.filtered = { items, groups }
   }
 
   function scrollSelectedIntoView() {
@@ -350,7 +362,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   /** Getters */
 
-  function getItemByValue(value) {
+  function getItemByValue(value: string) {
     if (!ref.current) return null
     return ref.current.querySelector(`${ITEM_SELECTOR}[data-value="${value}"]`)
   }
@@ -477,10 +489,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
           const box = entry.contentBoxSize?.[0] || entry.contentBoxSize || entry.contentRect
           // @ts-ignore
           const height = box?.blockSize ?? box?.heightblockSize
-
-          requestAnimationFrame(() => {
-            wrapper.style.setProperty(`--cmdk-list-height`, height + 'px')
-          })
+          wrapper.style.setProperty(`--cmdk-list-height`, height + 'px')
         }
       })
       observer.observe(el, { box: 'border-box' })
@@ -694,14 +703,6 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwarded
   )
 })
 
-// Command.displayName = 'Command'
-// List.displayName = 'CommandList'
-// Item.displayName = 'CommandItem'
-// Group.displayName = 'CommandGroup'
-// Separator.displayName = 'CommandSeparator'
-// Dialog.displayName = 'CommandDialog'
-// Empty.displayName = 'CommandEmpty'
-// Loading.displayName = 'CommandLoading'
 const pkg = Object.assign(Command, {
   List,
   Item,
@@ -818,11 +819,7 @@ function useValue(
   useLayoutEffect(() => {
     const value = getValue(deps)
     ref.current?.setAttribute('data-value', value)
-
-    setValue((current) => {
-      if (current === value) return current
-      return value
-    })
+    setValue(value)
   })
 
   return value

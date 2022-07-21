@@ -77,7 +77,7 @@ You should conditionally render this with `progress` while loading asynchronous 
 
 ## FAQ
 
-**Virtualization?** No. Good performance up to 3,000-4,000 items, though.
+**Virtualization?** No. Good performance up to 2,000-3,000 items, though.
 
 **Filter/sort items manually?** Yes. Pass `filter={false}` to [Command](#command). Better performance and bring your own virtualization this way.
 
