@@ -1,6 +1,5 @@
 import tinykeys from 'tinykeys'
 import * as RadixDialog from '@radix-ui/react-dialog'
-import * as RadixPopover from '@radix-ui/react-popover'
 import * as React from 'react'
 import commandScore from 'command-score'
 
@@ -27,12 +26,6 @@ type SeparatorProps = DivProps & {
   alwaysRender?: boolean
 }
 type DialogProps = RadixDialog.DialogProps & CommandProps
-type PopoverProps = Pick<RadixPopover.PopoverProps, 'open' | 'onOpenChange'> &
-  RadixPopover.PopoverContentProps &
-  CommandProps & {
-    /** A `Command.Trigger` that toggles this popover. */
-    trigger: React.ReactNode
-  }
 type ListProps = Children & DivProps & {}
 type ItemProps = Children & {
   /** Whether this item is currently disabled. */
@@ -458,11 +451,12 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     }
   }, [])
 
-  const { label, children, value: _, onValueChange: __, filter: ___, shouldFilter: ____, ...etc } = props
+  const { label, children, value: _, onValueChange: __, filter: ___, ...etc } = props
 
   return (
     <div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-root="">
       <label
+        cmdk-label=""
         htmlFor={context.inputId}
         id={context.labelId}
         // Screen reader only
@@ -567,7 +561,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       aria-disabled={props.disabled || undefined}
       aria-selected={selected || undefined}
       onPointerMove={props.disabled ? undefined : select}
-      onClick={props.disabled ? undefined : onSelect}
+      onClick={props.disabled ? undefined : () => props.onSelect(value)}
     >
       {props.children}
     </div>
@@ -678,25 +672,6 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRe
   )
 })
 
-const Popover = React.forwardRef<HTMLDivElement, PopoverProps>((props, forwardedRef) => {
-  const { open, onOpenChange, trigger, label, shouldFilter, filter, value, onValueChange, children, ...etc } = props
-
-  return (
-    <RadixPopover.Root open={open} onOpenChange={onOpenChange}>
-      {trigger}
-      <RadixPopover.Portal>
-        <RadixPopover.Content cmdk-popover="" {...etc}>
-          <Command ref={forwardedRef} {...{ label, shouldFilter, value, onValueChange, children }} />
-        </RadixPopover.Content>
-      </RadixPopover.Portal>
-    </RadixPopover.Root>
-  )
-})
-
-const Trigger = React.forwardRef<HTMLButtonElement, RadixPopover.PopoverTriggerProps>((props, forwardedRef) => {
-  return <RadixPopover.Trigger cmdk-trigger="" {...props} ref={forwardedRef} />
-})
-
 /**
  * Automatically renders when there are no results for the search query.
  */
@@ -736,8 +711,6 @@ const pkg = Object.assign(Command, {
   Group,
   Separator,
   Dialog,
-  Popover,
-  Trigger,
   Empty,
   Loading,
 })

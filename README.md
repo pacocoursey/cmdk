@@ -47,14 +47,6 @@ Render this to show the command menu inline, or use [Dialog](#dialog) to render 
 
 Props are forwarded to [Command](#command). Composes Radix UI's Dialog component. The overlay is always rendered. See the [Radix Documentation](https://www.radix-ui.com/docs/primitives/components/dialog) for more information.
 
-### Popover `[cmdk-popover]`
-
-Props are forwarded to [Command](#command). Composes Radix UI's Popover component. The popover is always portalled. See the [Radix Documentation](https://www.radix-ui.com/docs/primitives/components/popover) for more information.
-
-### Trigger `[cmdk-trigger]`
-
-Composes Radix UI's Popover Trigger component. See the [Radix Documentation](https://www.radix-ui.com/docs/primitives/components/popover#trigger) for more information.
-
 ### Input `[cmdk-input]`
 
 All props are forwarded to the underlying `input` element.
