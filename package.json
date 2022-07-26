@@ -10,7 +10,8 @@
   "scripts": {
     "prepublishOnly": "pnpm build",
     "build": "tsup src",
-    "dev": "tsup src --watch"
+    "dev": "tsup src --watch",
+    "test": "playwright test"
   },
   "peerDependencies": {
     "react": "*",
@@ -20,5 +21,8 @@
     "@radix-ui/react-dialog": "0.1.7",
     "command-score": "0.1.2",
     "tinykeys": "1.4.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.24.1"
   }
 }
