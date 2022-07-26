@@ -10,7 +10,8 @@ function useCommand() {
 const initialState: State = {
   search: '',
   selectedValue: '',
-  filtered: { items: new Map(), groups: new Set() },
+  filtered: { count: 0, items: new Map(), groups: new Set() },
+  shouldFilter: true,
 }
 
 type Children = { children?: React.ReactNode }
@@ -92,7 +93,8 @@ type Context = {
 type State = {
   search: string
   selectedValue: string
-  filtered: { items: Map<string, number>; groups: Set<string> }
+  filtered: { count: number; items: Map<string, number>; groups: Set<string> }
+  shouldFilter: boolean
 }
 type Store = {
   subscribe: (callback: () => void) => () => void
@@ -154,6 +156,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       },
       setState: (key, value) => {
         if (Object.is(state.current[key], value)) return
+        // @ts-ignore
         state.current[key] = value
 
         if (key === 'search') {
@@ -191,6 +194,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       emit: () => {
         listeners.current.forEach((l) => l())
       },
+      get shouldFilter() {
+        return propsRef.current.shouldFilter
+      },
     }
   }, [])
 
@@ -214,6 +220,11 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         })
 
         return () => {
+          // Reduce count
+          if (state.current.filtered.items.get(value) > 0) {
+            state.current.filtered.count = Math.max(0, state.current.filtered.count - 1)
+          }
+
           // The item removed could have been the selected one,
           // so selection should be moved to the next valid
           schedule('itemRemove', () => {
@@ -248,7 +259,11 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   /** Sorts items by score, and groups by highest item score. */
   function sort() {
-    if (!state.current.search) {
+    if (
+      !state.current.search ||
+      // Explicitly false, because true | undefined is the default
+      propsRef.current.shouldFilter === false
+    ) {
       return
     }
 
@@ -322,17 +337,21 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       // Explicitly false, because true | undefined is the default
       propsRef.current.shouldFilter === false
     ) {
+      state.current.filtered.count = allItems.current.size
       // Do nothing, each item will know to show itself because search is empty
       return
     }
 
     // Reset the groups
     state.current.filtered.groups = new Set()
+    let itemCount = 0
 
     // Check which items should be included
     if (updateItems) {
       for (const item of allItems.current) {
-        state.current.filtered.items.set(item, score(item))
+        const value = score(item)
+        state.current.filtered.items.set(item, value)
+        if (value > 0) itemCount++
       }
     }
 
@@ -345,6 +364,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         }
       }
     }
+
+    state.current.filtered.count = itemCount
   }
 
   function scrollSelectedIntoView() {
@@ -451,7 +472,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     }
   }, [])
 
-  const { label, children, value: _, onValueChange: __, filter: ___, ...etc } = props
+  const { label, children, value: _, onValueChange: __, filter: ___, shouldFilter: ____, ...etc } = props
 
   return (
     <div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-root="">
@@ -528,7 +549,9 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 
   const store = useStore()
   const selected = useSelector((state) => state.selectedValue && state.selectedValue === value)
-  const render = useSelector((state) => (!state.search ? true : state.filtered.items.get(value) > 0))
+  const render = useSelector((state) =>
+    state.shouldFilter === false ? true : !state.search ? true : state.filtered.items.get(value) > 0
+  )
 
   useLayoutEffect(() => {
     if (value) {
@@ -579,6 +602,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
   const search = useSelector((state) => state.search)
   const context = React.useContext(CommandContext)
 
+  useLayoutEffect(() => {
+    if (props.value != null) {
+      store.setState('search', props.value)
+    }
+  }, [props.value])
+
   return (
     <input
       ref={forwardedRef}
@@ -596,7 +625,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
       type="text"
       value={isControlled ? props.value : search}
       onChange={(e) => {
-        store.setState('search', e.target.value)
+        if (!isControlled) {
+          store.setState('search', e.target.value)
+        }
+
         onValueChange?.(e.target.value)
       }}
     />
@@ -676,7 +708,7 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRe
  * Automatically renders when there are no results for the search query.
  */
 const Empty = React.forwardRef<HTMLDivElement, EmptyProps>((props, forwardedRef) => {
-  const render = useSelector((state) => Boolean(state.search) && state.filtered.items.size === 0)
+  const render = useSelector((state) => state.filtered.count === 0)
 
   if (!render) return null
   return <div ref={forwardedRef} {...props} cmdk-empty="" role="presentation" />

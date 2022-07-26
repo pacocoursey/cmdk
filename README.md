@@ -9,22 +9,26 @@ $ yarn add cmdk
 Usage:
 
 ```tsx
-<Command.Dialog open={open} onOpenChange={setOpen}>
-  <Command.Input />
-  <Command.List>
-    {loading && <Command.Loading>Hang on…</Command.Loading>}
-    <Command.Empty>No results found.</Command.Empty>
+import { Command } from 'cmdk'
 
-    <Command.Group heading="Letters">
-      <Command.Item>a</Command.Item>
-      <Command.Item>b</Command.Item>
-      <Command.Separator />
-      <Command.Item>c</Command.Item>
-    </Command.Group>
+return (
+  <Command.Dialog open={open} onOpenChange={setOpen}>
+    <Command.Input />
+    <Command.List>
+      {loading && <Command.Loading>Hang on…</Command.Loading>}
+      <Command.Empty>No results found.</Command.Empty>
 
-    <Command.Item>Ungrouped</Command.Item>
-  </Command.List>
-</Command.Dialog>
+      <Command.Group heading="Letters">
+        <Command.Item>a</Command.Item>
+        <Command.Item>b</Command.Item>
+        <Command.Separator />
+        <Command.Item>c</Command.Item>
+      </Command.Group>
+
+      <Command.Item>Ungrouped</Command.Item>
+    </Command.List>
+  </Command.Dialog>
+)
 ```
 
 To render inline, replace `Command.Dialog` with just `Command`. ⌘K supports a fully composable API, meaning you can wrap items in other components or even static JSX:
