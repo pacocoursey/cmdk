@@ -101,9 +101,10 @@ type Store = {
   emit: () => void
 }
 
-const GROUP_SELECTOR = `[cmdk-group]`
-const GROUP_HEADING_SELECTOR = `[cmdk-group-heading]`
-const ITEM_SELECTOR = `[cmdk-item]`
+const GROUP_SELECTOR = `[cmdk-group=""]`
+const GROUP_ITEMS_SELECTOR = `[cmdk-group-items=""]`
+const GROUP_HEADING_SELECTOR = `[cmdk-group-heading=""]`
+const ITEM_SELECTOR = `[cmdk-item=""]`
 const VALID_ITEM_SELECTOR = `${ITEM_SELECTOR}:not([aria-disabled="true"])`
 const SELECT_EVENT = `cmdk-item-select`
 const defaultFilter: CommandProps['filter'] = (value, search) => commandScore(value, search)
@@ -253,8 +254,6 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
     const scores = state.current.filtered.items
 
-    // TODO: non-grouped items need to be placed correctly in the order
-
     // Sort the groups
     const groups: [string, number][] = []
     state.current.filtered.groups.forEach((value) => {
@@ -270,14 +269,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       groups.push([value, max])
     })
 
-    groups
-      .sort((a, b) => {
-        return b[1] - a[1]
-      })
-      .forEach((group) => {
-        const element = ref.current.querySelector(`${GROUP_SELECTOR}[data-value="${group[0]}"]`)
-        element?.parentElement.appendChild(element)
-      })
+    // Sort items within groups to bottom
+    // Sort items outside of groups
+    // Sort groups to bottom (pushes all non-grouped items to the top)
+    const list = ref.current.querySelector('[cmdk-list-sizer=""]')
 
     // Sort the items
     getValidItems()
@@ -287,14 +282,20 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         return (scores.get(valueB) ?? 0) - (scores.get(valueA) ?? 0)
       })
       .forEach((item) => {
-        const list = item.closest(`[cmdk-list-sizer=""]`)
-        const group = item.closest(`[cmdk-group-items=""]`)
+        const group = item.closest(GROUP_ITEMS_SELECTOR)
 
         if (group) {
-          group.appendChild(item.parentElement === group ? item : item.closest(`[cmdk-group-items=""] > *`))
+          group.appendChild(item.parentElement === group ? item : item.closest(`${GROUP_ITEMS_SELECTOR} > *`))
         } else {
-          list.appendChild(item.parentElement === list ? item : item.closest(`[cmdk-list-sizer=""] > *`))
+          list.appendChild(item.parentElement === list ? item : item.closest(`${GROUP_ITEMS_SELECTOR} > *`))
         }
+      })
+
+    groups
+      .sort((a, b) => b[1] - a[1])
+      .forEach((group) => {
+        const element = ref.current.querySelector(`${GROUP_SELECTOR}[data-value="${group[0]}"]`)
+        element?.parentElement.appendChild(element)
       })
   }
 
