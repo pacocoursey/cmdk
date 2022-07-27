@@ -45,7 +45,7 @@ type GroupProps = Children & {
   /** If no heading is provided, you must provie a value that is unique for this group. */
   value?: string
 }
-type InputProps = Omit<React.HTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> & {
+type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> & {
   /**
    * Optional controlled state for the value of the search input.
    */
