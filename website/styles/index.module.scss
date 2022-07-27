@@ -333,6 +333,16 @@
     gap: 4px;
     color: var(--gray12);
     font-weight: 500;
+    border-radius: 9999px;
+    padding: 4px;
+    margin: 0 -2px;
+    transition: background 150ms ease;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--grayA4);
+      outline: 0;
+    }
   }
 
   img {
@@ -401,6 +411,7 @@
   position: absolute;
   height: fit-content;
   color: var(--gray11);
+  pointer-events: none;
 }
 
 .raunoSignature {

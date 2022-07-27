@@ -1,8 +1,8 @@
-import { Command } from 'cmdk';
 import React from 'react';
+import { Command } from 'cmdk';
 
 export function VercelCMDK() {
-  const ref = React.useRef(null);
+  const ref = React.useRef<HTMLDivElement | null>(null);
   const [inputValue, setInputValue] = React.useState('');
   const [activePage, setActivePage] = React.useState('home');
 
@@ -40,7 +40,7 @@ export function VercelCMDK() {
   );
 }
 
-function Home({ setActivePage }) {
+function Home({ setActivePage }: { setActivePage: Function }) {
   return (
     <>
       <Command.Group heading="Projects">
@@ -120,7 +120,6 @@ function Item({
 function ProjectsIcon() {
   return (
     <svg
-      data-testid="geist-icon"
       fill="none"
       height="24"
       shapeRendering="geometricPrecision"
@@ -142,7 +141,6 @@ function ProjectsIcon() {
 function PlusIcon() {
   return (
     <svg
-      data-testid="geist-icon"
       fill="none"
       height="24"
       shapeRendering="geometricPrecision"
@@ -162,7 +160,6 @@ function PlusIcon() {
 function TeamsIcon() {
   return (
     <svg
-      data-testid="geist-icon"
       fill="none"
       height="24"
       shapeRendering="geometricPrecision"
@@ -184,7 +181,6 @@ function TeamsIcon() {
 function CopyIcon() {
   return (
     <svg
-      data-testid="geist-icon"
       fill="none"
       height="24"
       shapeRendering="geometricPrecision"
@@ -203,7 +199,6 @@ function CopyIcon() {
 function DocsIcon() {
   return (
     <svg
-      data-testid="geist-icon"
       fill="none"
       height="24"
       shapeRendering="geometricPrecision"
@@ -226,7 +221,6 @@ function DocsIcon() {
 function FeedbackIcon() {
   return (
     <svg
-      data-testid="geist-icon"
       fill="none"
       height="24"
       shapeRendering="geometricPrecision"
@@ -245,7 +239,6 @@ function FeedbackIcon() {
 function ContactIcon() {
   return (
     <svg
-      data-testid="geist-icon"
       fill="none"
       height="24"
       shapeRendering="geometricPrecision"
