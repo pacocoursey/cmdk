@@ -1,6 +1,7 @@
 .vercel {
     [cmdk-root] {
-        width: 640px;
+        max-width: 640px;
+        width: 100%;
         padding: 8px;
         background: #FFFFFF;
         border-radius: 12px;

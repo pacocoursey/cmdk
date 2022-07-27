@@ -6,6 +6,7 @@
     position: relative;
     line-height: 16px;
     background: var(--lowContrast);
+    white-space: pre-wrap;
     box-shadow: rgb(0 0 0 / 10%) 0px 5px 30px -5px;
 
     @media (prefers-color-scheme: dark) {

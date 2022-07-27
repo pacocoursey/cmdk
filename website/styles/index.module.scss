@@ -3,8 +3,7 @@
   position: relative;
   display: flex;
   justify-content: center;
-  padding-top: 120px;
-  padding-bottom: 120px;
+  padding: 120px 24px 120px 24px;
 
   &:before {
     background: radial-gradient(circle, rgba(2, 0, 36, 0) 0, var(--gray1) 100%);
@@ -52,6 +51,8 @@
   height: fit-content;
   position: relative;
   z-index: 3;
+  width: 100%;
+  max-width: 640px;
 
   &:after {
     background-image: radial-gradient(at 27% 37%, hsla(215, 98%, 61%, 1) 0px, transparent 50%),
@@ -83,6 +84,8 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 48px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .buttons {
@@ -309,17 +312,16 @@
 }
 
 .footer {
-  position: absolute;
   display: flex;
   align-items: center;
   gap: 4px;
   width: fit-content;
+  margin: 32px auto;
   bottom: 48px;
-  transform: translate(-50%, -50%);
-  left: 50%;
   color: var(--gray11);
   font-size: 13px;
   z-index: 3;
+  position: relative;
 
   a {
     display: inline-flex;
@@ -412,7 +414,7 @@
   width: 120px;
   stroke-dashoffset: -1097;
   stroke-dasharray: 1140;
-  left: -20px;
+  left: -8px;
 
   path {
     animation: drawPacoSignature 1.5s linear forwards 1s;
@@ -443,5 +445,22 @@
 @keyframes showFooter {
   100% {
     opacity: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+
+  .switcher {
+    flex-direction: column;
+
+    .arrow {
+      display: none;
+    }
+
+    button {}
   }
 }

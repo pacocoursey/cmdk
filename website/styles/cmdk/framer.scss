@@ -1,6 +1,7 @@
 .framer {
     [cmdk-root] {
-        width: 640px;
+        max-width: 640px;
+        width: 100%;
         padding: 8px;
         background: var(--cmdk-bg);
         border-radius: 16px;

@@ -1,6 +1,7 @@
 .raycast {
     [cmdk-root] {
-        width: 640px;
+        max-width: 640px;
+        width: 100%;
         background: var(--gray1);
         border-radius: 8px;
         padding: 8px 0;

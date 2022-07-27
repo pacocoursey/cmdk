@@ -1,6 +1,7 @@
 .linear {
     [cmdk-root] {
-        width: 640px;
+        max-width: 640px;
+        width: 100%;
         background: #FFFFFF;
         border-radius: 8px;
         overflow: hidden;
