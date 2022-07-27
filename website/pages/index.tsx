@@ -76,9 +76,9 @@ export default function Index() {
 
           <Codeblock />
         </div>
-      </main>
 
-      <Footer />
+        <Footer />
+      </main>
     </>
   );
 }

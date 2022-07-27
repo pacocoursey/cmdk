@@ -1,10 +1,10 @@
 .main {
   width: 100vw;
-  height: 100vh;
   position: relative;
   display: flex;
   justify-content: center;
   padding-top: 120px;
+  padding-bottom: 120px;
 
   &:before {
     background: radial-gradient(circle, rgba(2, 0, 36, 0) 0, var(--gray1) 100%);
@@ -314,7 +314,7 @@
   align-items: center;
   gap: 4px;
   width: fit-content;
-  bottom: 32px;
+  bottom: 48px;
   transform: translate(-50%, -50%);
   left: 50%;
   color: var(--gray11);
