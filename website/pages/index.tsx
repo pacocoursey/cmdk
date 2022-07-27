@@ -1,6 +1,6 @@
 import styles from 'styles/index.module.scss';
 import React from 'react';
-import { AnimatePresence, AnimateSharedLayout, motion, MotionProps } from 'framer-motion';
+import { AnimatePresence, AnimateSharedLayout, motion, MotionProps, useInView } from 'framer-motion';
 import {
   FramerCMDK,
   LinearCMDK,
@@ -26,7 +26,7 @@ type Themes = 'linear' | 'raycast' | 'vercel' | 'framer';
 const ThemeContext = React.createContext<TTheme>({} as TTheme);
 
 export default function Index() {
-  const [theme, setTheme] = React.useState<Themes>('raycast');
+  const [theme, setTheme] = React.useState<Themes>('vercel');
 
   return (
     <>
@@ -188,6 +188,9 @@ function ThemeSwitcher() {
           opacity: showArrowKeyHint ? 1 : 0,
           x: showArrowKeyHint ? -24 : 0,
         }}
+        style={{
+          left: 100,
+        }}
       >
         ←
       </motion.span>
@@ -230,6 +233,9 @@ function ThemeSwitcher() {
         animate={{
           opacity: showArrowKeyHint ? 1 : 0,
           x: showArrowKeyHint ? 24 : 0,
+        }}
+        style={{
+          right: 100,
         }}
       >
         →
@@ -278,8 +284,18 @@ function VersionBadge() {
 }
 
 function Footer() {
+  const ref = React.useRef<HTMLElement | null>(null);
+  const isInView = useInView(ref, {
+    margin: '100px',
+  });
   return (
-    <motion.footer initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={styles.footer}>
+    <motion.footer
+      ref={ref}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      className={styles.footer}
+      data-animate={isInView}
+    >
       <div className={styles.footerText}>
         Crafted by{' '}
         <a href="https://paco.me" target="_blank" rel="noopener noreferrer">
@@ -302,8 +318,8 @@ function RaunoSignature() {
   return (
     <motion.svg
       initial={{ opacity: 1 }}
-      animate={{ opacity: 0 }}
-      transition={{ delay: 3 }}
+      whileInView={{ opacity: 0 }}
+      transition={{ delay: 2.5 }}
       className={styles.raunoSignature}
       width="356"
       height="118"
@@ -329,8 +345,8 @@ function PacoSignature() {
       viewBox="0 0 892 235"
       fill="none"
       initial={{ opacity: 1 }}
-      animate={{ opacity: 0 }}
-      transition={{ delay: 3 }}
+      whileInView={{ opacity: 0 }}
+      transition={{ delay: 2.5 }}
     >
       <path
         d="M86.684 24.8853C84.684 64.5519 81.884 144.085 86.684 144.885M39.684 8.88526C68.3506 0.385261 131.984 -7.11474 157.184 30.8853C182.384 68.8853 96.3507 111.719 50.184 128.385C26.8506 138.885 -14.116 162.085 8.68398 170.885"

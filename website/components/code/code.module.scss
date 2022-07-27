@@ -51,3 +51,11 @@
         z-index: -1;
     }
 }
+
+@media (max-width: 640px) {
+    .root {
+        :global(.token-line) {
+            font-size: 11px !important;
+        }
+    }
+}

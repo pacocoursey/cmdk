@@ -183,17 +183,20 @@
 }
 
 .switcher {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, 100px);
   align-items: center;
   justify-content: center;
   gap: 4px;
   margin-top: 48px;
+  position: relative;
 
   button {
     height: 32px;
     line-height: 32px;
     display: flex;
     align-items: center;
+    margin: auto;
     gap: 8px;
     padding: 0 16px;
     border-radius: 9999px;
@@ -252,6 +255,7 @@
   .arrow {
     color: var(--gray11);
     user-select: none;
+    position: absolute;
   }
 }
 
@@ -404,10 +408,6 @@
   stroke-dashoffset: 1011;
   stroke-dasharray: 1010;
   right: -48px;
-
-  path {
-    animation: drawRaunoSignature 1.5s ease forwards 1s;
-  }
 }
 
 .pacoSignature {
@@ -416,9 +416,6 @@
   stroke-dasharray: 1140;
   left: -8px;
 
-  path {
-    animation: drawPacoSignature 1.5s linear forwards 1s;
-  }
 }
 
 .footerText {
@@ -427,7 +424,20 @@
   align-items: center;
   gap: 4px;
   opacity: 0;
-  animation: showFooter 1s linear forwards 3.5s;
+}
+
+.footer[data-animate="true"] {
+  .raunoSignature path {
+    animation: drawRaunoSignature 1.5s ease forwards 0.5s;
+  }
+
+  .pacoSignature path {
+    animation: drawPacoSignature 1.5s linear forwards 0.5s;
+  }
+
+  .footerText {
+    animation: showFooter 1s linear forwards 3s;
+  }
 }
 
 @keyframes drawPacoSignature {
@@ -455,12 +465,11 @@
   }
 
   .switcher {
-    flex-direction: column;
+    grid-template-columns: repeat(2, 100px);
+    gap: 16px;
 
     .arrow {
       display: none;
     }
-
-    button {}
   }
 }

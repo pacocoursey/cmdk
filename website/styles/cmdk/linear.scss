@@ -6,7 +6,7 @@
         border-radius: 8px;
         overflow: hidden;
         padding: 0;
-        font-family: var(--cmdk-font);
+        font-family: var(--font-sans);
         box-shadow: var(--cmdk-shadow);
 
         .dark & {
@@ -40,7 +40,7 @@
     }
 
     [cmdk-input] {
-        font-family: var(--cmdk-font);
+        font-family: var(--font-sans);
         border: none;
         width: 100%;
         font-size: 18px;
@@ -71,6 +71,7 @@
         will-change: background, color;
         transition: all 150ms ease;
         transition-property: none;
+        position: relative;
 
         &[aria-selected='true'] {
             background: var(--gray3);

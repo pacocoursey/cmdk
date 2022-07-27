@@ -49,7 +49,7 @@ export function FramerCMDK() {
 
 function Item({ children, value, subtitle }: { children: React.ReactNode; value: string; subtitle: string }) {
   return (
-    <Command.Item value={value}>
+    <Command.Item value={value} onSelect={() => {}}>
       <div cmdk-framer-icon-wrapper="">{children}</div>
       <div cmdk-framer-item-meta="">
         {value}

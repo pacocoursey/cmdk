@@ -3,10 +3,10 @@
         max-width: 640px;
         width: 100%;
         padding: 8px;
-        background: var(--cmdk-bg);
+        background: #FFFFFF;
         border-radius: 16px;
         overflow: hidden;
-        font-family: var(--cmdk-font);
+        font-family: var(--font-sans);
         border: 1px solid var(--gray6);
         box-shadow: var(--cmdk-shadow);
 
@@ -34,7 +34,7 @@
     }
 
     [cmdk-input] {
-        font-family: var(--cmdk-font);
+        font-family: var(--font-sans);
         border: none;
         width: 100%;
         font-size: 16px;
@@ -94,7 +94,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 32px;
+        min-width: 32px;
         height: 32px;
         background: orange;
         border-radius: 8px;
@@ -171,5 +171,16 @@
         padding: 32px;
         white-space: pre-wrap;
         color: var(--gray11);
+    }
+}
+
+@media (max-width: 640px) {
+    .framer {
+
+        [cmdk-framer-icon-wrapper] {}
+
+        [cmdk-framer-item-subtitle] {
+            display: none;
+        }
     }
 }

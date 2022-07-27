@@ -15,31 +15,31 @@ export function RaycastCMDK() {
         <Command.List>
           <Command.Empty>No results found.</Command.Empty>
           <Command.Group heading="Suggestions">
-            <Item value="Linear">
+            <Item>
               <Logo>
                 <LinearIcon />
               </Logo>
               Linear
             </Item>
-            <Item value="Figma">
+            <Item>
               <Logo>
                 <FigmaIcon />
               </Logo>
               Figma
             </Item>
-            <Item value="Slack">
+            <Item>
               <Logo>
                 <SlackIcon />
               </Logo>
               Slack
             </Item>
-            <Item value="YouTube">
+            <Item>
               <Logo>
                 <YouTubeIcon />
               </Logo>
               YouTube
             </Item>
-            <Item value="Raycast">
+            <Item>
               <Logo>
                 <RaycastIcon />
               </Logo>
@@ -58,9 +58,9 @@ export function RaycastCMDK() {
   );
 }
 
-function Item({ children, value }: { children: React.ReactNode; value: string }) {
+function Item({ children }: { children: React.ReactNode }) {
   return (
-    <Command.Item value={value}>
+    <Command.Item>
       {children}
       <span cmdk-raycast-meta="">Application</span>
     </Command.Item>

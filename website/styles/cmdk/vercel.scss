@@ -1,4 +1,6 @@
 .vercel {
+    transition: transform 100ms ease;
+
     [cmdk-root] {
         max-width: 640px;
         width: 100%;
@@ -6,7 +8,7 @@
         background: #FFFFFF;
         border-radius: 12px;
         overflow: hidden;
-        font-family: var(--cmdk-font);
+        font-family: var(--font-sans);
         border: 1px solid var(--gray6);
         box-shadow: var(--cmdk-shadow);
 
@@ -16,7 +18,7 @@
     }
 
     [cmdk-input] {
-        font-family: var(--cmdk-font);
+        font-family: var(--font-sans);
         border: none;
         width: 100%;
         font-size: 17px;
@@ -77,11 +79,6 @@
             background: var(--gray4);
         }
 
-        &:first-child {
-            margin-top: 8px;
-        }
-
-
         &+[cmdk-item] {
             margin-top: 4px;
         }
@@ -103,6 +100,28 @@
         transition-property: height;
     }
 
+
+    [cmdk-vercel-shortcuts] {
+        display: flex;
+        margin-left: auto;
+        gap: 8px;
+
+        kbd {
+            font-family: var(--font-sans);
+            font-size: 12px;
+            min-width: 20px;
+            padding: 4px;
+            height: 20px;
+            border-radius: 4px;
+            color: var(--gray11);
+            background: var(--gray4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+        }
+    }
+
     [cmdk-separator] {
         height: 1px;
         width: 100%;
@@ -117,7 +136,11 @@
         padding: 0 8px;
         display: flex;
         align-items: center;
+        margin-bottom: 8px;
+    }
 
+    [cmdk-group]:not(:first-of-type) [cmdk-group-heading] {
+        margin-top: 8px;
     }
 
     [cmdk-empty] {

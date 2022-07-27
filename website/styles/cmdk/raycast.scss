@@ -5,7 +5,7 @@
         background: var(--gray1);
         border-radius: 8px;
         padding: 8px 0;
-        font-family: var(--cmdk-font);
+        font-family: var(--font-sans);
         box-shadow: var(--cmdk-shadow);
         border: 1px solid var(--gray6);
         position: relative;
@@ -44,7 +44,7 @@
     }
 
     [cmdk-input] {
-        font-family: var(--cmdk-font);
+        font-family: var(--font-sans);
         border: none;
         width: 100%;
         font-size: 15px;
@@ -417,5 +417,13 @@
     100% {
         opacity: 0;
         transform: scale(0.9);
+    }
+}
+
+@media (max-width: 640px) {
+    .raycast {
+        [cmdk-input] {
+            font-size: 16px;
+        }
     }
 }
