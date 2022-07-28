@@ -85,7 +85,7 @@ function Slider() {
 }
 
 function Avatar() {
-  return <img src="/rauno.jpeg" alt="Avatar" />;
+  return <img src="/rauno.jpeg" alt="Avatar of Rauno" />;
 }
 
 function Container() {

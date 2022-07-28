@@ -4,7 +4,7 @@
   position: relative;
   display: flex;
   justify-content: center;
-  padding: 120px 24px 120px 24px;
+  padding: 120px 24px 160px 24px;
 
   &:before {
     background: radial-gradient(circle, rgba(2, 0, 36, 0) 0, var(--gray1) 100%);
@@ -473,8 +473,8 @@
 
 @media (max-width: 640px) {
   .main {
-    padding-top: 64px;
-    padding-bottom: 64px;
+    padding-top: 24px;
+    padding-bottom: 120px;
   }
 
   .switcher {
