@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-test.describe.only('group', async () => {
+test.describe('group', async () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/group')
   })
