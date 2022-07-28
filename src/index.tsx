@@ -82,8 +82,8 @@ type CommandProps = Children & {
 }
 
 type Context = {
-  item: (value: string) => () => void
-  group: (group: HTMLDivElement, value: string) => () => void
+  item: (id: string, value: string, groupId: string) => () => void
+  group: (id: string, value: string) => () => void
   label: string
   // Ids
   listId: string
@@ -115,12 +115,15 @@ const defaultFilter: CommandProps['filter'] = (value, search) => commandScore(va
 const CommandContext = React.createContext<Context>(undefined)
 // @ts-ignore
 const StoreContext = React.createContext<Store>(undefined)
+// @ts-ignore
+const GroupContext = React.createContext<string>(undefined)
 
 const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const state = useLazyRef<State>(() => ({ ...initialState }))
-  const allItems = useLazyRef<Set<string>>(() => new Set()) // [...values]
-  const allGroups = useLazyRef<Map<string, string[]>>(() => new Map()) // groupValue → [...itemValues]
+  const allItems = useLazyRef<Set<string>>(() => new Set()) // [...itemIds]
+  const allGroups = useLazyRef<Map<string, Set<string>>>(() => new Map()) // groupId → [...itemIds]
+  const ids = useLazyRef<Map<string, string>>(() => new Map()) // id → value
   const listeners = useLazyRef<Set<() => void>>(() => new Set())
   const propsRef = useAsRef(props)
 
@@ -202,9 +205,19 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   const context: Context = React.useMemo(
     () => ({
-      item: (value) => {
-        allItems.current.add(value)
-        state.current.filtered.items.set(value, score(value))
+      item: (id, value, groupId) => {
+        allItems.current.add(id)
+        ids.current.set(id, value)
+        state.current.filtered.items.set(id, score(value))
+
+        // Register this item within the group
+        if (groupId) {
+          if (!allGroups.current.has(groupId)) {
+            allGroups.current.set(groupId, new Set([id]))
+          } else {
+            allGroups.current.get(groupId).add(id)
+          }
+        }
 
         // Consider the search query is "3"
         // then a new item is rendered with a value that matches "3"
@@ -221,7 +234,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
         return () => {
           // Reduce count
-          if (state.current.filtered.items.get(value) > 0) {
+          if (state.current.filtered.items.get(id) > 0) {
             state.current.filtered.count = Math.max(0, state.current.filtered.count - 1)
           }
 
@@ -231,17 +244,18 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
             selectFirstItem(false)
           })
 
-          allItems.current.delete(value)
-          state.current.filtered.items.delete(value)
+          ids.current.delete(id)
+          allItems.current.delete(id)
+          state.current.filtered.items.delete(id)
         }
       },
-      group: (group, value) => {
-        const items = Array.from(group.querySelectorAll(ITEM_SELECTOR))
-        const itemValues = items.map((item) => item.getAttribute('data-value'))
-        allGroups.current.set(value, itemValues)
+      group: (id, value) => {
+        ids.current.set(id, value)
+        allGroups.current.set(id, new Set())
 
         return () => {
-          allGroups.current.delete(value)
+          ids.current.delete(id)
+          allGroups.current.delete(id)
         }
       },
       label: props.label || props['aria-label'],
@@ -348,18 +362,19 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
     // Check which items should be included
     if (updateItems) {
-      for (const item of allItems.current) {
-        const value = score(item)
-        state.current.filtered.items.set(item, value)
-        if (value > 0) itemCount++
+      for (const id of allItems.current) {
+        const value = ids.current.get(id)
+        const rank = score(value)
+        state.current.filtered.items.set(id, rank)
+        if (rank > 0) itemCount++
       }
     }
 
     // Check which groups have at least 1 item shown
-    for (const [name, group] of allGroups.current) {
-      for (const value of group) {
-        if (state.current.filtered.items.get(value) > 0) {
-          state.current.filtered.groups.add(name)
+    for (const [groupId, group] of allGroups.current) {
+      for (const itemId of group) {
+        if (state.current.filtered.items.get(itemId) > 0) {
+          state.current.filtered.groups.add(groupId)
           break
         }
       }
@@ -498,7 +513,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
  * the rendered item's `textContent`.
  */
 const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) => {
+  const id = React.useId()
   const ref = React.useRef<HTMLDivElement>(null)
+  const groupId = React.useContext(GroupContext)
   const context = React.useContext(CommandContext)
   const propsRef = useAsRef(props)
   const value = useValue(ref, [props.value, props.children, ref])
@@ -506,12 +523,12 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const store = useStore()
   const selected = useSelector((state) => state.selectedValue && state.selectedValue === value)
   const render = useSelector((state) =>
-    state.shouldFilter === false ? true : !state.search ? true : state.filtered.items.get(value) > 0
+    state.shouldFilter === false ? true : !state.search ? true : state.filtered.items.get(id) > 0
   )
 
   useLayoutEffect(() => {
     if (value) {
-      return context.item(value)
+      return context.item(id, value, groupId)
     }
   }, [value])
 
@@ -553,6 +570,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
  */
 const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef) => {
   const { heading, children, ...etc } = props
+  const id = React.useId()
   const ref = React.useRef<HTMLDivElement>(null)
   const headingRef = React.useRef<HTMLDivElement>(null)
   const headingId = React.useId()
@@ -562,7 +580,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
 
   useLayoutEffect(() => {
     if (value) {
-      return context.group(ref.current, value)
+      return context.group(id, value)
     }
   }, [value])
 
@@ -580,7 +598,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
         </div>
       )}
       <div cmdk-group-items="" role="group" aria-labelledby={heading ? headingId : undefined}>
-        {children}
+        <GroupContext.Provider value={id}>{children}</GroupContext.Provider>
       </div>
     </div>
   )
