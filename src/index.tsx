@@ -9,7 +9,7 @@ function useCommand() {
 
 const initialState: State = {
   search: '',
-  selectedValue: '',
+  value: '',
   filtered: {
     /** The count of all visible items. */
     count: 0,
@@ -99,7 +99,7 @@ type Context = {
 }
 type State = {
   search: string
-  selectedValue: string
+  value: string
   filtered: { count: number; items: Map<string, number>; groups: Set<string> }
 }
 type Store = {
@@ -115,6 +115,7 @@ const GROUP_HEADING_SELECTOR = `[cmdk-group-heading=""]`
 const ITEM_SELECTOR = `[cmdk-item=""]`
 const VALID_ITEM_SELECTOR = `${ITEM_SELECTOR}:not([aria-disabled="true"])`
 const SELECT_EVENT = `cmdk-item-select`
+const VALUE_ATTR = `data-value`
 const defaultFilter: CommandProps['filter'] = (value, search) => commandScore(value, search)
 
 // @ts-ignore
@@ -141,18 +142,11 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   useLayoutEffect(() => {
     if (props.value !== undefined) {
       const value = props.value.trim().toLowerCase()
-      state.current.selectedValue = value
+      state.current.value = value
       scrollSelectedIntoView()
       store.emit()
     }
   }, [props.value])
-
-  const scheduled = useLazyRef(() => new Map())
-  const schedule = (id: string, cb: () => void) => {
-    const existing = scheduled.current.get(id)
-    clearTimeout(existing)
-    scheduled.current.set(id, setTimeout(cb, 1))
-  }
 
   const store: Store = React.useMemo(() => {
     return {
@@ -174,19 +168,19 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
           // Defer this update because it can be huge!
           // Okay to have 1 frame between the input updating and the items
-          schedule('searchChange', () => {
+          setTimeout(() => {
             store.emit()
 
             // Schedule a layout effect for after the children have finished rendering
             // but before paint so that we read up-to-date DOM state
-            schedule('afterSearchChange', () => {
+            setTimeout(() => {
               sort()
               selectFirstItem(true)
-            })
-          })
+            }, 1)
+          }, 1)
 
           return
-        } else if (key === 'selectedValue') {
+        } else if (key === 'value') {
           if (propsRef.current?.value !== undefined) {
             // If controlled, just call the callback instead of updating state internally
             propsRef.current.onValueChange?.(value)
@@ -222,21 +216,21 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           }
         }
 
-        schedule('itemAdd', () => {
+        setTimeout(() => {
           filterItems()
           store.emit()
           sort()
           selectFirstItem(false)
-        })
+        }, 1)
 
         return () => {
-          schedule('itemRemove', () => {
+          setTimeout(() => {
             filterItems()
             store.emit()
             // The item removed could have been the selected one,
             // so selection should be moved to the next valid
             selectFirstItem(false)
-          })
+          }, 1)
 
           ids.current.delete(id)
           allItems.current.delete(id)
@@ -304,8 +298,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     // Sort the items
     getValidItems()
       .sort((a, b) => {
-        const valueA = a.getAttribute('data-value')
-        const valueB = b.getAttribute('data-value')
+        const valueA = a.getAttribute(VALUE_ATTR)
+        const valueB = b.getAttribute(VALUE_ATTR)
         return (scores.get(valueB) ?? 0) - (scores.get(valueA) ?? 0)
       })
       .forEach((item) => {
@@ -321,13 +315,13 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     groups
       .sort((a, b) => b[1] - a[1])
       .forEach((group) => {
-        const element = ref.current.querySelector(`${GROUP_SELECTOR}[data-value="${group[0]}"]`)
+        const element = ref.current.querySelector(`${GROUP_SELECTOR}[${VALUE_ATTR}="${group[0]}"]`)
         element?.parentElement.appendChild(element)
       })
   }
 
   function selectFirstItem(overwrite: boolean = true) {
-    const selected = state.current.selectedValue
+    const selected = state.current.value
 
     // Do not override existing, selected value is still valid
     if (!overwrite && selected && state.current.filtered.items.has(selected)) {
@@ -335,10 +329,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     }
 
     const item = getValidItems().find((item) => !item.ariaDisabled)
-    const value = item?.getAttribute('data-value')
+    const value = item?.getAttribute(VALUE_ATTR)
 
     if (value) {
-      store.setState('selectedValue', value)
+      store.setState('value', value)
     }
   }
 
@@ -380,7 +374,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }
 
   function scrollSelectedIntoView() {
-    const item = getItemByValue(state.current.selectedValue)
+    const item = getItemByValue(state.current.value)
 
     if (item) {
       if (item.parentElement?.firstChild === item) {
@@ -397,7 +391,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   function getItemByValue(value: string) {
     if (!ref.current) return null
-    return ref.current.querySelector(`${ITEM_SELECTOR}[data-value="${value}"]`)
+    return ref.current.querySelector(`${ITEM_SELECTOR}[${VALUE_ATTR}="${value}"]`)
   }
 
   function getSelectedItem() {
@@ -416,7 +410,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     const items = getValidItems()
     const item = items[index]
     if (!item) return
-    store.setState('selectedValue', item.getAttribute('data-value'))
+    store.setState('value', item.getAttribute(VALUE_ATTR))
   }
 
   function updateSelectedByChange(change: number) {
@@ -435,7 +429,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     // Get item at this index
     const newSelected = items[index + change]
     if (!newSelected) return
-    store.setState('selectedValue', newSelected.getAttribute('data-value'))
+    store.setState('value', newSelected.getAttribute(VALUE_ATTR))
   }
 
   function updateSelectedToGroup(change: number) {
@@ -452,7 +446,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     }
 
     if (item) {
-      store.setState('selectedValue', item.getAttribute('data-value'))
+      store.setState('value', item.getAttribute(VALUE_ATTR))
     }
   }
 
@@ -517,7 +511,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const value = useValue(ref, [props.value, props.children, ref])
 
   const store = useStore()
-  const selected = useSelector((state) => state.selectedValue && state.selectedValue === value)
+  const selected = useSelector((state) => state.value && state.value === value)
   const render = useSelector((state) =>
     context.propsRef.current?.shouldFilter === false ? true : !state.search ? true : state.filtered.items.get(id) > 0
   )
@@ -540,7 +534,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   }
 
   function select() {
-    store.setState('selectedValue', value)
+    store.setState('value', value)
   }
 
   if (!render) return null
@@ -866,7 +860,7 @@ function useValue(
 
   useLayoutEffect(() => {
     const value = getValue(deps)
-    ref.current?.setAttribute('data-value', value)
+    ref.current?.setAttribute(VALUE_ATTR, value)
     setValue(value)
   })
 
