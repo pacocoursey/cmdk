@@ -6,7 +6,6 @@ import { Logo, LinearIcon, FigmaIcon, SlackIcon, YouTubeIcon, RaycastIcon } from
 export function RaycastCMDK() {
   const [value, setValue] = React.useState('');
   const inputRef = React.useRef<HTMLInputElement | null>(null);
-  console.log(value);
   return (
     <div className="raycast">
       <Command value={value} onValueChange={(v) => setValue(v)}>
@@ -68,7 +67,7 @@ export function RaycastCMDK() {
 
 function Item({ children, value }: { children: React.ReactNode; value: string }) {
   return (
-    <Command.Item value={value}>
+    <Command.Item value={value} onSelect={() => {}}>
       {children}
       <span cmdk-raycast-meta="">Application</span>
     </Command.Item>
@@ -110,7 +109,7 @@ function SubCommand({
         align="end"
         className="raycast-submenu"
         sideOffset={16}
-        alignOffset={0}
+        alignOffset={-2}
         onCloseAutoFocus={(e) => {
           e.preventDefault();
           inputRef?.current?.focus();
@@ -144,9 +143,9 @@ function SubCommand({
   );
 }
 
-function SubItem({ children, value, shortcut }: { children: React.ReactNode; value: string; shortcut: string }) {
+function SubItem({ children, shortcut }: { children: React.ReactNode; shortcut: string }) {
   return (
-    <Command.Item value={value}>
+    <Command.Item>
       {children}
       <div cmdk-raycast-submenu-shortcuts="">
         {shortcut.split(' ').map((key) => {
