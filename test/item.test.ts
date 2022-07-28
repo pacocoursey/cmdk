@@ -40,3 +40,19 @@ test.describe('item', async () => {
     await expect(page.locator(`[cmdk-item]`)).toHaveCount(1)
   })
 })
+
+test.describe('item advanced', async () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/item-advanced')
+  })
+
+  test('re-rendering re-matches implicit textContent value', async ({ page }) => {
+    await expect(page.locator(`[cmdk-item]`)).toHaveCount(2)
+    await page.locator(`[cmdk-input]`).type('2')
+    const button = page.locator(`data-testid=increment`)
+    await button.click()
+    await expect(page.locator(`[cmdk-item]`)).toHaveCount(0)
+    await button.click()
+    await expect(page.locator(`[cmdk-item]`)).toHaveCount(2)
+  })
+})
