@@ -224,6 +224,10 @@
         &[aria-expanded="true"],
         &:hover {
             background: var(--gray4);
+
+            kbd {
+                background: var(--gray7);
+            }
         }
 
     }

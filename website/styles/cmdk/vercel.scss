@@ -34,6 +34,7 @@
         }
     }
 
+
     [cmdk-vercel-badge] {
         height: 20px;
         background: var(--grayA3);
@@ -45,6 +46,8 @@
         border-radius: 4px;
         margin: 4px 0 4px 4px;
         user-select: none;
+        text-transform: capitalize;
+        font-weight: 500;
     }
 
     [cmdk-item] {

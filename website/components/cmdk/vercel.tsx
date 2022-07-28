@@ -4,7 +4,32 @@ import { Command } from 'cmdk';
 export function VercelCMDK() {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [inputValue, setInputValue] = React.useState('');
-  const [activePage, setActivePage] = React.useState('home');
+
+  const [pages, setPages] = React.useState<string[]>(['home']);
+  const activePage = pages[pages.length - 1];
+  const isHome = activePage === 'home';
+
+  const popPage = React.useCallback(() => {
+    setPages((pages) => {
+      const x = [...pages];
+      x.splice(-1, 1);
+      return x;
+    });
+  }, []);
+
+  const onKeyDown = React.useCallback(
+    (e: KeyboardEvent) => {
+      if (isHome || inputValue.length) {
+        return;
+      }
+
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        popPage();
+      }
+    },
+    [inputValue.length, isHome, popPage],
+  );
 
   React.useEffect(() => {
     // todo: dont do this on mount
@@ -20,10 +45,24 @@ export function VercelCMDK() {
     }
   }, [activePage]);
 
+  React.useEffect(() => {
+    document.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onKeyDown]);
+
   return (
     <div ref={ref} className="vercel">
       <Command>
-        <div cmdk-vercel-badge="">Home</div>
+        <div>
+          {pages.map((p) => (
+            <div key={p} cmdk-vercel-badge="">
+              {p}
+            </div>
+          ))}
+        </div>
         <Command.Input
           autoFocus
           placeholder="What do you need?"
@@ -33,7 +72,7 @@ export function VercelCMDK() {
         />
         <Command.List>
           <Command.Empty>No results found.</Command.Empty>
-          {activePage === 'home' && <Home setActivePage={setActivePage} />}
+          {activePage === 'home' && <Home searchProjects={() => setPages([...pages, 'projects'])} />}
           {activePage === 'projects' && <Projects />}
         </Command.List>
       </Command>
@@ -41,11 +80,16 @@ export function VercelCMDK() {
   );
 }
 
-function Home({ setActivePage }: { setActivePage: Function }) {
+function Home({ searchProjects }: { searchProjects: Function }) {
   return (
     <>
       <Command.Group heading="Projects">
-        <Item shortcut="S P" onSelect={() => setActivePage('projects')}>
+        <Item
+          shortcut="S P"
+          onSelect={() => {
+            searchProjects();
+          }}
+        >
           <ProjectsIcon />
           Search Projects...
         </Item>
