@@ -508,9 +508,8 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
       const wrapper = ref.current
       const observer = new ResizeObserver((entries) => {
         for (const entry of entries) {
-          const box = entry.contentBoxSize?.[0] || entry.contentBoxSize || entry.contentRect
-          // @ts-ignore
-          const height = box?.blockSize ?? box?.heightblockSize
+          const box = entry.contentBoxSize?.[0] || entry.contentRect
+          const height = 'blockSize' in box ? box.blockSize : box.height
           wrapper.style.setProperty(`--cmdk-list-height`, height + 'px')
         }
       })
