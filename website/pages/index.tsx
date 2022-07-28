@@ -76,8 +76,8 @@ export default function Index() {
 
           <Codeblock />
         </div>
+        <Footer />
       </main>
-      <Footer />
     </>
   );
 }
@@ -287,6 +287,7 @@ function VersionBadge() {
 function Footer() {
   const ref = React.useRef<HTMLElement | null>(null);
   const isInView = useInView(ref, {
+    once: true,
     margin: '100px',
   });
   return (
