@@ -107,7 +107,7 @@ export function LinearIcon() {
   );
 }
 
-export function Logo({ children, size = '24px' }: { children: React.ReactNode; size?: string }) {
+export function Logo({ children, size = '20px' }: { children: React.ReactNode; size?: string }) {
   return (
     <div
       className={styles.blurLogo}

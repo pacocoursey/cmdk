@@ -131,7 +131,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 0 16px;
+        padding: 0 8px;
         color: var(--gray12);
         user-select: none;
         will-change: background, color;
@@ -183,6 +183,7 @@
         scroll-padding-block-end: 8px;
         transition: 100ms ease;
         transition-property: height;
+        padding-bottom: 40px;
     }
 
     [cmdk-raycast-open-trigger],
@@ -194,6 +195,30 @@
         font-size: 12px;
         height: 28px;
         letter-spacing: -0.25px;
+    }
+
+    [cmdk-raycast-clipboard-icon],
+    [cmdk-raycast-hammer-icon] {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FFFFFF;
+
+        svg {
+            width: 14px;
+            height: 14px;
+        }
+    }
+
+    [cmdk-raycast-clipboard-icon] {
+        background: linear-gradient(to bottom, #F55354, #EB4646);
+    }
+
+    [cmdk-raycast-hammer-icon] {
+        background: linear-gradient(to bottom, #6CB9A3, #2C6459);
     }
 
     [cmdk-raycast-open-trigger] {
@@ -254,6 +279,8 @@
         align-items: center;
         width: 100%;
         position: absolute;
+        background: var(--grayA1);
+        backdrop-filter: blur(80px) saturate(200%);
         bottom: 0;
         padding: 8px;
         border-top: 1px solid var(--gray6);
