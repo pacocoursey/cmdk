@@ -21,13 +21,13 @@ export function FramerCMDK() {
                 <Item value="Input" subtitle="Retrive user input">
                   <InputIcon />
                 </Item>
-                <Item value="Radio" subtitle="Single-choice input">
+                <Item value="Radio" subtitle="Single choice input">
                   <RadioIcon />
                 </Item>
                 <Item value="Badge" subtitle="Annotate context">
                   <BadgeIcon />
                 </Item>
-                <Item value="Slider" subtitle="Free-range picker">
+                <Item value="Slider" subtitle="Free range picker">
                   <SliderIcon />
                 </Item>
                 <Item value="Avatar" subtitle="Illustrate the user">

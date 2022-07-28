@@ -156,7 +156,7 @@ function ThemeSwitcher() {
 
       if (e.key === 'ArrowRight') {
         const currentIndex = themeNames.indexOf(theme);
-        const nextIndex = (currentIndex + 1) % themeNames.length;
+        const nextIndex = currentIndex + 1;
         const nextItem = themeNames[nextIndex];
 
         if (nextItem) {
@@ -166,7 +166,7 @@ function ThemeSwitcher() {
 
       if (e.key === 'ArrowLeft') {
         const currentIndex = themeNames.indexOf(theme);
-        const prevIndex = (currentIndex - 1 + themeNames.length) % themeNames.length;
+        const prevIndex = currentIndex - 1;
         const prevItem = themeNames[prevIndex];
 
         if (prevItem) {
