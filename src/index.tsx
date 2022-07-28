@@ -10,8 +10,14 @@ function useCommand() {
 const initialState: State = {
   search: '',
   selectedValue: '',
-  filtered: { count: 0, items: new Map(), groups: new Set() },
-  shouldFilter: true,
+  filtered: {
+    /** The count of all visible items. */
+    count: 0,
+    /** Map from visible item id to it's search score. */
+    items: new Map(),
+    /** Set of groups with at least one visible item. */
+    groups: new Set(),
+  },
 }
 
 type Children = { children?: React.ReactNode }
@@ -85,6 +91,7 @@ type Context = {
   item: (id: string, value: string, groupId: string) => () => void
   group: (id: string, value: string) => () => void
   label: string
+  propsRef: React.RefObject<CommandProps>
   // Ids
   listId: string
   labelId: string
@@ -94,7 +101,6 @@ type State = {
   search: string
   selectedValue: string
   filtered: { count: number; items: Map<string, number>; groups: Set<string> }
-  shouldFilter: boolean
 }
 type Store = {
   subscribe: (callback: () => void) => () => void
@@ -164,7 +170,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
         if (key === 'search') {
           // Filter synchronously before emitting back to children
-          filterItems(true)
+          filterItems()
 
           // Defer this update because it can be huge!
           // Okay to have 1 frame between the input updating and the items
@@ -197,20 +203,17 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       emit: () => {
         listeners.current.forEach((l) => l())
       },
-      get shouldFilter() {
-        return propsRef.current.shouldFilter
-      },
     }
   }, [])
 
   const context: Context = React.useMemo(
     () => ({
       item: (id, value, groupId) => {
+        // Track item
         allItems.current.add(id)
         ids.current.set(id, value)
-        state.current.filtered.items.set(id, score(value))
 
-        // Register this item within the group
+        // Track this item within the group
         if (groupId) {
           if (!allGroups.current.has(groupId)) {
             allGroups.current.set(groupId, new Set([id]))
@@ -219,31 +222,19 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           }
         }
 
-        // Consider the search query is "3"
-        // then a new item is rendered with a value that matches "3"
-        // We need to filter to ensure that item is shown
         schedule('itemAdd', () => {
           filterItems()
           store.emit()
-
-          // Better to sort ASAP, even if these items will be unrendered in the next pass
-          // This avoids a sorting flash
           sort()
-
-          schedule('afterItemAdd', () => {
-            selectFirstItem(false)
-          })
+          selectFirstItem(false)
         })
 
         return () => {
-          // Reduce count
-          if (state.current.filtered.items.get(id) > 0) {
-            state.current.filtered.count = Math.max(0, state.current.filtered.count - 1)
-          }
-
-          // The item removed could have been the selected one,
-          // so selection should be moved to the next valid
           schedule('itemRemove', () => {
+            filterItems()
+            store.emit()
+            // The item removed could have been the selected one,
+            // so selection should be moved to the next valid
             selectFirstItem(false)
           })
 
@@ -264,6 +255,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           allGroups.current.delete(id)
         }
       },
+      propsRef,
       label: props.label || props['aria-label'],
       listId,
       inputId,
@@ -351,7 +343,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }
 
   /** Filters the current items. */
-  function filterItems(updateItems = false) {
+  function filterItems() {
     if (
       !state.current.search ||
       // Explicitly false, because true | undefined is the default
@@ -367,13 +359,11 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     let itemCount = 0
 
     // Check which items should be included
-    if (updateItems) {
-      for (const id of allItems.current) {
-        const value = ids.current.get(id)
-        const rank = score(value)
-        state.current.filtered.items.set(id, rank)
-        if (rank > 0) itemCount++
-      }
+    for (const id of allItems.current) {
+      const value = ids.current.get(id)
+      const rank = score(value)
+      state.current.filtered.items.set(id, rank)
+      if (rank > 0) itemCount++
     }
 
     // Check which groups have at least 1 item shown
@@ -529,7 +519,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const store = useStore()
   const selected = useSelector((state) => state.selectedValue && state.selectedValue === value)
   const render = useSelector((state) =>
-    state.shouldFilter === false ? true : !state.search ? true : state.filtered.items.get(id) > 0
+    context.propsRef.current?.shouldFilter === false ? true : !state.search ? true : state.filtered.items.get(id) > 0
   )
 
   useLayoutEffect(() => {
@@ -681,14 +671,11 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
     if (height.current && ref.current) {
       const el = height.current
       const wrapper = ref.current
-      const observer = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          const box = entry.contentBoxSize?.[0] || entry.contentRect
-          const height = 'blockSize' in box ? box.blockSize : box.height
-          wrapper.style.setProperty(`--cmdk-list-height`, height + 'px')
-        }
+      const observer = new ResizeObserver(() => {
+        const height = el.getBoundingClientRect().height
+        wrapper.style.setProperty(`--cmdk-list-height`, height + 'px')
       })
-      observer.observe(el, { box: 'border-box' })
+      observer.observe(el)
       return () => observer.unobserve(el)
     }
   }, [])
@@ -731,9 +718,14 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRe
  * Automatically renders when there are no results for the search query.
  */
 const Empty = React.forwardRef<HTMLDivElement, EmptyProps>((props, forwardedRef) => {
+  const isFirstRender = React.useRef(true)
   const render = useSelector((state) => state.filtered.count === 0)
 
-  if (!render) return null
+  React.useEffect(() => {
+    isFirstRender.current = false
+  }, [])
+
+  if (isFirstRender.current || !render) return null
   return <div ref={forwardedRef} {...props} cmdk-empty="" role="presentation" />
 })
 
