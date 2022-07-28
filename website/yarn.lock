@@ -917,7 +917,7 @@ cli-truncate@^3.1.0:
     slice-ansi "^5.0.0"
     string-width "^5.0.0"
 
-cmdk@0.1.7:
+cmdk@^0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/cmdk/-/cmdk-0.1.7.tgz#9f3300bbad2c356dd89dfeeec36a98fb3eb994ac"
   integrity sha512-etBgwGf/dPupsj9VowwLlj4nD/stHY5fpNmWePOiQF3tiP4kJfI6gcW6olk4QD6Gp/vWAGtxvHh8taYgpZUPbw==

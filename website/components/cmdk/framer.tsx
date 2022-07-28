@@ -1,9 +1,11 @@
 import { Command } from 'cmdk';
+import React from 'react';
 
 export function FramerCMDK() {
+  const [value, setValue] = React.useState('slider');
   return (
     <div className="framer">
-      <Command>
+      <Command value={value} onValueChange={(v) => setValue(v)}>
         <div cmdk-framer-header="">
           <SearchIcon />
           <Command.Input autoFocus placeholder="Find components, packages, and interactions..." />
@@ -13,38 +15,81 @@ export function FramerCMDK() {
           <div cmdk-framer-items="">
             <div cmdk-framer-left="">
               <Command.Group heading="Components">
-                <Item value="Button" subtitle="Load random images">
+                <Item value="Button" subtitle="Trigger actions">
                   <ButtonIcon />
                 </Item>
-                <Item value="Input" subtitle="Load random images">
+                <Item value="Input" subtitle="Retrive user input">
                   <InputIcon />
                 </Item>
-                <Item value="Radio Button" subtitle="Load random images">
+                <Item value="Radio" subtitle="Single-choice input">
                   <RadioIcon />
                 </Item>
-                <Item value="Slider" subtitle="Load random images">
+                <Item value="Badge" subtitle="Annotate context">
+                  <BadgeIcon />
+                </Item>
+                <Item value="Slider" subtitle="Free-range picker">
                   <SliderIcon />
                 </Item>
-                <Item value="Toggle Button" subtitle="Load random images">
-                  <ToggleIcon />
-                </Item>
-                <Item value="Avatar" subtitle="Load random images">
+                <Item value="Avatar" subtitle="Illustrate the user">
                   <AvatarIcon />
                 </Item>
-                <Item value="Container" subtitle="Load random images">
+                <Item value="Container" subtitle="Lay out items">
                   <ContainerIcon />
                 </Item>
               </Command.Group>
             </div>
             <hr cmdk-framer-separator="" />
             <div cmdk-framer-right="">
-              <button>Primary</button>
+              {value === 'button' && <Button />}
+              {value === 'input' && <Input />}
+              {value === 'badge' && <Badge />}
+              {value === 'radio' && <Radio />}
+              {value === 'avatar' && <Avatar />}
+              {value === 'slider' && <Slider />}
+              {value === 'container' && <Container />}
             </div>
           </div>
         </Command.List>
       </Command>
     </div>
   );
+}
+
+function Button() {
+  return <button>Primary</button>;
+}
+
+function Input() {
+  return <input type="text" placeholder="Placeholder" />;
+}
+
+function Badge() {
+  return <div cmdk-framer-badge="">Badge</div>;
+}
+
+function Radio() {
+  return (
+    <label cmdk-framer-radio="">
+      <input type="radio" defaultChecked />
+      Radio Button
+    </label>
+  );
+}
+
+function Slider() {
+  return (
+    <div cmdk-framer-slider="">
+      <div />
+    </div>
+  );
+}
+
+function Avatar() {
+  return <img src="/rauno.jpeg" alt="Avatar" />;
+}
+
+function Container() {
+  return <div cmdk-framer-container="" />;
 }
 
 function Item({ children, value, subtitle }: { children: React.ReactNode; value: string; subtitle: string }) {
@@ -98,11 +143,11 @@ function RadioIcon() {
   );
 }
 
-function SliderIcon() {
+function BadgeIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
-        d="M10.3004 7.49991C10.3004 8.4943 9.49426 9.30041 8.49988 9.30041C7.50549 9.30041 6.69938 8.4943 6.69938 7.49991C6.69938 6.50553 7.50549 5.69942 8.49988 5.69942C9.49426 5.69942 10.3004 6.50553 10.3004 7.49991ZM11.205 8C10.9699 9.28029 9.84816 10.2504 8.49988 10.2504C7.1516 10.2504 6.0299 9.28029 5.79473 8H0.5C0.223858 8 0 7.77614 0 7.5C0 7.22386 0.223858 7 0.5 7H5.7947C6.0298 5.71962 7.15154 4.74942 8.49988 4.74942C9.84822 4.74942 10.97 5.71962 11.2051 7H14.5C14.7761 7 15 7.22386 15 7.5C15 7.77614 14.7761 8 14.5 8H11.205Z"
+        d="M3.5 6H11.5C12.3284 6 13 6.67157 13 7.5C13 8.32843 12.3284 9 11.5 9H3.5C2.67157 9 2 8.32843 2 7.5C2 6.67157 2.67157 6 3.5 6ZM1 7.5C1 6.11929 2.11929 5 3.5 5H11.5C12.8807 5 14 6.11929 14 7.5C14 8.88071 12.8807 10 11.5 10H3.5C2.11929 10 1 8.88071 1 7.5ZM4.5 7C4.22386 7 4 7.22386 4 7.5C4 7.77614 4.22386 8 4.5 8H10.5C10.7761 8 11 7.77614 11 7.5C11 7.22386 10.7761 7 10.5 7H4.5Z"
         fill="currentColor"
         fillRule="evenodd"
         clipRule="evenodd"
@@ -161,6 +206,19 @@ function SearchIcon() {
       strokeWidth={1.5}
     >
       <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    </svg>
+  );
+}
+
+function SliderIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M10.3004 7.49991C10.3004 8.4943 9.49426 9.30041 8.49988 9.30041C7.50549 9.30041 6.69938 8.4943 6.69938 7.49991C6.69938 6.50553 7.50549 5.69942 8.49988 5.69942C9.49426 5.69942 10.3004 6.50553 10.3004 7.49991ZM11.205 8C10.9699 9.28029 9.84816 10.2504 8.49988 10.2504C7.1516 10.2504 6.0299 9.28029 5.79473 8H0.5C0.223858 8 0 7.77614 0 7.5C0 7.22386 0.223858 7 0.5 7H5.7947C6.0298 5.71962 7.15154 4.74942 8.49988 4.74942C9.84822 4.74942 10.97 5.71962 11.2051 7H14.5C14.7761 7 15 7.22386 15 7.5C15 7.77614 14.7761 8 14.5 8H11.205Z"
+        fill="currentColor"
+        fillRule="evenodd"
+        clipRule="evenodd"
+      ></path>
     </svg>
   );
 }

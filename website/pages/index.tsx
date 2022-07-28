@@ -72,7 +72,7 @@ export default function Index() {
             <ThemeSwitcher />
           </ThemeContext.Provider>
 
-          <div className={styles.line} />
+          <div aria-hidden className={styles.line} />
 
           <Codeblock />
         </div>
@@ -177,6 +177,7 @@ function ThemeSwitcher() {
     return () => {
       document.removeEventListener('keydown', listener);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theme]);
 
   return (

@@ -90,7 +90,7 @@
     }
 
     [cmdk-list] {
-        height: min(300px, calc(var(--cmdk-list-height)));
+        height: min(330px, calc(var(--cmdk-list-height)));
         max-height: 400px;
         overflow: auto;
         overscroll-behavior: contain;

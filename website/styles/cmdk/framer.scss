@@ -64,7 +64,7 @@
         transition-property: none;
 
         &[aria-selected='true'] {
-            background: dodgerblue;
+            background: var(--blue9);
             color: #FFFFFF;
 
             [cmdk-framer-item-subtitle] {
@@ -138,10 +138,86 @@
         button {
             width: 120px;
             height: 40px;
-            background: dodgerblue;
+            background: var(--blue9);
             border-radius: 6px;
             font-weight: 500;
             color: white;
+        }
+
+        input[type="text"] {
+            height: 40px;
+            width: 160px;
+            border: 1px solid var(--gray6);
+            background: #FFFFFF;
+            border-radius: 6px;
+            padding: 0 8px;
+            font-size: 14px;
+            font-family: var(--font-sans);
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.08);
+
+            &::placeholder {
+                color: var(--gray9);
+            }
+
+            @media (prefers-color-scheme: dark) {
+                background: var(--gray3);
+            }
+        }
+
+        [cmdk-framer-radio] {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--gray12);
+            font-weight: 500;
+            font-size: 14px;
+            accent-color: var(--blue9);
+
+            input {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        img {
+            width: 40px;
+            height: 40px;
+            border-radius: 9999px;
+            border: 1px solid var(--gray6);
+        }
+
+        [cmdk-framer-container] {
+            width: 100px;
+            height: 100px;
+            background: var(--blue9);
+            border-radius: 16px;
+        }
+
+        [cmdk-framer-badge] {
+            background: var(--blue3);
+            padding: 0 8px;
+            height: 28px;
+            font-size: 14px;
+            line-height: 28px;
+            color: var(--blue11);
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+
+        [cmdk-framer-slider] {
+            height: 20px;
+            width: 200px;
+            background: linear-gradient(90deg, var(--blue9) 40%, var(--gray3) 0%);
+            border-radius: 9999px;
+
+            div {
+                width: 20px;
+                height: 20px;
+                background: #FFFFFF;
+                border-radius: 9999px;
+                box-shadow: 0 1px 3px -1px rgba(0, 0, 0, 0.32);
+                transform: translateX(70px);
+            }
         }
     }
 
