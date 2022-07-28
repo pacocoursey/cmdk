@@ -26,7 +26,7 @@ type Themes = 'linear' | 'raycast' | 'vercel' | 'framer';
 const ThemeContext = React.createContext<TTheme>({} as TTheme);
 
 export default function Index() {
-  const [theme, setTheme] = React.useState<Themes>('vercel');
+  const [theme, setTheme] = React.useState<Themes>('raycast');
 
   return (
     <>

@@ -7,6 +7,7 @@ export function VercelCMDK() {
   const [activePage, setActivePage] = React.useState('home');
 
   React.useEffect(() => {
+    // todo: dont do this on mount
     if (ref.current) {
       ref.current.style.transform = 'scale(0.96)';
       setTimeout(() => {
