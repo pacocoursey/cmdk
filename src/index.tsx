@@ -493,49 +493,6 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 })
 
 /**
- * Contains `Item`, `Group`, and `Separator`.
- * Use the `--cmdk-list-height` CSS variable to animate height based on the number of results.
- */
-const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) => {
-  const { children, ...etc } = props
-  const ref = React.useRef<HTMLDivElement>(null)
-  const height = React.useRef<HTMLDivElement>(null)
-  const context = React.useContext(CommandContext)
-
-  React.useEffect(() => {
-    if (height.current && ref.current) {
-      const el = height.current
-      const wrapper = ref.current
-      const observer = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          const box = entry.contentBoxSize?.[0] || entry.contentRect
-          const height = 'blockSize' in box ? box.blockSize : box.height
-          wrapper.style.setProperty(`--cmdk-list-height`, height + 'px')
-        }
-      })
-      observer.observe(el, { box: 'border-box' })
-      return () => observer.unobserve(el)
-    }
-  }, [])
-
-  return (
-    <div
-      ref={mergeRefs([ref, forwardedRef])}
-      {...etc}
-      cmdk-list=""
-      role="listbox"
-      aria-label="Suggestions"
-      id={context.listId}
-      aria-labelledby={context.inputId}
-    >
-      <div ref={height} cmdk-list-sizer="">
-        {children}
-      </div>
-    </div>
-  )
-})
-
-/**
  * Command menu item. Becomes active on pointer enter or through keyboard navigation.
  * Preferably pass a `value`, otherwise the value will be inferred from `children` or
  * the rendered item's `textContent`.
@@ -583,54 +540,10 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       aria-disabled={props.disabled || undefined}
       aria-selected={selected || undefined}
       onPointerMove={props.disabled ? undefined : select}
-      onClick={props.disabled ? undefined : () => props.onSelect(value)}
+      onClick={props.disabled ? undefined : onSelect}
     >
       {props.children}
     </div>
-  )
-})
-
-/**
- * Command menu input.
- * All props are forwarded to the underyling `input` element.
- */
-const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRef) => {
-  const { onValueChange, ...etc } = props
-  const isControlled = props.value != null
-  const store = useStore()
-  const search = useSelector((state) => state.search)
-  const context = React.useContext(CommandContext)
-
-  useLayoutEffect(() => {
-    if (props.value != null) {
-      store.setState('search', props.value)
-    }
-  }, [props.value])
-
-  return (
-    <input
-      ref={forwardedRef}
-      {...etc}
-      cmdk-input=""
-      autoComplete="off"
-      autoCorrect="off"
-      spellCheck={false}
-      aria-autocomplete="list"
-      role="combobox"
-      aria-expanded={true}
-      aria-controls={context.listId}
-      aria-labelledby={context.labelId}
-      id={context.inputId}
-      type="text"
-      value={isControlled ? props.value : search}
-      onChange={(e) => {
-        if (!isControlled) {
-          store.setState('search', e.target.value)
-        }
-
-        onValueChange?.(e.target.value)
-      }}
-    />
   )
 })
 
@@ -684,6 +597,93 @@ const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>((props, forwa
 
   if (!alwaysRender && !render) return null
   return <div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-separator="" role="separator" />
+})
+
+/**
+ * Command menu input.
+ * All props are forwarded to the underyling `input` element.
+ */
+const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRef) => {
+  const { onValueChange, ...etc } = props
+  const isControlled = props.value != null
+  const store = useStore()
+  const search = useSelector((state) => state.search)
+  const context = React.useContext(CommandContext)
+
+  useLayoutEffect(() => {
+    if (props.value != null) {
+      store.setState('search', props.value)
+    }
+  }, [props.value])
+
+  return (
+    <input
+      ref={forwardedRef}
+      {...etc}
+      cmdk-input=""
+      autoComplete="off"
+      autoCorrect="off"
+      spellCheck={false}
+      aria-autocomplete="list"
+      role="combobox"
+      aria-expanded={true}
+      aria-controls={context.listId}
+      aria-labelledby={context.labelId}
+      id={context.inputId}
+      type="text"
+      value={isControlled ? props.value : search}
+      onChange={(e) => {
+        if (!isControlled) {
+          store.setState('search', e.target.value)
+        }
+
+        onValueChange?.(e.target.value)
+      }}
+    />
+  )
+})
+
+/**
+ * Contains `Item`, `Group`, and `Separator`.
+ * Use the `--cmdk-list-height` CSS variable to animate height based on the number of results.
+ */
+const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) => {
+  const { children, ...etc } = props
+  const ref = React.useRef<HTMLDivElement>(null)
+  const height = React.useRef<HTMLDivElement>(null)
+  const context = React.useContext(CommandContext)
+
+  React.useEffect(() => {
+    if (height.current && ref.current) {
+      const el = height.current
+      const wrapper = ref.current
+      const observer = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const box = entry.contentBoxSize?.[0] || entry.contentRect
+          const height = 'blockSize' in box ? box.blockSize : box.height
+          wrapper.style.setProperty(`--cmdk-list-height`, height + 'px')
+        }
+      })
+      observer.observe(el, { box: 'border-box' })
+      return () => observer.unobserve(el)
+    }
+  }, [])
+
+  return (
+    <div
+      ref={mergeRefs([ref, forwardedRef])}
+      {...etc}
+      cmdk-list=""
+      role="listbox"
+      aria-label="Suggestions"
+      id={context.listId}
+      aria-labelledby={context.inputId}
+    >
+      <div ref={height} cmdk-list-sizer="">
+        {children}
+      </div>
+    </div>
+  )
 })
 
 /**
