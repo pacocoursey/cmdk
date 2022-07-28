@@ -2,10 +2,12 @@ import { Command } from 'cmdk'
 import * as React from 'react'
 
 const Page = () => {
+  const [search, setSearch] = React.useState('')
+
   return (
     <div>
       <Command>
-        <Command.Input placeholder="Search…" />
+        <Command.Input placeholder="Search…" value={search} onValueChange={setSearch} />
         <Command.List>
           <Command.Empty>No results.</Command.Empty>
           <Command.Group heading="Animals">
@@ -18,6 +20,14 @@ const Page = () => {
             <Command.Item>B</Command.Item>
             <Command.Item>Z</Command.Item>
           </Command.Group>
+
+          {!!search && (
+            <Command.Group heading="Numbers">
+              <Command.Item>One</Command.Item>
+              <Command.Item>Two</Command.Item>
+              <Command.Item>Three</Command.Item>
+            </Command.Group>
+          )}
         </Command.List>
       </Command>
     </div>

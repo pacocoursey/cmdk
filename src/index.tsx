@@ -226,8 +226,11 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           filterItems()
           store.emit()
 
+          // Better to sort ASAP, even if these items will be unrendered in the next pass
+          // This avoids a sorting flash
+          sort()
+
           schedule('afterItemAdd', () => {
-            sort()
             selectFirstItem(false)
           })
         })
@@ -251,7 +254,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       },
       group: (id, value) => {
         ids.current.set(id, value)
-        allGroups.current.set(id, new Set())
+
+        if (!allGroups.current.has(id)) {
+          allGroups.current.set(id, new Set())
+        }
 
         return () => {
           ids.current.delete(id)
@@ -576,7 +582,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
   const headingId = React.useId()
   const context = React.useContext(CommandContext)
   const value = useValue(ref, [props.value, props.heading, headingRef])
-  const render = useSelector((state) => (!state.search ? true : state.filtered.groups.has(value)))
+  const render = useSelector((state) => (!state.search ? true : state.filtered.groups.has(id)))
 
   useLayoutEffect(() => {
     if (value) {
