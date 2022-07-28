@@ -41,7 +41,7 @@ test.describe('item', async () => {
   })
 })
 
-test.describe.only('item advanced', async () => {
+test.describe('item advanced', async () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/item-advanced')
   })
