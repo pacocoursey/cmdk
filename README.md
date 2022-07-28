@@ -31,7 +31,7 @@ return (
 )
 ```
 
-To render inline, replace `Command.Dialog` with just `Command`. ⌘K supports a fully composable API, meaning you can wrap items in other components or even static JSX:
+To render inline, replace `Command.Dialog` with just `Command`. ⌘K supports a fully composable API <sup>[How?](/ARCHITECTURE.md)</sup>, meaning you can wrap items in other components or even static JSX:
 
 ```tsx
 <Command.List>
@@ -81,23 +81,25 @@ You should conditionally render this with `progress` while loading asynchronous 
 
 ## FAQ
 
-**Virtualization?** No. Good performance up to 2,000-3,000 items, though.
+**Accessible?** Yes. Labeling, aria attributes, and DOM ordering tested with Voice Over and Chrome DevTools. [Dialog](#dialog) composes an accessible Dialog implementation.
 
-**Filter/sort items manually?** Yes. Pass `filter={false}` to [Command](#command). Better performance and bring your own virtualization this way.
+**Virtualization?** No. Good performance up to 2,000-3,000 items, though. Read below to bring your own.
 
-**React 18 safe?** Yes, as far as I can tell. Uses React 18 features like `useId` and `startTransition`.
+**Filter/sort items manually?** Yes. Pass `shouldFilter={false}` to [Command](#command). Better memory usage and performance, bring your own virtualization this way.
 
-**Concurrent mode safe?** Probably not. It uses risky refs and manual DOM ordering.
-
-**Server component?** No, it's a client component.
+**React 18 safe?** Yes, required. Uses React 18 hooks like `useId` and `useSyncExternalStore`.
 
 **Unstyled?** Yes, use the listed CSS selectors.
 
-**Hydration mismatch?** Yes. Only render when mounted on client, or use [Dialog](#dialog) which handles this automatically.
+**Hydration mismatch?** Yes. Only render when mounted on client, or use [Dialog](#dialog) with `open={false}`, which handles this automatically.
 
-**React strict mode safe?** Yes, as far as I can tell. Proceed with caution.
+**React strict mode safe?** Yes. Open an issue if you notice a bug.
 
-**Weird/wrong behavior?** Make sure your `Command.Item` have a `key` and unique `value`.
+**Weird/wrong behavior?** Make sure your `Command.Item` has a `key` and unique `value`.
+
+**Concurrent mode safe?** Probably not, but concurrent mode is not yet real. Uses risky approaches like manual DOM ordering.
+
+**React server component?** No, it's a client component.
 
 ## History
 
