@@ -119,7 +119,7 @@ const StoreContext = React.createContext<Store>(undefined)
 const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const state = useLazyRef<State>(() => ({ ...initialState }))
-  const allItems = useLazyRef<Set<any>>(() => new Set())
+  const allItems = useLazyRef<Set<string>>(() => new Set()) // [...values]
   const allGroups = useLazyRef<Map<string, string[]>>(() => new Map()) // groupValue → [...itemValues]
   const listeners = useLazyRef<Set<() => void>>(() => new Set())
   const propsRef = useAsRef(props)
