@@ -27,7 +27,7 @@
         );
         z-index: -1;
         position: absolute;
-        border-radius: 8px;
+        border-radius: 12px;
         top: -1px;
         left: -1px;
         width: calc(100% + 2px);
@@ -40,7 +40,7 @@
         content: '';
         z-index: -1;
         position: absolute;
-        border-radius: 8px;
+        border-radius: 12px;
         top: -1px;
         left: -1px;
         width: calc(100% + 2px);
@@ -185,7 +185,7 @@
 
   [cmdk-list] {
     padding: 0 8px;
-    height: 400px;
+    height: 385px;
     overflow: auto;
     overscroll-behavior: contain;
     scroll-padding-block-start: 32px;
@@ -332,6 +332,7 @@
   }
 
   [cmdk-empty] {
+    font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -489,6 +490,16 @@
 
   &[data-side='closed'] {
     animation-name: slideOut;
+  }
+
+  [cmdk-empty] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 64px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    color: var(--gray11);
   }
 }
 
