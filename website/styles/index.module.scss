@@ -418,17 +418,16 @@
 
 .raunoSignature {
   width: 120px;
-  stroke-dashoffset: 1011;
-  stroke-dasharray: 1010;
+  stroke-dashoffset: 1;
+  stroke-dasharray: 1;
   right: -48px;
 }
 
 .pacoSignature {
   width: 120px;
-  stroke-dashoffset: -1097;
-  stroke-dasharray: 1140;
+  stroke-dashoffset: 1;
+  stroke-dasharray: 1;
   left: -8px;
-
 }
 
 .footerText {
@@ -439,13 +438,13 @@
   opacity: 0;
 }
 
-.footer[data-animate="true"] {
+.footer[data-animate='true'] {
   .raunoSignature path {
     animation: drawRaunoSignature 1.5s ease forwards 0.5s;
   }
 
   .pacoSignature path {
-    animation: drawPacoSignature 1.5s linear forwards 0.5s;
+    animation: drawPacoSignature 0.8s linear forwards 0.5s;
   }
 
   .footerText {
@@ -455,7 +454,7 @@
 
 @keyframes drawPacoSignature {
   100% {
-    stroke-dashoffset: -2279;
+    stroke-dashoffset: 0;
   }
 }
 
