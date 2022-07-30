@@ -6,6 +6,11 @@ import { Logo, LinearIcon, FigmaIcon, SlackIcon, YouTubeIcon, RaycastIcon } from
 export function RaycastCMDK() {
   const [value, setValue] = React.useState('');
   const inputRef = React.useRef<HTMLInputElement | null>(null);
+
+  React.useEffect(() => {
+    inputRef?.current?.focus();
+  }, []);
+
   return (
     <div className="raycast">
       <Command value={value} onValueChange={(v) => setValue(v)}>
