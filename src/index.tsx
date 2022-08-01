@@ -3,10 +3,6 @@ import * as RadixDialog from '@radix-ui/react-dialog'
 import * as React from 'react'
 import commandScore from 'command-score'
 
-function useCommand() {
-  return useSelector((state) => state)
-}
-
 const initialState: State = {
   search: '',
   value: '',
@@ -120,8 +116,10 @@ const defaultFilter: CommandProps['filter'] = (value, search) => commandScore(va
 
 // @ts-ignore
 const CommandContext = React.createContext<Context>(undefined)
+const useCommand = () => React.useContext(CommandContext)
 // @ts-ignore
 const StoreContext = React.createContext<Store>(undefined)
+const useStore = () => React.useContext(StoreContext)
 // @ts-ignore
 const GroupContext = React.createContext<string>(undefined)
 
@@ -506,7 +504,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const id = React.useId()
   const ref = React.useRef<HTMLDivElement>(null)
   const groupId = React.useContext(GroupContext)
-  const context = React.useContext(CommandContext)
+  const context = useCommand()
   const propsRef = useAsRef(props)
   const value = useValue(ref, [props.value, props.children, ref])
 
@@ -564,7 +562,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
   const ref = React.useRef<HTMLDivElement>(null)
   const headingRef = React.useRef<HTMLDivElement>(null)
   const headingId = React.useId()
-  const context = React.useContext(CommandContext)
+  const context = useCommand()
   const value = useValue(ref, [props.value, props.heading, headingRef])
   const render = useSelector((state) => (!state.search ? true : state.filtered.groups.has(id)))
 
@@ -616,7 +614,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
   const isControlled = props.value != null
   const store = useStore()
   const search = useSelector((state) => state.search)
-  const context = React.useContext(CommandContext)
+  const context = useCommand()
 
   useLayoutEffect(() => {
     if (props.value != null) {
@@ -659,7 +657,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
   const { children, ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const height = React.useRef<HTMLDivElement>(null)
-  const context = React.useContext(CommandContext)
+  const context = useCommand()
 
   React.useEffect(() => {
     if (height.current && ref.current) {
@@ -755,7 +753,6 @@ const pkg = Object.assign(Command, {
   Empty,
   Loading,
 })
-export { useCommand }
 export { pkg as Command }
 
 /**
@@ -838,8 +835,6 @@ function mergeRefs<T = any>(refs: Array<React.MutableRefObject<T> | React.Legacy
     })
   }
 }
-
-const useStore = () => React.useContext(StoreContext)
 
 /** Run a selector against the store state. */
 function useSelector(selector: (state: State) => any) {
