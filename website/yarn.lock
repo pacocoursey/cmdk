@@ -917,10 +917,10 @@ cli-truncate@^3.1.0:
     slice-ansi "^5.0.0"
     string-width "^5.0.0"
 
-cmdk@0.1.8:
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/cmdk/-/cmdk-0.1.8.tgz#2803cf9bee208e25291c91801a6a2685a611b206"
-  integrity sha512-jea+hrHeQi9CAJw3G2X1gpkgRCs8pOt6Aw+YPzgxnmH4FuY2oa2Rqc+Z0TvFhvNiYAohqzSq74whsMCpP9ZGsQ==
+cmdk@^0.1.10:
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/cmdk/-/cmdk-0.1.10.tgz#9918085166079f7cfe733ca88c073d24787372e6"
+  integrity sha512-JOh9aHO9yBHAsV7KG0pMOADnQNt2hP5S6pNjY2YvnTl2l2v5BdnTZHy1PeN4U9znulJ8VQHYyIo3r5MvkuZyqQ==
   dependencies:
     "@radix-ui/react-dialog" "0.1.7"
     command-score "0.1.2"
