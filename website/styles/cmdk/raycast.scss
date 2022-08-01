@@ -289,13 +289,15 @@
     display: flex;
     height: 40px;
     align-items: center;
-    width: 100%;
+    width: calc(100% + 2px);
     position: absolute;
     background: var(--grayA1);
     backdrop-filter: blur(80px) saturate(200%);
-    bottom: 0;
+    bottom: -1px;
+    left: -1px;
     padding: 8px;
     border-top: 1px solid var(--gray6);
+    border-radius: 0 0 12px 12px;
 
     svg {
       width: 20px;
