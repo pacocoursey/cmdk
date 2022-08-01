@@ -3,19 +3,6 @@ import * as RadixDialog from '@radix-ui/react-dialog'
 import * as React from 'react'
 import commandScore from 'command-score'
 
-const initialState: State = {
-  search: '',
-  value: '',
-  filtered: {
-    /** The count of all visible items. */
-    count: 0,
-    /** Map from visible item id to it's search score. */
-    items: new Map(),
-    /** Set of groups with at least one visible item. */
-    groups: new Set(),
-  },
-}
-
 type Children = { children?: React.ReactNode }
 type DivProps = React.HTMLAttributes<HTMLDivElement>
 
@@ -126,7 +113,18 @@ const GroupContext = React.createContext<string>(undefined)
 
 const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const ref = React.useRef<HTMLDivElement>(null)
-  const state = useLazyRef<State>(() => ({ ...initialState }))
+  const state = useLazyRef<State>(() => ({
+    search: '',
+    value: '',
+    filtered: {
+      /** The count of all visible items. */
+      count: 0,
+      /** Map from visible item id to it's search score. */
+      items: new Map(),
+      /** Set of groups with at least one visible item. */
+      groups: new Set(),
+    },
+  }))
   const allItems = useLazyRef<Set<string>>(() => new Set()) // [...itemIds]
   const allGroups = useLazyRef<Map<string, Set<string>>>(() => new Map()) // groupId → [...itemIds]
   const ids = useLazyRef<Map<string, string>>(() => new Map()) // id → value
