@@ -105,6 +105,7 @@ type Store = {
   emit: () => void
 }
 
+const LIST_SELECTOR = `[cmdk-list-sizer=""]`
 const GROUP_SELECTOR = `[cmdk-group=""]`
 const GROUP_ITEMS_SELECTOR = `[cmdk-group-items=""]`
 const GROUP_HEADING_SELECTOR = `[cmdk-group-heading=""]`
@@ -291,7 +292,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     // Sort items within groups to bottom
     // Sort items outside of groups
     // Sort groups to bottom (pushes all non-grouped items to the top)
-    const list = ref.current.querySelector('[cmdk-list-sizer=""]')
+    const list = ref.current.querySelector(LIST_SELECTOR)
 
     // Sort the items
     getValidItems()
@@ -450,28 +451,23 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   useLayoutEffect(() => {
     if (ref.current) {
-      return keys(
-        ref.current,
-        {
-          ArrowDown: () => updateSelectedByChange(1),
-          ArrowUp: () => updateSelectedByChange(-1),
-          Home: () => updateSelectedToIndex(0),
-          End: () => updateSelectedToIndex(getValidItems().length - 1),
-          '$mod+ArrowDown': () => updateSelectedToIndex(getValidItems().length - 1),
-          '$mod+ArrowUp': () => updateSelectedToIndex(0),
-          'Alt+ArrowDown': () => updateSelectedToGroup(1),
-          'Alt+ArrowUp': () => updateSelectedToGroup(-1),
-          Enter: (e) => {
-            const item = getSelectedItem()
-            if (item) {
-              e.preventDefault()
-              const event = new Event(SELECT_EVENT)
-              item.dispatchEvent(event)
-            }
-          },
+      return keys(ref.current, {
+        ArrowDown: () => updateSelectedByChange(1),
+        ArrowUp: () => updateSelectedByChange(-1),
+        Home: () => updateSelectedToIndex(0),
+        End: () => updateSelectedToIndex(getValidItems().length - 1),
+        '$mod+ArrowDown': () => updateSelectedToIndex(getValidItems().length - 1),
+        '$mod+ArrowUp': () => updateSelectedToIndex(0),
+        'Alt+ArrowDown': () => updateSelectedToGroup(1),
+        'Alt+ArrowUp': () => updateSelectedToGroup(-1),
+        Enter: () => {
+          const item = getSelectedItem()
+          if (item) {
+            const event = new Event(SELECT_EVENT)
+            item.dispatchEvent(event)
+          }
         },
-        { preventDefault: true }
-      )
+      })
     }
   }, [])
 
@@ -763,18 +759,12 @@ export { pkg as Command }
  *
  */
 
-function keys(
-  element: HTMLElement,
-  handlers: Record<string, (e: KeyboardEvent) => void> = {},
-  opts: { preventDefault?: boolean } = {}
-) {
-  if (opts.preventDefault) {
-    for (const key in handlers) {
-      const callback = handlers[key]
-      handlers[key] = (e) => {
-        callback(e)
-        e.preventDefault()
-      }
+function keys(element: HTMLElement, handlers: Record<string, (e: KeyboardEvent) => void> = {}) {
+  for (const key in handlers) {
+    const callback = handlers[key]
+    handlers[key] = (e) => {
+      callback(e)
+      e.preventDefault()
     }
   }
 
@@ -814,7 +804,7 @@ const useLayoutEffect = typeof window === 'undefined' ? React.useEffect : React.
 function useLazyRef<T>(fn: () => T) {
   const ref = React.useRef<T>()
 
-  if (!ref.current) {
+  if (ref.current === undefined) {
     ref.current = fn()
   }
 
@@ -839,12 +829,8 @@ function mergeRefs<T = any>(refs: Array<React.MutableRefObject<T> | React.Legacy
 /** Run a selector against the store state. */
 function useSelector(selector: (state: State) => any) {
   const store = useStore()
-
-  return React.useSyncExternalStore(
-    store.subscribe,
-    () => selector(store.snapshot()),
-    () => selector(store.snapshot())
-  )
+  const cb = () => selector(store.snapshot())
+  return React.useSyncExternalStore(store.subscribe, cb, cb)
 }
 
 function useValue(
@@ -854,24 +840,22 @@ function useValue(
   const [value, setValue] = React.useState<string>()
 
   useLayoutEffect(() => {
-    const value = getValue(deps)
+    const value = (() => {
+      for (const part of deps) {
+        if (typeof part === 'string') {
+          return part.trim().toLowerCase()
+        }
+
+        if (typeof part === 'object' && 'current' in part && part.current) {
+          return part.current.textContent?.trim().toLowerCase()
+        }
+      }
+    })()
     ref.current?.setAttribute(VALUE_ATTR, value)
     setValue(value)
   })
 
   return value
-}
-
-function getValue(parts: (string | React.ReactNode | React.RefObject<HTMLElement>)[]) {
-  for (const part of parts) {
-    if (typeof part === 'string') {
-      return part.trim().toLowerCase()
-    }
-
-    if (typeof part === 'object' && 'current' in part && part.current) {
-      return part.current.textContent?.trim().toLowerCase()
-    }
-  }
 }
 
 const srOnlyStyles = {
