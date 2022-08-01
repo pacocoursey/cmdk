@@ -13,6 +13,7 @@ import {
   FramerIcon,
   GitHubIcon,
   Code,
+  CopiedIcon,
 } from 'components';
 import packageJSON from '../../package.json';
 
@@ -35,7 +36,7 @@ export default function Index() {
           <div className={styles.meta}>
             <div className={styles.info}>
               <VersionBadge />
-              <h1>cmdk</h1>
+              <h1>⌘K</h1>
               <p>Fast, composable, unstyled command menu for React.</p>
             </div>
 
@@ -100,12 +101,23 @@ function CMDKWrapper(props: MotionProps & { children: React.ReactNode }) {
 //////////////////////////////////////////////////////////////////
 
 function InstallButton() {
+  const [copied, setCopied] = React.useState(false);
+
   return (
-    <button className={styles.installButton}>
+    <button
+      className={styles.installButton}
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(`npm install cmdk`);
+          setCopied(true);
+          setTimeout(() => {
+            setCopied(false);
+          }, 2000);
+        } catch (e) {}
+      }}
+    >
       npm install cmdk
-      <span>
-        <CopyIcon />
-      </span>
+      <span>{copied ? <CopiedIcon /> : <CopyIcon />}</span>
     </button>
   );
 }
