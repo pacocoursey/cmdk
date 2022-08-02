@@ -4,15 +4,20 @@ import * as React from 'react'
 const Page = () => {
   const [unmount, setUnmount] = React.useState(false)
   const [mount, setMount] = React.useState(false)
+  const [many, setMany] = React.useState(false)
 
   return (
     <div>
       <button data-testid="mount" onClick={() => setMount(!mount)}>
-        Mount item B
+        Toggle item B
       </button>
 
       <button data-testid="unmount" onClick={() => setUnmount(!unmount)}>
-        Unmount item A
+        Toggle item A
+      </button>
+
+      <button data-testid="many" onClick={() => setMany(!many)}>
+        Toggle many items
       </button>
 
       <Command>
@@ -20,6 +25,13 @@ const Page = () => {
         <Command.List>
           <Command.Empty>No results.</Command.Empty>
           {!unmount && <Command.Item>A</Command.Item>}
+          {many && (
+            <>
+              <Command.Item>1</Command.Item>
+              <Command.Item>2</Command.Item>
+              <Command.Item>3</Command.Item>
+            </>
+          )}
           {mount && <Command.Item>B</Command.Item>}
         </Command.List>
       </Command>

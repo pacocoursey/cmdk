@@ -39,6 +39,14 @@ test.describe('item', async () => {
     await expect(page.locator(`[cmdk-empty]`)).toHaveCount(0)
     await expect(page.locator(`[cmdk-item]`)).toHaveCount(1)
   })
+
+  test('selected does not change when mounting new items', async ({ page }) => {
+    await page.locator(`data-testid=mount`).click()
+    await page.locator(`[cmdk-item][data-value="b"]`).click()
+    await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveText('B')
+    await page.locator(`data-testid=many`).click()
+    await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveText('B')
+  })
 })
 
 test.describe('item advanced', async () => {
