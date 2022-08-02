@@ -7,7 +7,7 @@ test.describe('basic behavior', async () => {
 
   test('input props are forwarded', async ({ page }) => {
     const input = page.locator(`input[placeholder="Search…"]`)
-    await expect(input).toBeVisible()
+    await expect(input).toHaveCount(1)
   })
 
   test('item value is derived from textContent', async ({ page }) => {
