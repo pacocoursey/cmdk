@@ -74,8 +74,8 @@ type Context = {
   value: (id: string, value: string) => void
   item: (id: string, groupId: string) => () => void
   group: (id: string) => () => void
+  filter: () => boolean
   label: string
-  propsRef: React.RefObject<CommandProps>
   // Ids
   listId: string
   labelId: string
@@ -194,6 +194,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   const context: Context = React.useMemo(
     () => ({
+      // Keep id → value mapping up-to-date
       value: (id, value) => {
         if (value !== ids.current.get(id)) {
           ids.current.set(id, value)
@@ -204,8 +205,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           })
         }
       },
+      // Track item lifecycle (mount, unmount)
       item: (id, groupId) => {
-        // Track item
         allItems.current.add(id)
 
         // Track this item within the group
@@ -248,6 +249,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           })
         }
       },
+      // Track group lifecycle (mount, unmount)
       group: (id) => {
         if (!allGroups.current.has(id)) {
           allGroups.current.set(id, new Set())
@@ -258,7 +260,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           allGroups.current.delete(id)
         }
       },
-      propsRef,
+      filter: () => {
+        return propsRef.current.shouldFilter
+      },
       label: props.label || props['aria-label'],
       listId,
       inputId,
@@ -511,9 +515,9 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const value = useValue(id, ref, [props.value, props.children, ref])
 
   const store = useStore()
-  const selected = useSelector((state) => state.value && state.value === value.current)
-  const render = useSelector((state) =>
-    context.propsRef.current?.shouldFilter === false ? true : !state.search ? true : state.filtered.items.get(id) > 0
+  const selected = useCmdk((state) => state.value && state.value === value.current)
+  const render = useCmdk((state) =>
+    context.filter() === false ? true : !state.search ? true : state.filtered.items.get(id) > 0
   )
 
   React.useEffect(() => {
@@ -559,7 +563,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
   const headingRef = React.useRef<HTMLDivElement>(null)
   const headingId = React.useId()
   const context = useCommand()
-  const render = useSelector((state) => (!state.search ? true : state.filtered.groups.has(id)))
+  const render = useCmdk((state) => (!state.search ? true : state.filtered.groups.has(id)))
 
   useLayoutEffect(() => {
     return context.group(id)
@@ -594,7 +598,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
 const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>((props, forwardedRef) => {
   const { alwaysRender, ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
-  const render = useSelector((state) => !state.search)
+  const render = useCmdk((state) => !state.search)
 
   if (!alwaysRender && !render) return null
   return <div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-separator="" role="separator" />
@@ -608,7 +612,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
   const { onValueChange, ...etc } = props
   const isControlled = props.value != null
   const store = useStore()
-  const search = useSelector((state) => state.search)
+  const search = useCmdk((state) => state.search)
   const context = useCommand()
 
   React.useEffect(() => {
@@ -706,7 +710,7 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRe
  */
 const Empty = React.forwardRef<HTMLDivElement, EmptyProps>((props, forwardedRef) => {
   const isFirstRender = React.useRef(true)
-  const render = useSelector((state) => state.filtered.count === 0)
+  const render = useCmdk((state) => state.filtered.count === 0)
 
   React.useEffect(() => {
     isFirstRender.current = false
@@ -748,6 +752,7 @@ const pkg = Object.assign(Command, {
   Empty,
   Loading,
 })
+export { useCmdk as useCommandState }
 export { pkg as Command }
 
 /**
@@ -826,7 +831,7 @@ function mergeRefs<T = any>(refs: Array<React.MutableRefObject<T> | React.Legacy
 }
 
 /** Run a selector against the store state. */
-function useSelector<T = any>(selector: (state: State) => T) {
+function useCmdk<T = any>(selector: (state: State) => T) {
   const store = useStore()
   const cb = () => selector(store.snapshot())
   return React.useSyncExternalStore(store.subscribe, cb, cb)

@@ -79,6 +79,10 @@ Automatically renders when there are no results for the search query.
 
 You should conditionally render this with `progress` while loading asynchronous items.
 
+### `useCmdk(state => state.selectedField)`
+
+Hook that composes [`useSyncExternalStore`](https://reactjs.org/docs/hooks-reference.html#usesyncexternalstore). Pass a function that returns a slice of the command menu state to re-render when that slice changes.
+
 ## FAQ
 
 **Accessible?** Yes. Labeling, aria attributes, and DOM ordering tested with Voice Over and Chrome DevTools. [Dialog](#dialog) composes an accessible Dialog implementation.
