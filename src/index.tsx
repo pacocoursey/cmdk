@@ -21,7 +21,7 @@ type ItemProps = Children & {
   /** Whether this item is currently disabled. */
   disabled?: boolean
   /** Event handler for when this item is selected, either via click or keyboard selection. */
-  onSelect?: () => void
+  onSelect?: (value: string) => void
   /**
    * A unique value for this item.
    * If no value is provided, it will be inferred from `children` or the rendered `textContent`. If your `textContent` changes between renders, you _must_ provide a stable, unique `value`.
@@ -71,9 +71,8 @@ type CommandProps = Children & {
 }
 
 type Context = {
-  value: (id: string, value: string) => void
-  item: (id: string, groupId: string) => () => void
-  group: (id: string) => () => void
+  item: (id: string, value: string, groupId: string) => () => void
+  group: (id: string, value: string) => () => void
   label: string
   propsRef: React.RefObject<CommandProps>
   // Ids
@@ -100,7 +99,7 @@ const GROUP_HEADING_SELECTOR = `[cmdk-group-heading=""]`
 const ITEM_SELECTOR = `[cmdk-item=""]`
 const VALID_ITEM_SELECTOR = `${ITEM_SELECTOR}:not([aria-disabled="true"])`
 const SELECT_EVENT = `cmdk-item-select`
-const VALUE_ATTR = `id`
+const VALUE_ATTR = `data-value`
 const defaultFilter: CommandProps['filter'] = (value, search) => commandScore(value, search)
 
 // @ts-ignore
@@ -139,14 +138,14 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const schedule = useScheduleLayoutEffect()
 
   /** Controlled mode `value` handling. */
-  // useLayoutEffect(() => {
-  //   if (props.value !== undefined) {
-  //     const value = props.value.trim().toLowerCase()
-  //     state.current.value = value
-  //     scrollSelectedIntoView()
-  //     store.emit()
-  //   }
-  // }, [props.value])
+  useLayoutEffect(() => {
+    if (props.value !== undefined) {
+      const value = props.value.trim().toLowerCase()
+      state.current.value = value
+      scrollSelectedIntoView()
+      store.emit()
+    }
+  }, [props.value])
 
   const store: Store = React.useMemo(() => {
     return {
@@ -193,23 +192,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   const context: Context = React.useMemo(
     () => ({
-      value(id, value) {
-        // The value has changed
-        if (value && ids.current.get(id) !== value) {
-          ids.current.set(id, value)
-
-          // filter, sort, emit
-          state.current.filtered.items.set(id, score(value))
-
-          schedule(() => {
-            sort()
-            store.emit()
-          })
-        }
-      },
-      item: (id, groupId) => {
+      item: (id, value, groupId) => {
         // Track item
         allItems.current.add(id)
+        ids.current.set(id, value)
 
         // Track this item within the group
         if (groupId) {
@@ -251,7 +237,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           })
         }
       },
-      group: (id) => {
+      group: (id, value) => {
+        ids.current.set(id, value)
+
         if (!allGroups.current.has(id)) {
           allGroups.current.set(id, new Set())
         }
@@ -272,7 +260,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   function score(value: string) {
     const filter = propsRef.current?.filter ?? defaultFilter
-    return !value ? 0 : filter(value, state.current.search)
+    return filter(value, state.current.search)
   }
 
   /** Sorts items by score, and groups by highest item score. */
@@ -501,38 +489,38 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
  * the rendered item's `textContent`.
  */
 const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) => {
-  const id = 'item-' + useHTMLId()
+  const id = React.useId()
   const ref = React.useRef<HTMLDivElement>(null)
   const groupId = React.useContext(GroupContext)
   const context = useCommand()
   const propsRef = useAsRef(props)
+  const value = useValue(ref, [props.value, props.children, ref])
 
   const store = useStore()
-  const selected = useSelector((state) => state.value && state.value === id)
+  const selected = useSelector((state) => state.value && state.value === value)
   const render = useSelector((state) =>
     context.propsRef.current?.shouldFilter === false ? true : !state.search ? true : state.filtered.items.get(id) > 0
   )
 
   useLayoutEffect(() => {
-    return context.item(id, groupId)
-  }, [])
-
-  // Must come after `context.item`
-  useValue(id, [props.value, props.children, ref])
+    if (value) {
+      return context.item(id, value, groupId)
+    }
+  }, [value])
 
   React.useEffect(() => {
     const element = ref.current
     if (!element || props.disabled) return
     element.addEventListener(SELECT_EVENT, onSelect)
     return () => element.removeEventListener(SELECT_EVENT, onSelect)
-  }, [render, props.onSelect, props.disabled])
+  }, [render, props.onSelect, props.disabled, value])
 
   function onSelect() {
-    propsRef.current.onSelect?.()
+    propsRef.current.onSelect?.(value)
   }
 
   function select() {
-    store.setState('value', id)
+    store.setState('value', value)
   }
 
   if (!render) return null
@@ -540,8 +528,6 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   return (
     <div
       ref={mergeRefs([ref, forwardedRef])}
-      // TODO: could we remove this somehow?
-      id={id}
       cmdk-item=""
       role="option"
       aria-disabled={props.disabled || undefined}
@@ -565,13 +551,14 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
   const headingRef = React.useRef<HTMLDivElement>(null)
   const headingId = React.useId()
   const context = useCommand()
+  const value = useValue(ref, [props.value, props.heading, headingRef])
   const render = useSelector((state) => (!state.search ? true : state.filtered.groups.has(id)))
 
   useLayoutEffect(() => {
-    return context.group(id)
-  }, [])
-
-  useValue(id, [props.value, props.heading, headingRef])
+    if (value) {
+      return context.group(id, value)
+    }
+  }, [value])
 
   return (
     <div
@@ -838,8 +825,11 @@ function useSelector<T = any>(selector: (state: State) => T) {
   return React.useSyncExternalStore(store.subscribe, cb, cb)
 }
 
-function useValue(id: string, deps: (string | React.ReactNode | React.RefObject<HTMLElement>)[]) {
-  const context = useCommand()
+function useValue(
+  ref: React.RefObject<HTMLElement>,
+  deps: (string | React.ReactNode | React.RefObject<HTMLElement>)[]
+) {
+  const [value, setValue] = React.useState<string>()
 
   useLayoutEffect(() => {
     const value = (() => {
@@ -853,9 +843,11 @@ function useValue(id: string, deps: (string | React.ReactNode | React.RefObject<
         }
       }
     })()
-
-    context.value(id, value)
+    ref.current?.setAttribute(VALUE_ATTR, value)
+    setValue(value)
   })
+
+  return value
 }
 
 /** Imperatively run a function on the next layout effect cycle. */
@@ -885,8 +877,3 @@ const srOnlyStyles = {
   whiteSpace: 'nowrap',
   borderWidth: '0',
 } as const
-
-const idReplacer = /:/g
-const useHTMLId = () => {
-  return React.useId().replace(idReplacer, '')
-}
