@@ -135,9 +135,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const labelId = React.useId()
   const inputId = React.useId()
 
-  const scheduleSearch = useScheduleLayoutEffect()
-  const scheduleAdd = useScheduleLayoutEffect()
-  const scheduleRemove = useScheduleLayoutEffect()
+  const schedule = useScheduleLayoutEffect()
 
   /** Controlled mode `value` handling. */
   useLayoutEffect(() => {
@@ -167,7 +165,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           filterItems()
           sort()
 
-          scheduleSearch(() => {
+          schedule(() => {
             // Select the first item and emit again
             selectFirstItem()
             store.emit()
@@ -210,7 +208,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
         // Batch this, multiple items can mount in one pass
         // and we should not be filtering/sorting/emitting each time
-        scheduleAdd(() => {
+        schedule(() => {
           filterItems()
           sort()
 
@@ -228,7 +226,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           state.current.filtered.items.delete(id)
 
           // Batch this, multiple items could be removed in one pass
-          scheduleRemove(() => {
+          schedule(() => {
             filterItems()
 
             // The item removed could have been the selected one,
@@ -855,14 +853,15 @@ function useValue(
 /** Imperatively run a function on the next layout effect cycle. */
 const useScheduleLayoutEffect = () => {
   const [s, ss] = React.useState<object>()
-  const fn = React.useRef<() => void>()
+  const fns = useLazyRef(() => [])
 
   useLayoutEffect(() => {
-    fn.current?.()
+    fns.current.forEach((f) => f())
+    fns.current = []
   }, [s])
 
   return (cb: () => void) => {
-    fn.current = cb
+    fns.current.push(cb)
     ss({})
   }
 }
