@@ -101,3 +101,6 @@ Added to `allItems`, group is added to `allGroups`
 Item unmounts with id `27ah`
 Removed from `allItems`
 Removed from `allGroups[z7jj]`
+
+Can't use `id` for `.selectedValue` because of controlled mode, doesn't make sense…
+Unless we change the API to have a stable `key` that is independent of item value…
