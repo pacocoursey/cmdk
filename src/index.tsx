@@ -88,7 +88,7 @@ type State = {
 type Store = {
   subscribe: (callback: () => void) => () => void
   snapshot: () => State
-  setState: (key: keyof State, value: any) => void
+  setState: <K extends keyof State>(key: K, value: State[K]) => void
   emit: () => void
 }
 
@@ -135,6 +135,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const labelId = React.useId()
   const inputId = React.useId()
 
+  const scheduleSearch = useScheduleLayoutEffect()
+  const scheduleAdd = useScheduleLayoutEffect()
+  const scheduleRemove = useScheduleLayoutEffect()
+
   /** Controlled mode `value` handling. */
   useLayoutEffect(() => {
     if (props.value !== undefined) {
@@ -156,31 +160,22 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       },
       setState: (key, value) => {
         if (Object.is(state.current[key], value)) return
-        // @ts-ignore
         state.current[key] = value
 
         if (key === 'search') {
           // Filter synchronously before emitting back to children
           filterItems()
+          sort()
 
-          // Defer this update because it can be huge!
-          // Okay to have 1 frame between the input updating and the items
-          setTimeout(() => {
+          scheduleSearch(() => {
+            // Select the first item and emit again
+            selectFirstItem()
             store.emit()
-
-            // Schedule a layout effect for after the children have finished rendering
-            // but before paint so that we read up-to-date DOM state
-            setTimeout(() => {
-              sort()
-              selectFirstItem(true)
-            }, 1)
-          }, 1)
-
-          return
+          })
         } else if (key === 'value') {
           if (propsRef.current?.value !== undefined) {
             // If controlled, just call the callback instead of updating state internally
-            propsRef.current.onValueChange?.(value)
+            propsRef.current.onValueChange?.(value as string)
             return
           } else {
             // Scroll the selected item into view
@@ -213,25 +208,35 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           }
         }
 
-        setTimeout(() => {
+        // Batch this, multiple items can mount in one pass
+        // and we should not be filtering/sorting/emitting each time
+        scheduleAdd(() => {
           filterItems()
-          store.emit()
           sort()
-          selectFirstItem(false)
-        }, 1)
+
+          // Could be initial mount, select the first item if none already selected
+          if (!state.current.value) {
+            selectFirstItem()
+          }
+
+          store.emit()
+        })
 
         return () => {
-          setTimeout(() => {
-            filterItems()
-            store.emit()
-            // The item removed could have been the selected one,
-            // so selection should be moved to the next valid
-            selectFirstItem(false)
-          }, 1)
-
           ids.current.delete(id)
           allItems.current.delete(id)
           state.current.filtered.items.delete(id)
+
+          // Batch this, multiple items could be removed in one pass
+          scheduleRemove(() => {
+            filterItems()
+
+            // The item removed could have been the selected one,
+            // so selection should be moved to the first
+            selectFirstItem()
+
+            store.emit()
+          })
         }
       },
       group: (id, value) => {
@@ -263,6 +268,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   /** Sorts items by score, and groups by highest item score. */
   function sort() {
     if (
+      !ref.current ||
       !state.current.search ||
       // Explicitly false, because true | undefined is the default
       propsRef.current.shouldFilter === false
@@ -317,20 +323,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       })
   }
 
-  function selectFirstItem(overwrite: boolean = true) {
-    const selected = state.current.value
-
-    // Do not override existing, selected value is still valid
-    if (!overwrite && selected && state.current.filtered.items.has(selected)) {
-      return
-    }
-
+  function selectFirstItem() {
     const item = getValidItems().find((item) => !item.ariaDisabled)
     const value = item?.getAttribute(VALUE_ATTR)
-
-    if (value) {
-      store.setState('value', value)
-    }
+    state.current.value = value || undefined
   }
 
   /** Filters the current items. */
@@ -610,7 +606,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
   const search = useSelector((state) => state.search)
   const context = useCommand()
 
-  useLayoutEffect(() => {
+  React.useEffect(() => {
     if (props.value != null) {
       store.setState('search', props.value)
     }
@@ -825,7 +821,7 @@ function mergeRefs<T = any>(refs: Array<React.MutableRefObject<T> | React.Legacy
 }
 
 /** Run a selector against the store state. */
-function useSelector(selector: (state: State) => any) {
+function useSelector<T = any>(selector: (state: State) => T) {
   const store = useStore()
   const cb = () => selector(store.snapshot())
   return React.useSyncExternalStore(store.subscribe, cb, cb)
@@ -854,6 +850,21 @@ function useValue(
   })
 
   return value
+}
+
+/** Imperatively run a function on the next layout effect cycle. */
+const useScheduleLayoutEffect = () => {
+  const [s, ss] = React.useState<object>()
+  const fn = React.useRef<() => void>()
+
+  useLayoutEffect(() => {
+    fn.current?.()
+  }, [s])
+
+  return (cb: () => void) => {
+    fn.current = cb
+    ss({})
+  }
 }
 
 const srOnlyStyles = {
