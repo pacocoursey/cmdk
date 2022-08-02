@@ -115,12 +115,14 @@ const GroupContext = React.createContext<string>(undefined)
 const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const state = useLazyRef<State>(() => ({
+    /** Value of the search query. */
     search: '',
+    /** Currently selected item value. */
     value: '',
     filtered: {
       /** The count of all visible items. */
       count: 0,
-      /** Map from visible item id to it's search score. */
+      /** Map from visible item id to its search score. */
       items: new Map(),
       /** Set of groups with at least one visible item. */
       groups: new Set(),
@@ -129,7 +131,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const allItems = useLazyRef<Set<string>>(() => new Set()) // [...itemIds]
   const allGroups = useLazyRef<Map<string, Set<string>>>(() => new Map()) // groupId → [...itemIds]
   const ids = useLazyRef<Map<string, string>>(() => new Map()) // id → value
-  const listeners = useLazyRef<Set<() => void>>(() => new Set())
+  const listeners = useLazyRef<Set<() => void>>(() => new Set()) // [...rerenders]
   const propsRef = useAsRef(props)
 
   const listId = React.useId()
@@ -165,8 +167,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           // Filter synchronously before emitting back to children
           filterItems()
           sort()
-
-          schedule(() => {
+          schedule(1, () => {
             // Select the first item and emit again
             selectFirstItem()
             store.emit()
@@ -193,11 +194,11 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   const context: Context = React.useMemo(
     () => ({
-      value(id, value) {
+      value: (id, value) => {
         if (value !== ids.current.get(id)) {
           ids.current.set(id, value)
           state.current.filtered.items.set(id, score(value))
-          schedule(() => {
+          schedule(2, () => {
             sort()
             store.emit()
           })
@@ -218,7 +219,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
         // Batch this, multiple items can mount in one pass
         // and we should not be filtering/sorting/emitting each time
-        schedule(() => {
+        schedule(3, () => {
           filterItems()
           sort()
 
@@ -236,7 +237,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           state.current.filtered.items.delete(id)
 
           // Batch this, multiple items could be removed in one pass
-          schedule(() => {
+          schedule(4, () => {
             filterItems()
 
             // The item removed could have been the selected one,
@@ -863,15 +864,15 @@ function useValue(
 /** Imperatively run a function on the next layout effect cycle. */
 const useScheduleLayoutEffect = () => {
   const [s, ss] = React.useState<object>()
-  const fns = useLazyRef(() => [])
+  const fns = useLazyRef(() => new Map<string | number, () => void>())
 
   useLayoutEffect(() => {
     fns.current.forEach((f) => f())
-    fns.current = []
+    fns.current = new Map()
   }, [s])
 
-  return (cb: () => void) => {
-    fns.current.push(cb)
+  return (id: string | number, cb: () => void) => {
+    fns.current.set(id, cb)
     ss({})
   }
 }
