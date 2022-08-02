@@ -71,8 +71,9 @@ type CommandProps = Children & {
 }
 
 type Context = {
-  item: (id: string, value: string, groupId: string) => () => void
-  group: (id: string, value: string) => () => void
+  value: (id: string, value: string) => void
+  item: (id: string, groupId: string) => () => void
+  group: (id: string) => () => void
   label: string
   propsRef: React.RefObject<CommandProps>
   // Ids
@@ -192,10 +193,19 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   const context: Context = React.useMemo(
     () => ({
-      item: (id, value, groupId) => {
+      value(id, value) {
+        if (value !== ids.current.get(id)) {
+          ids.current.set(id, value)
+          state.current.filtered.items.set(id, score(value))
+          schedule(() => {
+            sort()
+            store.emit()
+          })
+        }
+      },
+      item: (id, groupId) => {
         // Track item
         allItems.current.add(id)
-        ids.current.set(id, value)
 
         // Track this item within the group
         if (groupId) {
@@ -237,9 +247,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           })
         }
       },
-      group: (id, value) => {
-        ids.current.set(id, value)
-
+      group: (id) => {
         if (!allGroups.current.has(id)) {
           allGroups.current.set(id, new Set())
         }
@@ -260,7 +268,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   function score(value: string) {
     const filter = propsRef.current?.filter ?? defaultFilter
-    return filter(value, state.current.search)
+    return value ? filter(value, state.current.search) : 0
   }
 
   /** Sorts items by score, and groups by highest item score. */
@@ -494,33 +502,32 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const groupId = React.useContext(GroupContext)
   const context = useCommand()
   const propsRef = useAsRef(props)
-  const value = useValue(ref, [props.value, props.children, ref])
+
+  useLayoutEffect(() => {
+    return context.item(id, groupId)
+  }, [])
+
+  const value = useValue(id, ref, [props.value, props.children, ref])
 
   const store = useStore()
-  const selected = useSelector((state) => state.value && state.value === value)
+  const selected = useSelector((state) => state.value && state.value === value.current)
   const render = useSelector((state) =>
     context.propsRef.current?.shouldFilter === false ? true : !state.search ? true : state.filtered.items.get(id) > 0
   )
-
-  useLayoutEffect(() => {
-    if (value) {
-      return context.item(id, value, groupId)
-    }
-  }, [value])
 
   React.useEffect(() => {
     const element = ref.current
     if (!element || props.disabled) return
     element.addEventListener(SELECT_EVENT, onSelect)
     return () => element.removeEventListener(SELECT_EVENT, onSelect)
-  }, [render, props.onSelect, props.disabled, value])
+  }, [render, props.onSelect, props.disabled])
 
   function onSelect() {
-    propsRef.current.onSelect?.(value)
+    propsRef.current.onSelect?.(value.current)
   }
 
   function select() {
-    store.setState('value', value)
+    store.setState('value', value.current)
   }
 
   if (!render) return null
@@ -551,14 +558,13 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
   const headingRef = React.useRef<HTMLDivElement>(null)
   const headingId = React.useId()
   const context = useCommand()
-  const value = useValue(ref, [props.value, props.heading, headingRef])
   const render = useSelector((state) => (!state.search ? true : state.filtered.groups.has(id)))
 
   useLayoutEffect(() => {
-    if (value) {
-      return context.group(id, value)
-    }
-  }, [value])
+    return context.group(id)
+  }, [])
+
+  useValue(id, ref, [props.value, props.heading, headingRef])
 
   return (
     <div
@@ -826,10 +832,12 @@ function useSelector<T = any>(selector: (state: State) => T) {
 }
 
 function useValue(
+  id: string,
   ref: React.RefObject<HTMLElement>,
   deps: (string | React.ReactNode | React.RefObject<HTMLElement>)[]
 ) {
-  const [value, setValue] = React.useState<string>()
+  const valueRef = React.useRef<string>()
+  const context = useCommand()
 
   useLayoutEffect(() => {
     const value = (() => {
@@ -843,11 +851,13 @@ function useValue(
         }
       }
     })()
+
+    context.value(id, value)
     ref.current?.setAttribute(VALUE_ATTR, value)
-    setValue(value)
+    valueRef.current = value
   })
 
-  return value
+  return valueRef
 }
 
 /** Imperatively run a function on the next layout effect cycle. */
