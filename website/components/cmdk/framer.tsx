@@ -11,7 +11,6 @@ export function FramerCMDK() {
           <Command.Input autoFocus placeholder="Find components, packages, and interactions..." />
         </div>
         <Command.List>
-          <Command.Empty>No results found.</Command.Empty>
           <div cmdk-framer-items="">
             <div cmdk-framer-left="">
               <Command.Group heading="Components">
