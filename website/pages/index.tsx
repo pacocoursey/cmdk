@@ -248,7 +248,7 @@ function ThemeSwitcher() {
         initial={false}
         animate={{
           opacity: showArrowKeyHint ? 1 : 0,
-          x: showArrowKeyHint ? 24 : 0,
+          x: showArrowKeyHint ? 20 : 0,
         }}
         style={{
           right: 100,
