@@ -1,5 +1,7 @@
 # Architecture
 
+> Document is a work in progress!
+
 ⌘K is born from a simple constraint: can you write a combobox with filtering and sorting using the [compount component](https://kentcdodds.com/blog/compound-components-with-react-hooks) approach? We didn't want to render items manually from an array:
 
 ```tsx
@@ -37,7 +39,7 @@ Especially, we wanted full component composition:
 </>
 ```
 
-Compound components are natural and easy to write. A few months after exploring this approach, we were pleased to see [Radix UI](https://www.radix-ui.com) released using this exact approach of component structure – setting the standard for ease of use and composability.
+Compound components are natural and easy to write. A few months after exploring this library, we were pleased to see [Radix UI](https://www.radix-ui.com) released using this exact approach of component structure – setting the standard for ease of use and composability.
 
 However, for a combobox, it is a terrible, terrible constraint that we've spent 2 years fighting.
 
@@ -55,7 +57,7 @@ We did not use a render prop because they are an inelegant pattern and quickly f
 
 The original approach for tracking which item was selected was to keep an index 0..n. But it's impossible to know which Item is in which position within the React tree when React Strict Mode is enabled, because `useEffect` runs twice and `useRef` cannot be used for stable IDs. <sup>This may be possible with `useId`, now.</sup> We created [use-descendants](https://github.com/pacocoursey/use-descendants) to track relative component indeces, but abandoned it because it could not work in Strict Mode, and will be incompatible with upcoming concurrent mode. Now, we track the selected item with its value, because it is stable across item mounts and unmounts.
 
-## idk
+## Example
 
 ```tsx
 <Input value="b" />
@@ -81,7 +83,8 @@ But in our case, the item will remain in the React tree and just be removed from
 
 ```tsx
 <List>
-  <Item>A</Item> {/* returns `null`, no DOM created */}
+  {/* returns `null`, no DOM created */}
+  <Item>A</Item>
   <Item>B</Item>
 </List>
 ```
@@ -93,11 +96,3 @@ This is more expensive memory wise, because if there are 2,000 items but the lis
 ## Groups
 
 Item mount informs both the root and the parent group, which keeps track of items within it. Each group informs the root.
-
-Each item and group has a stable `id`
-Item mounts with id `27ah` under group `z7jj`
-Added to `allItems`, group is added to `allGroups`
-
-Item unmounts with id `27ah`
-Removed from `allItems`
-Removed from `allGroups[z7jj]`
