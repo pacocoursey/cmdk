@@ -378,7 +378,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }
 
   function scrollSelectedIntoView() {
-    const item = getItemByValue(state.current.value)
+    const item = getSelectedItem()
 
     if (item) {
       if (item.parentElement?.firstChild === item) {
@@ -393,18 +393,11 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   /** Getters */
 
-  function getItemByValue(value: string) {
-    if (!ref.current) return null
-    return ref.current.querySelector(`${ITEM_SELECTOR}[${VALUE_ATTR}="${value}"]`)
-  }
-
   function getSelectedItem() {
-    if (!ref.current) return null
     return ref.current.querySelector(`${ITEM_SELECTOR}[aria-selected="true"]`)
   }
 
   function getValidItems() {
-    if (!ref.current) return []
     return Array.from(ref.current.querySelectorAll(VALID_ITEM_SELECTOR))
   }
 
@@ -413,35 +406,22 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   function updateSelectedToIndex(index: number) {
     const items = getValidItems()
     const item = items[index]
-    if (!item) return
-    store.setState('value', item.getAttribute(VALUE_ATTR))
+    if (item) store.setState('value', item.getAttribute(VALUE_ATTR))
   }
 
   function updateSelectedByChange(change: number) {
-    if (!change) return
-
-    const items = getValidItems()
-    if (!items.length) return
-
-    // If nothing selected yet, choose first or last
     const selected = getSelectedItem()
+    const items = getValidItems()
     const index = items.findIndex((item) => item === selected)
-    if (!selected) {
-      return updateSelectedToIndex(change > 0 ? 0 : items.length - 1)
-    }
 
     // Get item at this index
     const newSelected = items[index + change]
-    if (!newSelected) return
-    store.setState('value', newSelected.getAttribute(VALUE_ATTR))
+    if (newSelected) store.setState('value', newSelected.getAttribute(VALUE_ATTR))
   }
 
   function updateSelectedToGroup(change: number) {
     const selected = getSelectedItem()
     let group = selected?.closest(GROUP_SELECTOR)
-
-    if (!group) return updateSelectedByChange(change)
-
     let item: HTMLElement
 
     while (group && !item) {
@@ -452,11 +432,11 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     if (item) {
       store.setState('value', item.getAttribute(VALUE_ATTR))
     } else {
-      return updateSelectedByChange(change)
+      updateSelectedByChange(change)
     }
   }
 
-  const last = () => updateSelectedToIndex(getValidItems().length - 1)
+  const last = () => updateSelectedToIndex(state.current.filtered.count - 1)
 
   const { label, children, value: _, onValueChange: __, filter: ___, shouldFilter: ____, ...etc } = props
 
