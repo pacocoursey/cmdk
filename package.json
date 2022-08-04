@@ -19,8 +19,7 @@
   },
   "dependencies": {
     "@radix-ui/react-dialog": "0.1.7",
-    "command-score": "0.1.2",
-    "tinykeys": "1.4.0"
+    "command-score": "0.1.2"
   },
   "devDependencies": {
     "@playwright/test": "1.24.1"

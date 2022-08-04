@@ -1,4 +1,3 @@
-import tinykeys from 'tinykeys'
 import * as RadixDialog from '@radix-ui/react-dialog'
 import * as React from 'react'
 import commandScore from 'command-score'
@@ -44,31 +43,32 @@ type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'o
    */
   onValueChange?: (search: string) => void
 }
-type CommandProps = Children & {
-  /**
-   * Accessible label for this command menu. Not shown visibly.
-   */
-  label?: string
-  /**
-   * Optionally set to `false` to turn off the automatic filtering and sorting.
-   * If `false`, you must conditionally render valid items based on the search query yourself.
-   */
-  shouldFilter?: boolean
-  /**
-   * Custom filter function for whether each command menu item should matches the given search query.
-   * It should return a number between 0 and 1, with 1 being the best match and 0 being hidden entirely.
-   * By default, uses the `command-score` library.
-   */
-  filter?: (value: string, search: string) => number
-  /**
-   * Optional controlled state of the selected command menu item.
-   */
-  value?: string
-  /**
-   * Event handler called when the selected item of the menu changes.
-   */
-  onValueChange?: (value: string) => void
-}
+type CommandProps = Children &
+  DivProps & {
+    /**
+     * Accessible label for this command menu. Not shown visibly.
+     */
+    label?: string
+    /**
+     * Optionally set to `false` to turn off the automatic filtering and sorting.
+     * If `false`, you must conditionally render valid items based on the search query yourself.
+     */
+    shouldFilter?: boolean
+    /**
+     * Custom filter function for whether each command menu item should matches the given search query.
+     * It should return a number between 0 and 1, with 1 being the best match and 0 being hidden entirely.
+     * By default, uses the `command-score` library.
+     */
+    filter?: (value: string, search: string) => number
+    /**
+     * Optional controlled state of the selected command menu item.
+     */
+    value?: string
+    /**
+     * Event handler called when the selected item of the menu changes.
+     */
+    onValueChange?: (value: string) => void
+  }
 
 type Context = {
   value: (id: string, value: string) => void
@@ -454,32 +454,68 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     }
   }
 
-  useLayoutEffect(() => {
-    if (ref.current) {
-      return keys(ref.current, {
-        ArrowDown: () => updateSelectedByChange(1),
-        ArrowUp: () => updateSelectedByChange(-1),
-        Home: () => updateSelectedToIndex(0),
-        End: () => updateSelectedToIndex(getValidItems().length - 1),
-        '$mod+ArrowDown': () => updateSelectedToIndex(getValidItems().length - 1),
-        '$mod+ArrowUp': () => updateSelectedToIndex(0),
-        'Alt+ArrowDown': () => updateSelectedToGroup(1),
-        'Alt+ArrowUp': () => updateSelectedToGroup(-1),
-        Enter: () => {
-          const item = getSelectedItem()
-          if (item) {
-            const event = new Event(SELECT_EVENT)
-            item.dispatchEvent(event)
-          }
-        },
-      })
-    }
-  }, [])
+  const last = () => updateSelectedToIndex(getValidItems().length - 1)
 
   const { label, children, value: _, onValueChange: __, filter: ___, shouldFilter: ____, ...etc } = props
 
   return (
-    <div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-root="">
+    <div
+      ref={mergeRefs([ref, forwardedRef])}
+      {...etc}
+      cmdk-root=""
+      onKeyDown={(e) => {
+        etc.onKeyDown?.(e)
+
+        if (!e.defaultPrevented) {
+          switch (e.key) {
+            case 'ArrowDown': {
+              // Last item
+              if (e.metaKey) {
+                return last()
+              }
+
+              // Next group
+              if (e.altKey) {
+                return updateSelectedToGroup(1)
+              }
+
+              // Next item
+              return updateSelectedByChange(1)
+            }
+            case 'ArrowUp': {
+              // First item
+              if (e.metaKey) {
+                return updateSelectedToIndex(0)
+              }
+
+              // Previous group
+              if (e.altKey) {
+                return updateSelectedToGroup(-1)
+              }
+
+              // Previous item
+              return updateSelectedByChange(-1)
+            }
+            case 'Home': {
+              // First item
+              return updateSelectedToIndex(0)
+            }
+            case 'End': {
+              // Last item
+              return last()
+            }
+            case 'Enter': {
+              // Trigger item onSelect
+              const item = getSelectedItem()
+              if (item) {
+                const event = new Event(SELECT_EVENT)
+                item.dispatchEvent(event)
+              }
+            }
+          }
+        }
+      }}
+    >
       <label
         cmdk-label=""
         htmlFor={context.inputId}
@@ -762,18 +798,6 @@ export { pkg as Command }
  *
  *
  */
-
-function keys(element: HTMLElement, handlers: Record<string, (e: KeyboardEvent) => void> = {}) {
-  for (const key in handlers) {
-    const callback = handlers[key]
-    handlers[key] = (e) => {
-      callback(e)
-      e.preventDefault()
-    }
-  }
-
-  return tinykeys(element, handlers)
-}
 
 function findNextSibling(el: Element, selector: string) {
   let sibling = el.nextElementSibling
