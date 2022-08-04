@@ -409,7 +409,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     if (item) store.setState('value', item.getAttribute(VALUE_ATTR))
   }
 
-  function updateSelectedByChange(change: number) {
+  function updateSelectedByChange(change: 1 | -1) {
     const selected = getSelectedItem()
     const items = getValidItems()
     const index = items.findIndex((item) => item === selected)
@@ -419,7 +419,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     if (newSelected) store.setState('value', newSelected.getAttribute(VALUE_ATTR))
   }
 
-  function updateSelectedToGroup(change: number) {
+  function updateSelectedToGroup(change: 1 | -1) {
     const selected = getSelectedItem()
     let group = selected?.closest(GROUP_SELECTOR)
     let item: HTMLElement
