@@ -451,6 +451,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
     if (item) {
       store.setState('value', item.getAttribute(VALUE_ATTR))
+    } else {
+      return updateSelectedByChange(change)
     }
   }
 
