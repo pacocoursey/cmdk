@@ -1,19 +1,21 @@
-# ⌘K ![cmdk minzip package size](https://img.shields.io/bundlephobia/minzip/cmdk) ![Version](https://img.shields.io/npm/v/cmdk.svg?colorB=green)
+# ⌘K ![cmdk minzip package size](https://img.shields.io/bundlephobia/minzip/cmdk) ![cmdk package version](https://img.shields.io/npm/v/cmdk.svg?colorB=green)
 
-Composable command palette React component. Render items to be filtered and sorted automatically. ⌘K supports a fully composable API <sup>[How?](/ARCHITECTURE.md)</sup>, you can wrap items in other components or even as static JSX. Check out the [examples](#) to try it yourself.
+Composable command palette React component that can also be used as an accessible combobox. Render items that are filtered and sorted automatically. ⌘K supports a fully composable API <sup>[How?](/ARCHITECTURE.md)</sup>, so you can wrap items in other components or even as static JSX. Check out the [examples](#TODO) to try it yourself.
+
+## Install
 
 ```bash
 $ npm install cmdk
 ```
 
-Usage:
+## Use
 
 ```tsx
 import { Command } from 'cmdk'
 
 const CommandMenu = () => {
   return (
-    <Command>
+    <Command label="Command Menu">
       <Command.Input />
       <Command.List>
         <Command.Empty>No results found.</Command.Empty>
@@ -32,7 +34,7 @@ const CommandMenu = () => {
 }
 ```
 
-Or as a dialog:
+Or in a dialog:
 
 ```tsx
 import { Command } from 'cmdk'
@@ -53,7 +55,7 @@ const CommandMenu = () => {
   }, [])
 
   return (
-    <Command.Dialog open={open} onOpenChange={setOpen}>
+    <Command.Dialog open={open} onOpenChange={setOpen} label="Global Command Menu">
       <Command.Input />
       <Command.List>
         <Command.Empty>No results found.</Command.Empty>
@@ -74,11 +76,52 @@ const CommandMenu = () => {
 
 ## Parts
 
-All parts forward props, including `ref`, to the appropriate element.
+All parts forward props, including `ref`, to an appropriate element.
 
 ### Command `[cmdk-root]`
 
-Render this to show the command menu inline, or use [Dialog](#dialog) to render in a elevated context.
+Render this to show the command menu inline, or use [Dialog](#TODO) to render in a elevated context. Can be controlled with the `value` and `onValueChange` props.
+
+```tsx
+const [value, setValue] = React.useState('apple')
+
+return (
+  <Command value={value} onValueChange={setValue}>
+    <Command.Input />
+    <Command.List>
+      <Command.Item>Orange</Command.Item>
+      <Command.Item>Apple</Command.Item>
+    </Command.List>
+  </Command>
+)
+```
+
+You can provide a custom `filter` function that is called to rank each item. Both strings are normalized as lower case and trimmed.
+
+```tsx
+<Command
+  filter={(value, search) => {
+    if (value.includes(search)) return 1
+    return 0
+  }}
+/>
+```
+
+Or disable filtering and sorting entirely:
+
+```tsx
+<Command shouldFilter={false}>
+  <Command.List>
+    {filteredItems.map((item) => {
+      return (
+        <Command.Item key={item} value={item}>
+          {item}
+        </Command.Item>
+      )
+    })}
+  </Command.List>
+</Command>
+```
 
 ### Dialog `[cmdk-dialog]` `[cmdk-overlay]`
 
@@ -261,17 +304,82 @@ return (
 )
 ```
 
+### Asynchronous results
+
+Render the items as they become available. Filtering and sorting will happen automatically.
+
+```tsx
+const [loading, setLoading] = React.useState(false)
+const [items, setItems] = React.useState([])
+
+React.useEffect(() => {
+  async function getItems() {
+    setLoading(true)
+    const res = await api.get('/dictionary')
+    setItems(res)
+    setLoading(false)
+  }
+
+  getItems()
+}, [])
+
+return (
+  <Command>
+    <Command.Input />
+    <Command.List>
+      {loading && <Command.Loading>Fetching words…</Command.Loading>}
+      {items.map((item) => {
+        return (
+          <Command.Item key={`word-${item}`} value={item}>
+            {item}
+          </Command.Item>
+        )
+      })}
+    </Command.List>
+  </Command>
+)
+```
+
+### Use inside Popover
+
+We recommend using the [Radix UI popover](https://www.radix-ui.com/docs/primitives/components/popover) component. ⌘K relies on the Radix UI Dialog component, so this will reduce your bundle size a bit due to shared dependencies.
+
+```bash
+$ npm install @radix-ui/react-popover
+```
+
+Render `Command` inside of the popover content:
+
+```tsx
+import * as Popover from '@radix-ui/react-popover'
+
+return (
+  <Popover.Root>
+    <Popover.Trigger>Toggle popover</Popover.Trigger>
+
+    <Popover.Content>
+      <Command>
+        <Command.Input />
+        <Command.List>
+          <Command.Item>Apple</Command.Item>
+        </Command.List>
+      </Command>
+    </Popover.Content>
+  </Popover.Root>
+)
+```
+
 ### Vim style keybindings
 
-Currently not possible.
+Not currently possible. Upvote [this issue](#TODO) if you'd like to see it added.
 
 ## FAQ
 
-**Accessible?** Yes. Labeling, aria attributes, and DOM ordering tested with Voice Over and Chrome DevTools. [Dialog](#dialog) composes an accessible Dialog implementation.
+**Accessible?** Yes. Labeling, aria attributes, and DOM ordering tested with Voice Over and Chrome DevTools. [Dialog](#TODO) composes an accessible Dialog implementation.
 
 **Virtualization?** No. Good performance up to 2,000-3,000 items, though. Read below to bring your own.
 
-**Filter/sort items manually?** Yes. Pass `shouldFilter={false}` to [Command](#command). Better memory usage and performance. Bring your own virtualization this way.
+**Filter/sort items manually?** Yes. Pass `shouldFilter={false}` to [Command](#TODO). Better memory usage and performance. Bring your own virtualization this way.
 
 **React 18 safe?** Yes, required. Uses React 18 hooks like `useId` and `useSyncExternalStore`.
 
