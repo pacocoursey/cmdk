@@ -571,21 +571,21 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
 
   useValue(id, ref, [props.value, props.heading, headingRef])
 
+  const inner = <GroupContext.Provider value={id}>{children}</GroupContext.Provider>
+
+  // When this group is not rendered, still render rhe children to keep them in the React tree
+  // however each of them should be rendering `null`, so this won't result in any DOM output
+  if (!render) return inner
+
   return (
-    <div
-      ref={mergeRefs([ref, forwardedRef])}
-      {...etc}
-      cmdk-group=""
-      role="presentation"
-      hidden={render ? undefined : true}
-    >
+    <div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-group="" role="presentation">
       {heading && (
         <div ref={headingRef} cmdk-group-heading="" aria-hidden id={headingId}>
           {heading}
         </div>
       )}
       <div cmdk-group-items="" role="group" aria-labelledby={heading ? headingId : undefined}>
-        <GroupContext.Provider value={id}>{children}</GroupContext.Provider>
+        {inner}
       </div>
     </div>
   )
