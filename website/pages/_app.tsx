@@ -12,7 +12,7 @@ import Head from 'next/head';
 
 const title = '⌘K';
 const description = 'Fast, composable, unstyled command menu for React';
-const siteUrl = '#';
+const siteUrl = 'https://cmdk.paco.me';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
