@@ -7,11 +7,38 @@ import 'styles/cmdk/framer.scss';
 
 import type { AppProps } from 'next/app';
 import { ThemeProvider } from 'next-themes';
+import { NextSeo } from 'next-seo';
+import Head from 'next/head';
+
+const title = '⌘K';
+const description = 'Fast, composable, unstyled command menu for React';
+const siteUrl = '#';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider disableTransitionOnChange attribute="class">
-      <Component {...pageProps} />
-    </ThemeProvider>
+    <>
+      <Head>
+        <link rel="shortcut icon" href="/favicon.svg" />
+      </Head>
+      <NextSeo
+        title={`${description} — ${title}`}
+        description={description}
+        openGraph={{
+          type: 'website',
+          url: siteUrl,
+          title,
+          description: description + '.',
+          images: [
+            {
+              url: `${siteUrl}/og.png`,
+              alt: title,
+            },
+          ],
+        }}
+      />
+      <ThemeProvider disableTransitionOnChange attribute="class">
+        <Component {...pageProps} />
+      </ThemeProvider>
+    </>
   );
 }
