@@ -373,6 +373,10 @@ return (
 
 Not currently possible. Upvote [this issue](#TODO) if you'd like to see it added.
 
+### Drop in stylesheets
+
+You can find global stylesheets to drop in as a starting point for styling. See [website/styles/cmdk](website/styles/cmdk) for examples.
+
 ## FAQ
 
 **Accessible?** Yes. Labeling, aria attributes, and DOM ordering tested with Voice Over and Chrome DevTools. [Dialog](#TODO) composes an accessible Dialog implementation.
