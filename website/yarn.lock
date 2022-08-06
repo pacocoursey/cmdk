@@ -917,14 +917,13 @@ cli-truncate@^3.1.0:
     slice-ansi "^5.0.0"
     string-width "^5.0.0"
 
-cmdk@^0.1.10:
-  version "0.1.10"
-  resolved "https://registry.yarnpkg.com/cmdk/-/cmdk-0.1.10.tgz#9918085166079f7cfe733ca88c073d24787372e6"
-  integrity sha512-JOh9aHO9yBHAsV7KG0pMOADnQNt2hP5S6pNjY2YvnTl2l2v5BdnTZHy1PeN4U9znulJ8VQHYyIo3r5MvkuZyqQ==
+cmdk@0.1.14:
+  version "0.1.14"
+  resolved "https://registry.yarnpkg.com/cmdk/-/cmdk-0.1.14.tgz#8cdf72e49e7a381c93b23590d524e6081ddf99a6"
+  integrity sha512-lBzzV5qnS04ga714kF1MQldcd3IZn0+jMIgvqnO/5XvqgSFQoOwsuUFMNde9H6MB2uqZTCxuoGpDW9MVM/1lkw==
   dependencies:
     "@radix-ui/react-dialog" "0.1.7"
     command-score "0.1.2"
-    tinykeys "1.4.0"
 
 color-convert@^1.9.0:
   version "1.9.3"
@@ -2655,11 +2654,6 @@ through@^2.3.8:
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
   integrity sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==
-
-tinykeys@1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/tinykeys/-/tinykeys-1.4.0.tgz#c2986cd0184c86e943a6b17acc0352e42b542dff"
-  integrity sha512-ysnVd2E4nWbNXIbHaUidcKGLTmNimqP0hdpsD0Ph5hPJ84ntCF6PHj+Jg3im9nZt9/hNsBg/E6m1psHc2KaPnQ==
 
 to-fast-properties@^2.0.0:
   version "2.0.0"

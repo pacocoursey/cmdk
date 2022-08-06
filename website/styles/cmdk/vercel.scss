@@ -130,7 +130,7 @@
     margin: 4px 0;
   }
 
-  *:not([hidden]) + [cmdk-group] {
+  * + [cmdk-group] {
     margin-top: 8px;
   }
 
