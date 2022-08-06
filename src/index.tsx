@@ -437,33 +437,35 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }
 
   const last = () => updateSelectedToIndex(state.current.filtered.count - 1)
+
   const next = (e: React.KeyboardEvent) => {
-    // Last item
+    e.preventDefault()
+
     if (e.metaKey) {
-      return last()
+      // Last item
+      last()
+    } else if (e.altKey) {
+      // Next group
+      updateSelectedToGroup(1)
+    } else {
+      // Next item
+      updateSelectedByChange(1)
     }
-
-    // Next group
-    if (e.altKey) {
-      return updateSelectedToGroup(1)
-    }
-
-    // Next item
-    return updateSelectedByChange(1)
   }
+
   const prev = (e: React.KeyboardEvent) => {
-    // First item
+    e.preventDefault()
+
     if (e.metaKey) {
-      return updateSelectedToIndex(0)
+      // First item
+      updateSelectedToIndex(0)
+    } else if (e.altKey) {
+      // Previous group
+      updateSelectedToGroup(-1)
+    } else {
+      // Previous item
+      updateSelectedByChange(-1)
     }
-
-    // Previous group
-    if (e.altKey) {
-      return updateSelectedToGroup(-1)
-    }
-
-    // Previous item
-    return updateSelectedByChange(-1)
   }
 
   const { label, children, value: _, onValueChange: __, filter: ___, shouldFilter: ____, ...etc } = props
@@ -502,16 +504,19 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
             }
             case 'Home': {
               // First item
+              e.preventDefault()
               updateSelectedToIndex(0)
               break
             }
             case 'End': {
               // Last item
+              e.preventDefault()
               last()
               break
             }
             case 'Enter': {
               // Trigger item onSelect
+              e.preventDefault()
               const item = getSelectedItem()
               if (item) {
                 const event = new Event(SELECT_EVENT)
