@@ -437,6 +437,34 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }
 
   const last = () => updateSelectedToIndex(state.current.filtered.count - 1)
+  const next = (e: React.KeyboardEvent) => {
+    // Last item
+    if (e.metaKey) {
+      return last()
+    }
+
+    // Next group
+    if (e.altKey) {
+      return updateSelectedToGroup(1)
+    }
+
+    // Next item
+    return updateSelectedByChange(1)
+  }
+  const prev = (e: React.KeyboardEvent) => {
+    // First item
+    if (e.metaKey) {
+      return updateSelectedToIndex(0)
+    }
+
+    // Previous group
+    if (e.altKey) {
+      return updateSelectedToGroup(-1)
+    }
+
+    // Previous item
+    return updateSelectedByChange(-1)
+  }
 
   const { label, children, value: _, onValueChange: __, filter: ___, shouldFilter: ____, ...etc } = props
 
@@ -450,41 +478,37 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
         if (!e.defaultPrevented) {
           switch (e.key) {
+            case 'j': {
+              // vim keybind down
+              if (e.ctrlKey) {
+                next(e)
+              }
+              break
+            }
             case 'ArrowDown': {
-              // Last item
-              if (e.metaKey) {
-                return last()
+              next(e)
+              break
+            }
+            case 'k': {
+              // vim keybind up
+              if (e.ctrlKey) {
+                prev(e)
               }
-
-              // Next group
-              if (e.altKey) {
-                return updateSelectedToGroup(1)
-              }
-
-              // Next item
-              return updateSelectedByChange(1)
+              break
             }
             case 'ArrowUp': {
-              // First item
-              if (e.metaKey) {
-                return updateSelectedToIndex(0)
-              }
-
-              // Previous group
-              if (e.altKey) {
-                return updateSelectedToGroup(-1)
-              }
-
-              // Previous item
-              return updateSelectedByChange(-1)
+              prev(e)
+              break
             }
             case 'Home': {
               // First item
-              return updateSelectedToIndex(0)
+              updateSelectedToIndex(0)
+              break
             }
             case 'End': {
               // Last item
-              return last()
+              last()
+              break
             }
             case 'Enter': {
               // Trigger item onSelect
