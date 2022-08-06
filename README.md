@@ -82,6 +82,9 @@ All parts forward props, including `ref`, to an appropriate element.
 
 Render this to show the command menu inline, or use [Dialog](#TODO) to render in a elevated context. Can be controlled with the `value` and `onValueChange` props.
 
+> **Note**
+> Values are always converted to lowercase and trimmed. Use `apple`, not `Apple`.
+
 ```tsx
 const [value, setValue] = React.useState('apple')
 

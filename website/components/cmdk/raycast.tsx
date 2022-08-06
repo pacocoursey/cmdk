@@ -4,7 +4,7 @@ import { Command } from 'cmdk';
 import { Logo, LinearIcon, FigmaIcon, SlackIcon, YouTubeIcon, RaycastIcon } from 'components';
 
 export function RaycastCMDK() {
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = React.useState('linear');
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   React.useEffect(() => {
