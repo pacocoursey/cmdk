@@ -70,7 +70,7 @@
     filter: blur(100px) saturate(150%);
     z-index: -1;
     top: 80px;
-    opacity: 0.15;
+    opacity: 0.2;
     transform: translateZ(0);
 
     @media (prefers-color-scheme: dark) {
@@ -170,7 +170,7 @@
     align-items: center;
     justify-content: center;
     margin-left: auto;
-    background: var(--gray5);
+    background: var(--grayA3);
     border-radius: 9999px;
     transition: background 150ms ease;
 

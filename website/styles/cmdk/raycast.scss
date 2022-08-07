@@ -488,7 +488,7 @@
     animation-name: slideIn;
   }
 
-  &[data-side='closed'] {
+  &[data-state='closed'] {
     animation-name: slideOut;
   }
 
@@ -506,7 +506,7 @@
 @keyframes slideIn {
   0% {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.96);
   }
 
   100% {
@@ -523,7 +523,7 @@
 
   100% {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.96);
   }
 }
 
