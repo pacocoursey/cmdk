@@ -16,13 +16,15 @@
 
       &:after {
         content: '';
-        background: linear-gradient(to right,
-            var(--gray6) 20%,
-            var(--gray6) 40%,
-            var(--gray10) 50%,
-            var(--gray10) 55%,
-            var(--gray6) 70%,
-            var(--gray6) 100%);
+        background: linear-gradient(
+          to right,
+          var(--gray6) 20%,
+          var(--gray6) 40%,
+          var(--gray10) 50%,
+          var(--gray10) 55%,
+          var(--gray6) 70%,
+          var(--gray6) 100%
+        );
         z-index: -1;
         position: absolute;
         border-radius: 12px;
@@ -83,11 +85,13 @@
 
   [cmdk-raycast-top-shine] {
     .dark & {
-      background: linear-gradient(90deg,
-          rgba(56, 189, 248, 0),
-          var(--gray5) 20%,
-          var(--gray9) 67.19%,
-          rgba(236, 72, 153, 0));
+      background: linear-gradient(
+        90deg,
+        rgba(56, 189, 248, 0),
+        var(--gray5) 20%,
+        var(--gray9) 67.19%,
+        rgba(236, 72, 153, 0)
+      );
       height: 1px;
       position: absolute;
       top: -1px;
@@ -163,7 +167,7 @@
       margin-top: 8px;
     }
 
-    &+[cmdk-item] {
+    & + [cmdk-item] {
       margin-top: 4px;
     }
 
@@ -184,7 +188,6 @@
     height: 393px;
     overflow: auto;
     overscroll-behavior: contain;
-    scroll-padding-block-start: 32px;
     scroll-padding-block-end: 40px;
     transition: 100ms ease;
     transition-property: height;
@@ -268,7 +271,7 @@
     margin: 4px 0;
   }
 
-  *+[cmdk-group] {
+  * + [cmdk-group] {
     margin-top: 8px;
   }
 
