@@ -6,6 +6,7 @@ import { Logo, LinearIcon, FigmaIcon, SlackIcon, YouTubeIcon, RaycastIcon } from
 export function RaycastCMDK() {
   const [value, setValue] = React.useState('linear');
   const inputRef = React.useRef<HTMLInputElement | null>(null);
+  const listRef = React.useRef(null);
 
   React.useEffect(() => {
     inputRef?.current?.focus();
@@ -17,7 +18,7 @@ export function RaycastCMDK() {
         <div cmdk-raycast-top-shine="" />
         <Command.Input ref={inputRef} autoFocus placeholder="Search for apps and commands..." />
         <hr cmdk-raycast-loader="" />
-        <Command.List>
+        <Command.List ref={listRef}>
           <Command.Empty>No results found.</Command.Empty>
           <Command.Group heading="Suggestions">
             <Item value="Linear">
@@ -79,7 +80,7 @@ export function RaycastCMDK() {
 
           <hr />
 
-          <SubCommand selectedValue={value} inputRef={inputRef} />
+          <SubCommand listRef={listRef} selectedValue={value} inputRef={inputRef} />
         </div>
       </Command>
     </div>
@@ -105,9 +106,11 @@ function Item({
 
 function SubCommand({
   inputRef,
+  listRef,
   selectedValue,
 }: {
   inputRef: React.RefObject<HTMLInputElement>;
+  listRef: React.RefObject<HTMLElement>;
   selectedValue: string;
 }) {
   const [open, setOpen] = React.useState(false);
@@ -126,6 +129,18 @@ function SubCommand({
     };
   }, []);
 
+  React.useEffect(() => {
+    const el = listRef.current;
+
+    if (!el) return;
+
+    if (open) {
+      el.style.overflow = 'hidden';
+    } else {
+      el.style.overflow = '';
+    }
+  }, [open, listRef]);
+
   return (
     <Popover.Root open={open} onOpenChange={setOpen} modal>
       <Popover.Trigger cmdk-raycast-subcommand-trigger="" onClick={() => setOpen(true)} aria-expanded={open}>
@@ -138,7 +153,7 @@ function SubCommand({
         align="end"
         className="raycast-submenu"
         sideOffset={16}
-        alignOffset={-2}
+        alignOffset={0}
         onCloseAutoFocus={(e) => {
           e.preventDefault();
           inputRef?.current?.focus();

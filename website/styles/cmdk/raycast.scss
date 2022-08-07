@@ -181,7 +181,7 @@
 
   [cmdk-list] {
     padding: 0 8px;
-    height: 385px;
+    height: 393px;
     overflow: auto;
     overscroll-behavior: contain;
     scroll-padding-block-start: 32px;
@@ -268,7 +268,7 @@
     margin: 4px 0;
   }
 
-  * + [cmdk-group] {
+  *+[cmdk-group] {
     margin-top: 8px;
   }
 
@@ -384,7 +384,7 @@
     flex-direction: column;
     width: 320px;
     border: 1px solid var(--gray6);
-    background: var(--gray3);
+    background: var(--gray2);
     border-radius: 8px;
   }
 
