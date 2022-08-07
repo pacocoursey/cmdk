@@ -102,7 +102,7 @@
       background: var(--gray4);
     }
 
-    &+[cmdk-item] {
+    & + [cmdk-item] {
       margin-top: 4px;
     }
 
@@ -118,8 +118,6 @@
     max-height: 400px;
     overflow: auto;
     overscroll-behavior: contain;
-    scroll-padding-block-start: 32px;
-    scroll-padding-block-end: 8px;
     transition: 100ms ease;
     transition-property: height;
   }
