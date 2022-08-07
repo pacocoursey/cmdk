@@ -4,7 +4,9 @@
 
 # ⌘K ![cmdk minzip package size](https://img.shields.io/bundlephobia/minzip/cmdk) ![cmdk package version](https://img.shields.io/npm/v/cmdk.svg?colorB=green)
 
-⌘K is a composable command menu React component that can also be used as an accessible combobox. You render items, it filters and sorts them automatically. ⌘K supports a fully composable API <sup>[How?](/ARCHITECTURE.md)</sup>, so you can wrap items in other components or even as static JSX. Check out the [examples](https://cmdk.paco.me) to try it yourself.
+⌘K is a command menu React component that can also be used as an accessible combobox. You render items, it filters and sorts them automatically. ⌘K supports a fully composable API <sup>[How?](/ARCHITECTURE.md)</sup>, so you can wrap items in other components or even as static JSX.
+
+Demo and examples: [cmdk.paco.me](https://cmdk.paco.me)
 
 ## Install
 
@@ -87,6 +89,7 @@ All parts forward props, including `ref`, to an appropriate element. Each part h
 Render this to show the command menu inline, or use [Dialog](#TODO) to render in a elevated context. Can be controlled with the `value` and `onValueChange` props.
 
 > **Note**
+> 
 > Values are always converted to lowercase and trimmed. Use `apple`, not `Apple`.
 
 ```tsx
