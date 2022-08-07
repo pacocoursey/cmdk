@@ -50,6 +50,7 @@
     color: var(--gray12);
     border-bottom: 1px solid var(--gray6);
     caret-color: #6e5ed2;
+    margin: 0;
 
     &::placeholder {
       color: var(--gray9);
@@ -101,7 +102,7 @@
       background: var(--gray4);
     }
 
-    & + [cmdk-item] {
+    &+[cmdk-item] {
       margin-top: 4px;
     }
 
