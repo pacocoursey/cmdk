@@ -14,14 +14,15 @@
     "test": "playwright test"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-dom": "*"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "0.1.7",
     "command-score": "0.1.2"
   },
   "devDependencies": {
-    "@playwright/test": "1.24.1"
+    "@playwright/test": "1.24.1",
+    "tsup": "6.2.1"
   }
 }
