@@ -84,18 +84,9 @@ export function VercelIcon() {
   );
 }
 
-export function LinearIcon() {
+export function LinearIcon({ style }: { style?: Object }) {
   return (
-    <svg
-      width="64"
-      height="64"
-      viewBox="0 0 64 64"
-      fill="none"
-      style={{
-        width: 12,
-        height: 12,
-      }}
-    >
+    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style={style}>
       <path
         d="M0.403013 37.3991L26.6009 63.597C13.2225 61.3356 2.66442 50.7775 0.403013 37.3991Z"
         fill="#5E6AD2"

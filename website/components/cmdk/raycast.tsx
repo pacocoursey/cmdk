@@ -23,7 +23,12 @@ export function RaycastCMDK() {
           <Command.Group heading="Suggestions">
             <Item value="Linear">
               <Logo>
-                <LinearIcon />
+                <LinearIcon
+                  style={{
+                    width: 12,
+                    height: 12,
+                  }}
+                />
               </Logo>
               Linear
             </Item>
