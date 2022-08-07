@@ -86,10 +86,10 @@ All parts forward props, including `ref`, to an appropriate element. Each part h
 
 ### Command `[cmdk-root]`
 
-Render this to show the command menu inline, or use [Dialog](#TODO) to render in a elevated context. Can be controlled with the `value` and `onValueChange` props.
+Render this to show the command menu inline, or use [Dialog](#dialog-cmdk-dialog-cmdk-overlay) to render in a elevated context. Can be controlled with the `value` and `onValueChange` props.
 
 > **Note**
-> 
+>
 > Values are always converted to lowercase and trimmed. Use `apple`, not `Apple`.
 
 ```tsx
@@ -246,24 +246,17 @@ const [search, setSearch] = React.useState('')
 const [pages, setPages] = React.useState([])
 const page = pages[pages.length - 1]
 
-React.useEffect(() => {
-  function down(e) {
-    // Escape goes to previous page
-    // Backspaces goes to previous page when search is empty
-    if (e.key === 'Escape' || (e.key === 'Backspace' && !search)) {
-      e.preventDefault()
-      setPages((pages) => pages.slice(0, -1))
-    }
-  }
-
-  const element = ref.current
-  element.addEventListener('keydown', down)
-  return () => element.removeEventListener('keydown', down)
-}, [search])
-
 return (
-  // TODO: use `onKeyDown` here instead?
-  <Command ref={ref}>
+  <Command
+    onKeyDown={(e) => {
+      // Escape goes to previous page
+      // Backspace goes to previous page when search is empty
+      if (e.key === 'Escape' || (e.key === 'Backspace' && !search)) {
+        e.preventDefault()
+        setPages((pages) => pages.slice(0, -1))
+      }
+    }}
+  >
     <Command.Input />
     <Command.List>
       {!page && (
@@ -385,11 +378,11 @@ You can find global stylesheets to drop in as a starting point for styling. See 
 
 ## FAQ
 
-**Accessible?** Yes. Labeling, aria attributes, and DOM ordering tested with Voice Over and Chrome DevTools. [Dialog](#TODO) composes an accessible Dialog implementation.
+**Accessible?** Yes. Labeling, aria attributes, and DOM ordering tested with Voice Over and Chrome DevTools. [Dialog](#dialog-cmdk-dialog-cmdk-overlay) composes an accessible Dialog implementation.
 
 **Virtualization?** No. Good performance up to 2,000-3,000 items, though. Read below to bring your own.
 
-**Filter/sort items manually?** Yes. Pass `shouldFilter={false}` to [Command](#TODO). Better memory usage and performance. Bring your own virtualization this way.
+**Filter/sort items manually?** Yes. Pass `shouldFilter={false}` to [Command](#command-cmdk-root). Better memory usage and performance. Bring your own virtualization this way.
 
 **React 18 safe?** Yes, required. Uses React 18 hooks like `useId` and `useSyncExternalStore`.
 
