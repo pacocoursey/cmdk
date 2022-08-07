@@ -89,7 +89,7 @@ type State = {
 type Store = {
   subscribe: (callback: () => void) => () => void
   snapshot: () => State
-  setState: <K extends keyof State>(key: K, value: State[K]) => void
+  setState: <K extends keyof State>(key: K, value: State[K], opts?: any) => void
   emit: () => void
 }
 
@@ -145,7 +145,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     if (props.value !== undefined) {
       const value = props.value.trim().toLowerCase()
       state.current.value = value
-      scrollSelectedIntoView()
+      schedule(6, scrollSelectedIntoView)
       store.emit()
     }
   }, [props.value])
@@ -159,7 +159,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       snapshot: () => {
         return state.current
       },
-      setState: (key, value) => {
+      setState: (key, value, opts) => {
         if (Object.is(state.current[key], value)) return
         state.current[key] = value
 
@@ -177,9 +177,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
             // If controlled, just call the callback instead of updating state internally
             propsRef.current.onValueChange?.(value as string)
             return
-          } else {
+            // opts is a boolean referring to whether it should NOT be scrolled into view
+          } else if (!opts) {
             // Scroll the selected item into view
-            scrollSelectedIntoView()
+            schedule(5, scrollSelectedIntoView)
           }
         }
 
@@ -579,7 +580,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   }
 
   function select() {
-    store.setState('value', value.current)
+    store.setState('value', value.current, true)
   }
 
   if (!render) return null
