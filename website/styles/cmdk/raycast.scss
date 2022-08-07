@@ -1,0 +1,536 @@
+.raycast {
+  [cmdk-root] {
+    max-width: 640px;
+    width: 100%;
+    background: var(--gray1);
+    border-radius: 12px;
+    padding: 8px 0;
+    font-family: var(--font-sans);
+    box-shadow: var(--cmdk-shadow);
+    border: 1px solid var(--gray6);
+    position: relative;
+
+    .dark & {
+      background: var(--gray2);
+      border: 0;
+
+      &:after {
+        content: '';
+        background: linear-gradient(to right,
+            var(--gray6) 20%,
+            var(--gray6) 40%,
+            var(--gray10) 50%,
+            var(--gray10) 55%,
+            var(--gray6) 70%,
+            var(--gray6) 100%);
+        z-index: -1;
+        position: absolute;
+        border-radius: 12px;
+        top: -1px;
+        left: -1px;
+        width: calc(100% + 2px);
+        height: calc(100% + 2px);
+        animation: shine 3s ease forwards 0.1s;
+        background-size: 200% auto;
+      }
+
+      &:before {
+        content: '';
+        z-index: -1;
+        position: absolute;
+        border-radius: 12px;
+        top: -1px;
+        left: -1px;
+        width: calc(100% + 2px);
+        height: calc(100% + 2px);
+        box-shadow: 0 0 0 1px transparent;
+        animation: border 1s linear forwards 0.5s;
+      }
+    }
+
+    kbd {
+      font-family: var(--font-sans);
+      background: var(--gray3);
+      color: var(--gray11);
+      height: 20px;
+      width: 20px;
+      border-radius: 4px;
+      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:first-of-type {
+        margin-left: 8px;
+      }
+    }
+  }
+
+  [cmdk-input] {
+    font-family: var(--font-sans);
+    border: none;
+    width: 100%;
+    font-size: 15px;
+    padding: 8px 16px;
+    outline: none;
+    background: var(--bg);
+    color: var(--gray12);
+
+    &::placeholder {
+      color: var(--gray9);
+    }
+  }
+
+  [cmdk-raycast-top-shine] {
+    .dark & {
+      background: linear-gradient(90deg,
+          rgba(56, 189, 248, 0),
+          var(--gray5) 20%,
+          var(--gray9) 67.19%,
+          rgba(236, 72, 153, 0));
+      height: 1px;
+      position: absolute;
+      top: -1px;
+      width: 100%;
+      z-index: -1;
+      opacity: 0;
+      animation: showTopShine 0.1s ease forwards 0.2s;
+    }
+  }
+
+  [cmdk-raycast-loader] {
+    --loader-color: var(--gray9);
+    border: 0;
+    width: 100%;
+    width: 100%;
+    left: 0;
+    height: 1px;
+    background: var(--gray6);
+    position: relative;
+    overflow: visible;
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 12px;
+
+    &:after {
+      content: '';
+      width: 50%;
+      height: 1px;
+      position: absolute;
+      background: linear-gradient(90deg, transparent 0%, var(--loader-color) 50%, transparent 100%);
+      top: -1px;
+      opacity: 0;
+      animation-duration: 1.5s;
+      animation-delay: 1s;
+      animation-timing-function: ease;
+      animation-name: loading;
+    }
+  }
+
+  [cmdk-item] {
+    content-visibility: auto;
+
+    cursor: pointer;
+    height: 40px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px;
+    color: var(--gray12);
+    user-select: none;
+    will-change: background, color;
+    transition: all 150ms ease;
+    transition-property: none;
+
+    &[aria-selected='true'] {
+      background: var(--gray5);
+      color: var(--gray12);
+    }
+
+    &[aria-disabled='true'] {
+      color: var(--gray8);
+      cursor: not-allowed;
+    }
+
+    &:active {
+      transition-property: background;
+      background: var(--gray4);
+    }
+
+    &:first-child {
+      margin-top: 8px;
+    }
+
+    &+[cmdk-item] {
+      margin-top: 4px;
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  [cmdk-raycast-meta] {
+    margin-left: auto;
+    color: var(--gray11);
+    font-size: 13px;
+  }
+
+  [cmdk-list] {
+    padding: 0 8px;
+    height: 385px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scroll-padding-block-start: 32px;
+    scroll-padding-block-end: 40px;
+    transition: 100ms ease;
+    transition-property: height;
+    padding-bottom: 40px;
+  }
+
+  [cmdk-raycast-open-trigger],
+  [cmdk-raycast-subcommand-trigger] {
+    color: var(--gray11);
+    padding: 0px 4px 0px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 12px;
+    height: 28px;
+    letter-spacing: -0.25px;
+  }
+
+  [cmdk-raycast-clipboard-icon],
+  [cmdk-raycast-hammer-icon] {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  [cmdk-raycast-clipboard-icon] {
+    background: linear-gradient(to bottom, #f55354, #eb4646);
+  }
+
+  [cmdk-raycast-hammer-icon] {
+    background: linear-gradient(to bottom, #6cb9a3, #2c6459);
+  }
+
+  [cmdk-raycast-open-trigger] {
+    display: flex;
+    align-items: center;
+    color: var(--gray12);
+  }
+
+  [cmdk-raycast-subcommand-trigger] {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    right: 8px;
+    bottom: 8px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    hr {
+      height: 100%;
+      background: var(--gray6);
+      border: 0;
+      width: 1px;
+    }
+
+    &[aria-expanded='true'],
+    &:hover {
+      background: var(--gray4);
+
+      kbd {
+        background: var(--gray7);
+      }
+    }
+  }
+
+  [cmdk-separator] {
+    height: 1px;
+    width: 100%;
+    background: var(--gray5);
+    margin: 4px 0;
+  }
+
+  * + [cmdk-group] {
+    margin-top: 8px;
+  }
+
+  [cmdk-group-heading] {
+    user-select: none;
+    font-size: 12px;
+    color: var(--gray11);
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  [cmdk-raycast-footer] {
+    display: flex;
+    height: 40px;
+    align-items: center;
+    width: 100%;
+    position: absolute;
+    background: var(--gray1);
+    bottom: 0;
+    padding: 8px;
+    border-top: 1px solid var(--gray6);
+    border-radius: 0 0 12px 12px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      filter: grayscale(1);
+      margin-right: auto;
+    }
+
+    hr {
+      height: 12px;
+      width: 1px;
+      border: 0;
+      background: var(--gray6);
+      margin: 0 4px 0px 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      background: var(--gray2);
+    }
+  }
+
+  [cmdk-dialog] {
+    z-index: var(--layer-portal);
+    position: fixed;
+    left: 50%;
+    top: var(--page-top);
+    transform: translateX(-50%);
+
+    [cmdk] {
+      width: 640px;
+      transform-origin: center center;
+      animation: dialogIn var(--transition-fast) forwards;
+    }
+
+    &[data-state='closed'] [cmdk] {
+      animation: dialogOut var(--transition-fast) forwards;
+    }
+  }
+
+  [cmdk-empty] {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 64px;
+    white-space: pre-wrap;
+    color: var(--gray11);
+  }
+}
+
+@keyframes loading {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateX(100%);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+    opacity: 0;
+  }
+}
+
+@keyframes border {
+  to {
+    box-shadow: 0 0 0 1px var(--gray6);
+  }
+}
+
+@keyframes showTopShine {
+  to {
+    opacity: 1;
+  }
+}
+
+.raycast-submenu {
+  [cmdk-root] {
+    display: flex;
+    flex-direction: column;
+    width: 320px;
+    border: 1px solid var(--gray6);
+    background: var(--gray3);
+    border-radius: 8px;
+  }
+
+  [cmdk-list] {
+    padding: 8px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    transition: 100ms ease;
+    transition-property: height;
+  }
+
+  [cmdk-item] {
+    height: 40px;
+
+    cursor: pointer;
+    height: 40px;
+    border-radius: 8px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px;
+    color: var(--gray12);
+    user-select: none;
+    will-change: background, color;
+    transition: all 150ms ease;
+    transition-property: none;
+
+    &[aria-selected='true'] {
+      background: var(--gray5);
+      color: var(--gray12);
+
+      [cmdk-raycast-submenu-shortcuts] kbd {
+        background: var(--gray7);
+      }
+    }
+
+    &[aria-disabled='true'] {
+      color: var(--gray8);
+      cursor: not-allowed;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    [cmdk-raycast-submenu-shortcuts] {
+      display: flex;
+      margin-left: auto;
+      gap: 2px;
+
+      kbd {
+        font-family: var(--font-sans);
+        background: var(--gray5);
+        color: var(--gray11);
+        height: 20px;
+        width: 20px;
+        border-radius: 4px;
+        padding: 0 4px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:first-of-type {
+          margin-left: 8px;
+        }
+      }
+    }
+  }
+
+  [cmdk-group-heading] {
+    text-transform: capitalize;
+    font-size: 12px;
+    color: var(--gray11);
+    font-weight: 500;
+    margin-bottom: 8px;
+    margin-top: 8px;
+    margin-left: 4px;
+  }
+
+  [cmdk-input] {
+    padding: 12px;
+    font-family: var(--font-sans);
+    border: 0;
+    border-top: 1px solid var(--gray6);
+    font-size: 13px;
+    background: transparent;
+    margin-top: auto;
+    width: 100%;
+    outline: 0;
+  }
+
+  animation-duration: 0.2s;
+  animation-timing-function: ease;
+  animation-fill-mode: forwards;
+  transform-origin: var(--radix-popover-content-transform-origin);
+
+  &[data-state='open'] {
+    animation-name: slideIn;
+  }
+
+  &[data-side='closed'] {
+    animation-name: slideOut;
+  }
+
+  [cmdk-empty] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 64px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    color: var(--gray11);
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 640px) {
+  .raycast {
+    [cmdk-input] {
+      font-size: 16px;
+    }
+  }
+}

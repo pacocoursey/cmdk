@@ -1,0 +1,61 @@
+.root {
+    border-radius: 12px;
+    padding: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--gray6);
+    position: relative;
+    line-height: 16px;
+    background: var(--lowContrast);
+    white-space: pre-wrap;
+    box-shadow: rgb(0 0 0 / 10%) 0px 5px 30px -5px;
+
+    @media (prefers-color-scheme: dark) {
+        background: var(--grayA2);
+    }
+
+    button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: var(--grayA3);
+        border-radius: 8px;
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        color: var(--gray11);
+        cursor: copy;
+        transition: color 150ms ease, background 150ms ease, transform 150ms ease;
+
+        &:hover {
+            color: var(--gray12);
+            background: var(--grayA4);
+        }
+
+        &:active {
+            color: var(--gray12);
+            background: var(--grayA5);
+            transform: scale(0.96);
+        }
+    }
+}
+
+.shine {
+    @media (prefers-color-scheme: dark) {
+        background: linear-gradient(90deg, rgba(56, 189, 248, 0), var(--gray5) 20%, var(--gray9) 67.19%, rgba(236, 72, 153, 0));
+        height: 1px;
+        position: absolute;
+        top: -1px;
+        width: 100%;
+        z-index: -1;
+    }
+}
+
+@media (max-width: 640px) {
+    .root {
+        :global(.token-line) {
+            font-size: 11px !important;
+        }
+    }
+}
