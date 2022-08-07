@@ -1,6 +1,10 @@
+<p align="center">
+<img  src="./website/public/og.png" />
+</p>
+
 # ⌘K ![cmdk minzip package size](https://img.shields.io/bundlephobia/minzip/cmdk) ![cmdk package version](https://img.shields.io/npm/v/cmdk.svg?colorB=green)
 
-Composable command palette React component that can also be used as an accessible combobox. Render items that are filtered and sorted automatically. ⌘K supports a fully composable API <sup>[How?](/ARCHITECTURE.md)</sup>, so you can wrap items in other components or even as static JSX. Check out the [examples](#TODO) to try it yourself.
+⌘K is a composable command menu React component that can also be used as an accessible combobox. You render items, it filters and sorts them automatically. ⌘K supports a fully composable API <sup>[How?](/ARCHITECTURE.md)</sup>, so you can wrap items in other components or even as static JSX. Check out the [examples](https://cmdk.paco.me) to try it yourself.
 
 ## Install
 
@@ -74,9 +78,9 @@ const CommandMenu = () => {
 }
 ```
 
-## Parts
+## Parts and styling
 
-All parts forward props, including `ref`, to an appropriate element.
+All parts forward props, including `ref`, to an appropriate element. Each part has a specific data-attribute (starting with `cmdk-`) that can be used for styling.
 
 ### Command `[cmdk-root]`
 
@@ -99,7 +103,7 @@ return (
 )
 ```
 
-You can provide a custom `filter` function that is called to rank each item. Both strings are normalized as lower case and trimmed.
+You can provide a custom `filter` function that is called to rank each item. Both strings are normalized as lowercase and trimmed.
 
 ```tsx
 <Command
@@ -228,9 +232,9 @@ return <Command.Empty>No results found for "{search}".</Command.Empty>
 
 Code snippets for common use cases.
 
-### Pages
+### Nested items
 
-Often selecting one item should navigate deeper, with a more refined set of items. We call these sets "pages", and they can be implemented with simple state:
+Often selecting one item should navigate deeper, with a more refined set of items. For example selecting "Change theme…" should show new items "Dark theme" and "Light theme". We call these sets of items "pages", and they can be implemented with simple state:
 
 ```tsx
 const ref = React.useRef(null)
