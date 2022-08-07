@@ -481,6 +481,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
         if (!e.defaultPrevented) {
           switch (e.key) {
+            case 'n':
             case 'j': {
               // vim keybind down
               if (e.ctrlKey) {
@@ -492,6 +493,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
               next(e)
               break
             }
+            case 'p':
             case 'k': {
               // vim keybind up
               if (e.ctrlKey) {
