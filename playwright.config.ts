@@ -10,6 +10,12 @@ const config: PlaywrightTestConfig = {
     baseURL: process.env.CI ? process.env.BASE_URL : 'http://localhost:3000',
   },
   timeout: 5000,
+  webServer: {
+    command: 'npm run test',
+    url: 'http://localhost:3000',
+    cwd: './test',
+    reuseExistingServer: !process.env.CI,
+  },
   projects: [
     {
       name: 'webkit',
