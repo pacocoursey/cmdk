@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "pnpm -F 'cmdk-website^...' && next build",
+    "build": "pnpm -F 'cmdk-website^...' build && next build",
     "start": "next start",
     "lint": "eslint --ext .tsx"
   },
