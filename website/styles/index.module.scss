@@ -106,6 +106,7 @@
   transition-duration: 150ms;
   transition-property: background, color, transform;
   transition-timing-function: ease-in;
+  will-change: transform;
 }
 
 .githubButton {
