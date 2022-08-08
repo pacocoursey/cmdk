@@ -257,7 +257,7 @@ return (
       }
     }}
   >
-    <Command.Input />
+    <Command.Input value={search} onValueChange={setSearch} />
     <Command.List>
       {!page && (
         <>
