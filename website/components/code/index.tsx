@@ -8,7 +8,7 @@ const theme = {
   plain: {
     color: 'var(--gray12)',
     fontSize: 12,
-    fontFamily: 'Menlo',
+    fontFamily: 'Menlo, monospace',
   },
   styles: [
     {
