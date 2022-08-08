@@ -28,6 +28,7 @@
     color: var(--gray12);
     border-bottom: 1px solid var(--gray6);
     margin-bottom: 16px;
+    border-radius: 0;
 
     &::placeholder {
       color: var(--gray9);
@@ -81,7 +82,7 @@
       background: var(--gray4);
     }
 
-    & + [cmdk-item] {
+    &+[cmdk-item] {
       margin-top: 4px;
     }
 
@@ -130,7 +131,7 @@
     margin: 4px 0;
   }
 
-  * + [cmdk-group] {
+  *+[cmdk-group] {
     margin-top: 8px;
   }
 
