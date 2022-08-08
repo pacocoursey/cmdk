@@ -49,11 +49,7 @@ export function VercelCMDK() {
       <Command
         ref={ref}
         onKeyDown={(e: React.KeyboardEvent) => {
-          if (inputValue.length) {
-            return;
-          }
-
-          if (e.key === 'Enter' || e.key === 'Backspace') {
+          if (e.key === 'Enter') {
             bounce();
           }
 
@@ -64,6 +60,7 @@ export function VercelCMDK() {
           if (e.key === 'Backspace') {
             e.preventDefault();
             popPage();
+            bounce();
           }
         }}
       >
