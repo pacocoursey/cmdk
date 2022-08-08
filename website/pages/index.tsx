@@ -306,14 +306,7 @@ function Footer() {
     margin: '100px',
   });
   return (
-    <motion.footer
-      ref={ref}
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
-      className={styles.footer}
-      data-animate={isInView}
-    >
+    <footer ref={ref} className={styles.footer} data-animate={isInView}>
       <div className={styles.footerText}>
         Crafted by{' '}
         <a href="https://paco.me" target="_blank" rel="noopener noreferrer">
@@ -328,7 +321,7 @@ function Footer() {
       </div>
       <RaunoSignature />
       <PacoSignature />
-    </motion.footer>
+    </footer>
   );
 }
 
@@ -338,6 +331,7 @@ function RaunoSignature() {
       initial={{ opacity: 1 }}
       whileInView={{ opacity: 0 }}
       transition={{ delay: 2.5 }}
+      viewport={{ once: true }}
       className={styles.raunoSignature}
       width="356"
       height="118"
@@ -366,6 +360,7 @@ function PacoSignature() {
       initial={{ opacity: 1 }}
       whileInView={{ opacity: 0 }}
       transition={{ delay: 2.5 }}
+      viewport={{ once: true }}
     >
       <path
         d="M86.684 24.8853C84.684 64.5519 81.884 144.085 86.684 144.885M39.684 8.88526C68.3506 0.385261 131.984 -7.11474 157.184 30.8853C182.384 68.8853 96.3507 111.719 50.184 128.385C26.8506 138.885 -14.116 162.085 8.68398 170.885"
