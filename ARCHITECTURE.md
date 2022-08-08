@@ -2,7 +2,7 @@
 
 > Document is a work in progress!
 
-⌘K is born from a simple constraint: can you write a combobox with filtering and sorting using the [compount component](https://kentcdodds.com/blog/compound-components-with-react-hooks) approach? We didn't want to render items manually from an array:
+⌘K is born from a simple constraint: can you write a combobox with filtering and sorting using the [compound component](https://kentcdodds.com/blog/compound-components-with-react-hooks) approach? We didn't want to render items manually from an array:
 
 ```tsx
 // No
