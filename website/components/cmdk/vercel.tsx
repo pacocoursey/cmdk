@@ -31,8 +31,7 @@ export function VercelCMDK() {
     [inputValue.length, isHome, popPage],
   );
 
-  React.useEffect(() => {
-    // todo: dont do this on mount
+  function bounce() {
     if (ref.current) {
       ref.current.style.transform = 'scale(0.96)';
       setTimeout(() => {
@@ -43,19 +42,27 @@ export function VercelCMDK() {
 
       setInputValue('');
     }
-  }, [activePage]);
-
-  React.useEffect(() => {
-    document.addEventListener('keydown', onKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
-    };
-  }, [onKeyDown]);
+  }
 
   return (
-    <div ref={ref} className="vercel">
-      <Command>
+    <div className="vercel">
+      <Command
+        ref={ref}
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === 'Backspace') {
+            bounce();
+          }
+
+          if (isHome || inputValue.length) {
+            return;
+          }
+
+          if (e.key === 'Backspace') {
+            e.preventDefault();
+            popPage();
+          }
+        }}
+      >
         <div>
           {pages.map((p) => (
             <div key={p} cmdk-vercel-badge="">

@@ -1,6 +1,4 @@
 .vercel {
-  transition: transform 100ms ease;
-
   [cmdk-root] {
     max-width: 640px;
     width: 100%;
@@ -11,6 +9,7 @@
     font-family: var(--font-sans);
     border: 1px solid var(--gray6);
     box-shadow: var(--cmdk-shadow);
+    transition: transform 100ms ease;
 
     .dark & {
       background: rgba(22, 22, 22, 0.7);
