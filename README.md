@@ -400,6 +400,8 @@ You can find global stylesheets to drop in as a starting point for styling. See 
 
 **Listen for ⌘K automatically?** No, do it yourself to have full control over keybind context.
 
+**React Native?** No, and no plans to support it. If you build a React Native version, let us know and we'll link your repository here.
+
 ## History
 
 Written in 2019 by Paco ([@pacocoursey](https://twitter.com/pacocoursey)) to see if a composable combobox API was possible. Used for the Vercel command menu and autocomplete by Rauno ([@raunofreiberg](https://twitter.com/raunofreiberg)) in 2020. Re-written independently in 2022 with a simpler and more performant approach. Ideas and help from Shu ([@shuding\_](https://twitter.com/shuding_)).
