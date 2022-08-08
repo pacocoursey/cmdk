@@ -1,6 +1,7 @@
 {
   "name": "cmdk",
   "version": "0.1.16",
+  "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
