@@ -19,6 +19,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
       <Head>
         <link rel="shortcut icon" href="/favicon.svg" />
+        <meta name="twitter:card" content="summary_large_image" />
       </Head>
       <NextSeo
         title={`${description} — ${title}`}
