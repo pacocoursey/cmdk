@@ -49,6 +49,10 @@ export function VercelCMDK() {
       <Command
         ref={ref}
         onKeyDown={(e: React.KeyboardEvent) => {
+          if (inputValue.length) {
+            return;
+          }
+
           if (e.key === 'Enter' || e.key === 'Backspace') {
             bounce();
           }
