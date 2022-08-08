@@ -1,5 +1,5 @@
 <p align="center">
-<img  src="./website/public/og.png" />
+<img src="./website/public/og.png" />
 </p>
 
 # ⌘K ![cmdk minzip package size](https://img.shields.io/bundlephobia/minzip/cmdk) ![cmdk package version](https://img.shields.io/npm/v/cmdk.svg?colorB=green)

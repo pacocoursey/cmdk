@@ -1,16 +1,16 @@
 {
-  "name": "website",
+  "name": "cmdk-website",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "pnpm -F 'cmdk-website^...' build && next build",
     "start": "next start",
     "lint": "eslint --ext .tsx"
   },
   "dependencies": {
     "@radix-ui/react-popover": "^0.1.6",
-    "cmdk": "0.1.16",
+    "cmdk": "workspace:*",
     "copy-to-clipboard": "^3.3.1",
     "framer-motion": "^6.5.1",
     "next": "12.2.2",

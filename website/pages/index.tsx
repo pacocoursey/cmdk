@@ -15,7 +15,7 @@ import {
   Code,
   CopiedIcon,
 } from 'components';
-import packageJSON from '../../package.json';
+import packageJSON from '../../cmdk/package.json';
 
 type TTheme = {
   theme: Themes;
