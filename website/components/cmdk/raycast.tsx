@@ -125,6 +125,7 @@ function SubCommand({
   React.useEffect(() => {
     function listener(e: KeyboardEvent) {
       if (e.key === 'k' && e.metaKey) {
+        e.preventDefault();
         setOpen((o) => !o);
       }
     }
