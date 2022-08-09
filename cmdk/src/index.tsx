@@ -16,23 +16,25 @@ type SeparatorProps = DivProps & {
 }
 type DialogProps = RadixDialog.DialogProps & CommandProps
 type ListProps = Children & DivProps & {}
-type ItemProps = Children & {
-  /** Whether this item is currently disabled. */
-  disabled?: boolean
-  /** Event handler for when this item is selected, either via click or keyboard selection. */
-  onSelect?: (value: string) => void
-  /**
-   * A unique value for this item.
-   * If no value is provided, it will be inferred from `children` or the rendered `textContent`. If your `textContent` changes between renders, you _must_ provide a stable, unique `value`.
-   */
-  value?: string
-}
-type GroupProps = Children & {
-  /** Optional heading to render for this group. */
-  heading?: React.ReactNode
-  /** If no heading is provided, you must provie a value that is unique for this group. */
-  value?: string
-}
+type ItemProps = Children &
+  Omit<DivProps, 'disabled' | 'onSelect' | 'value'> & {
+    /** Whether this item is currently disabled. */
+    disabled?: boolean
+    /** Event handler for when this item is selected, either via click or keyboard selection. */
+    onSelect?: (value: string) => void
+    /**
+     * A unique value for this item.
+     * If no value is provided, it will be inferred from `children` or the rendered `textContent`. If your `textContent` changes between renders, you _must_ provide a stable, unique `value`.
+     */
+    value?: string
+  }
+type GroupProps = Children &
+  Omit<DivProps, 'heading' | 'value'> & {
+    /** Optional heading to render for this group. */
+    heading?: React.ReactNode
+    /** If no heading is provided, you must provie a value that is unique for this group. */
+    value?: string
+  }
 type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> & {
   /**
    * Optional controlled state for the value of the search input.
@@ -133,6 +135,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const ids = useLazyRef<Map<string, string>>(() => new Map()) // id → value
   const listeners = useLazyRef<Set<() => void>>(() => new Set()) // [...rerenders]
   const propsRef = useAsRef(props)
+  const { label, children, value, onValueChange, filter, shouldFilter, ...etc } = props
 
   const listId = React.useId()
   const labelId = React.useId()
@@ -142,13 +145,13 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   /** Controlled mode `value` handling. */
   useLayoutEffect(() => {
-    if (props.value !== undefined) {
-      const value = props.value.trim().toLowerCase()
-      state.current.value = value
+    if (value !== undefined) {
+      const v = value.trim().toLowerCase()
+      state.current.value = v
       schedule(6, scrollSelectedIntoView)
       store.emit()
     }
-  }, [props.value])
+  }, [value])
 
   const store: Store = React.useMemo(() => {
     return {
@@ -264,7 +267,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       filter: () => {
         return propsRef.current.shouldFilter
       },
-      label: props.label || props['aria-label'],
+      label: label || props['aria-label'],
       listId,
       inputId,
       labelId,
@@ -469,8 +472,6 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     }
   }
 
-  const { label, children, value: _, onValueChange: __, filter: ___, shouldFilter: ____, ...etc } = props
-
   return (
     <div
       ref={mergeRefs([ref, forwardedRef])}
@@ -537,10 +538,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         // Screen reader only
         style={srOnlyStyles}
       >
-        {props.label}
+        {label}
       </label>
       <StoreContext.Provider value={store}>
-        <CommandContext.Provider value={context}>{props.children}</CommandContext.Provider>
+        <CommandContext.Provider value={context}>{children}</CommandContext.Provider>
       </StoreContext.Provider>
     </div>
   )
@@ -587,15 +588,18 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 
   if (!render) return null
 
+  const { disabled, value: _, onSelect: __, ...etc } = props
+
   return (
     <div
       ref={mergeRefs([ref, forwardedRef])}
+      {...etc}
       cmdk-item=""
       role="option"
-      aria-disabled={props.disabled || undefined}
+      aria-disabled={disabled || undefined}
       aria-selected={selected || undefined}
-      onPointerMove={props.disabled ? undefined : select}
-      onClick={props.disabled ? undefined : onSelect}
+      onPointerMove={disabled ? undefined : select}
+      onClick={disabled ? undefined : onSelect}
     >
       {props.children}
     </div>

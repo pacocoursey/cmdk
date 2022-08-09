@@ -53,4 +53,14 @@ test.describe('basic behavior', async () => {
     await expect(page.locator(`[cmdk-item]`)).toHaveCount(0)
     await expect(page.locator(`[cmdk-empty]`)).toHaveText('No results.')
   })
+
+  test('className is applied to each part', async ({ page }) => {
+    await expect(page.locator(`.root`)).toHaveCount(1)
+    await expect(page.locator(`.input`)).toHaveCount(1)
+    await expect(page.locator(`.list`)).toHaveCount(1)
+    await expect(page.locator(`.item`)).toHaveCount(2)
+    await page.locator('[cmdk-input]').type('zzzz')
+    await expect(page.locator(`.item`)).toHaveCount(0)
+    await expect(page.locator(`.empty`)).toHaveCount(1)
+  })
 })
