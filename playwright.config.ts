@@ -11,7 +11,7 @@ const config: PlaywrightTestConfig = {
   },
   timeout: 5000,
   webServer: {
-    command: 'npm run test',
+    command: 'npm run dev',
     url: 'http://localhost:3000',
     cwd: './test',
     reuseExistingServer: !process.env.CI,

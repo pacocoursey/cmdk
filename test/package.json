@@ -2,7 +2,7 @@
   "name": "cmdk-tests",
   "version": "0.0.0",
   "scripts": {
-    "test": "next"
+    "dev": "next"
   },
   "dependencies": {
     "@types/node": "18.0.4",

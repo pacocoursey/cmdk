@@ -81,7 +81,7 @@
       background: var(--gray4);
     }
 
-    &+[cmdk-item] {
+    & + [cmdk-item] {
       margin-top: 4px;
     }
 
@@ -128,7 +128,7 @@
     margin: 4px 0;
   }
 
-  *+[cmdk-group] {
+  *:not([hidden]) + [cmdk-group] {
     margin-top: 8px;
   }
 
