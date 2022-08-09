@@ -16,23 +16,25 @@ type SeparatorProps = DivProps & {
 }
 type DialogProps = RadixDialog.DialogProps & CommandProps
 type ListProps = Children & DivProps & {}
-type ItemProps = Children & {
-  /** Whether this item is currently disabled. */
-  disabled?: boolean
-  /** Event handler for when this item is selected, either via click or keyboard selection. */
-  onSelect?: (value: string) => void
-  /**
-   * A unique value for this item.
-   * If no value is provided, it will be inferred from `children` or the rendered `textContent`. If your `textContent` changes between renders, you _must_ provide a stable, unique `value`.
-   */
-  value?: string
-}
-type GroupProps = Children & {
-  /** Optional heading to render for this group. */
-  heading?: React.ReactNode
-  /** If no heading is provided, you must provie a value that is unique for this group. */
-  value?: string
-}
+type ItemProps = Children &
+  DivProps & {
+    /** Whether this item is currently disabled. */
+    disabled?: boolean
+    /** Event handler for when this item is selected, either via click or keyboard selection. */
+    onSelect?: (value: string) => void
+    /**
+     * A unique value for this item.
+     * If no value is provided, it will be inferred from `children` or the rendered `textContent`. If your `textContent` changes between renders, you _must_ provide a stable, unique `value`.
+     */
+    value?: string
+  }
+type GroupProps = Children &
+  DivProps & {
+    /** Optional heading to render for this group. */
+    heading?: React.ReactNode
+    /** If no heading is provided, you must provie a value that is unique for this group. */
+    value?: string
+  }
 type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> & {
   /**
    * Optional controlled state for the value of the search input.
@@ -587,15 +589,18 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 
   if (!render) return null
 
+  const { disabled, ...etc } = props
+
   return (
     <div
       ref={mergeRefs([ref, forwardedRef])}
+      {...etc}
       cmdk-item=""
       role="option"
-      aria-disabled={props.disabled || undefined}
+      aria-disabled={disabled || undefined}
       aria-selected={selected || undefined}
-      onPointerMove={props.disabled ? undefined : select}
-      onClick={props.disabled ? undefined : onSelect}
+      onPointerMove={disabled ? undefined : select}
+      onClick={disabled ? undefined : onSelect}
     >
       {props.children}
     </div>
