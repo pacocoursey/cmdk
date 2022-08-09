@@ -1,0 +1,21 @@
+name: Run E2E tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm install pnpm -g
+      - run: npx playwright install-deps chromium
+      - run: pnpm install
+      - run: pnpm playwright install
+      - run: pnpm build
+      - run: pnpm test
