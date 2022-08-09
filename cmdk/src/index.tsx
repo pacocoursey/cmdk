@@ -17,7 +17,7 @@ type SeparatorProps = DivProps & {
 type DialogProps = RadixDialog.DialogProps & CommandProps
 type ListProps = Children & DivProps & {}
 type ItemProps = Children &
-  DivProps & {
+  Omit<DivProps, 'disabled' | 'onSelect' | 'value'> & {
     /** Whether this item is currently disabled. */
     disabled?: boolean
     /** Event handler for when this item is selected, either via click or keyboard selection. */
@@ -29,7 +29,7 @@ type ItemProps = Children &
     value?: string
   }
 type GroupProps = Children &
-  DivProps & {
+  Omit<DivProps, 'heading' | 'value'> & {
     /** Optional heading to render for this group. */
     heading?: React.ReactNode
     /** If no heading is provided, you must provie a value that is unique for this group. */
@@ -135,6 +135,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const ids = useLazyRef<Map<string, string>>(() => new Map()) // id → value
   const listeners = useLazyRef<Set<() => void>>(() => new Set()) // [...rerenders]
   const propsRef = useAsRef(props)
+  const { label, children, value, onValueChange, filter, shouldFilter, ...etc } = props
 
   const listId = React.useId()
   const labelId = React.useId()
@@ -144,13 +145,13 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   /** Controlled mode `value` handling. */
   useLayoutEffect(() => {
-    if (props.value !== undefined) {
-      const value = props.value.trim().toLowerCase()
-      state.current.value = value
+    if (value !== undefined) {
+      const v = value.trim().toLowerCase()
+      state.current.value = v
       schedule(6, scrollSelectedIntoView)
       store.emit()
     }
-  }, [props.value])
+  }, [value])
 
   const store: Store = React.useMemo(() => {
     return {
@@ -266,7 +267,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       filter: () => {
         return propsRef.current.shouldFilter
       },
-      label: props.label || props['aria-label'],
+      label: label || props['aria-label'],
       listId,
       inputId,
       labelId,
@@ -471,8 +472,6 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     }
   }
 
-  const { label, children, value: _, onValueChange: __, filter: ___, shouldFilter: ____, ...etc } = props
-
   return (
     <div
       ref={mergeRefs([ref, forwardedRef])}
@@ -539,10 +538,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         // Screen reader only
         style={srOnlyStyles}
       >
-        {props.label}
+        {label}
       </label>
       <StoreContext.Provider value={store}>
-        <CommandContext.Provider value={context}>{props.children}</CommandContext.Provider>
+        <CommandContext.Provider value={context}>{children}</CommandContext.Provider>
       </StoreContext.Provider>
     </div>
   )
@@ -589,7 +588,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 
   if (!render) return null
 
-  const { disabled, ...etc } = props
+  const { disabled, value: _, onSelect: __, ...etc } = props
 
   return (
     <div
