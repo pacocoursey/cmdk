@@ -192,7 +192,7 @@ Item that becomes active on pointer enter. You should provide a unique `value` f
 </Command.Item>
 ```
 
-### Group `[cmdk-group]`
+### Group `[cmdk-group]` `[hidden?]`
 
 Groups items together with the given `heading` (`[cmdk-group-heading]`).
 
@@ -201,6 +201,8 @@ Groups items together with the given `heading` (`[cmdk-group-heading]`).
   <Command.Item>Apple</Command.Item>
 </Command.Group>
 ```
+
+Groups will not unmount from the DOM, rather the `hidden` attribute is applied to hide it from view. This may be relevant in your styling.
 
 ### Separator `[cmdk-separator]`
 
