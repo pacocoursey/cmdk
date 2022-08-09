@@ -135,7 +135,7 @@ Or disable filtering and sorting entirely:
 
 ### Dialog `[cmdk-dialog]` `[cmdk-overlay]`
 
-Props are forwarded to [Command](#command). Composes Radix UI's Dialog component. The overlay is always rendered. See the [Radix Documentation](https://www.radix-ui.com/docs/primitives/components/dialog) for more information. Can be controlled with the `open` and `onOpenChange` props.
+Props are forwarded to [Command](#command-cmdk-root). Composes Radix UI's Dialog component. The overlay is always rendered. See the [Radix Documentation](https://www.radix-ui.com/docs/primitives/components/dialog) for more information. Can be controlled with the `open` and `onOpenChange` props.
 
 ```tsx
 const [open, setOpen] = React.useState(false)
