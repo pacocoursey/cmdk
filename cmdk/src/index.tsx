@@ -14,7 +14,12 @@ type SeparatorProps = DivProps & {
   /** Whether this separator should always be rendered. Useful if you disable automatic filtering. */
   alwaysRender?: boolean
 }
-type DialogProps = RadixDialog.DialogProps & CommandProps
+type DialogProps = RadixDialog.DialogProps & CommandProps & {
+  /**
+   * Pass an element which will be used as Dialog.Trigger inside Dialog.Root
+   */
+  trigger?: React.ReactNode
+}
 type ListProps = Children & DivProps & {}
 type ItemProps = Children &
   Omit<DivProps, 'disabled' | 'onSelect' | 'value'> & {
@@ -748,9 +753,10 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
  * Renders the command menu in a Radix Dialog.
  */
 const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRef) => {
-  const { open, onOpenChange, ...etc } = props
+  const { open, onOpenChange, trigger, ...etc } = props
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
+      {trigger && <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger>}
       <RadixDialog.Portal>
         <RadixDialog.Overlay cmdk-overlay="" />
         <RadixDialog.Content aria-label={props.label} cmdk-dialog="">
