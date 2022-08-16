@@ -1,4 +1,4 @@
-import styles from './icons.module.scss';
+import styles from './icons.module.scss'
 
 export function FigmaIcon() {
   return (
@@ -9,7 +9,7 @@ export function FigmaIcon() {
       <path fill="#ff7043" d="M32,17h-7V3h7c3.866,0,7,3.134,7,7v0C39,13.866,35.866,17,32,17z" />
       <circle cx="32" cy="24" r="7" fill="#29b6f6" />
     </svg>
-  );
+  )
 }
 
 export function RaycastIcon() {
@@ -22,7 +22,7 @@ export function RaycastIcon() {
         fill="#FF6363"
       />
     </svg>
-  );
+  )
 }
 
 export function YouTubeIcon() {
@@ -34,7 +34,7 @@ export function YouTubeIcon() {
       />
       <path fill="#FFF" d="M20 31L20 17 32 24z" />
     </svg>
-  );
+  )
 }
 
 export function SlackIcon() {
@@ -73,7 +73,7 @@ export function SlackIcon() {
         d="M28,43c-2.209,0-4-1.791-4-4c0-1.195,0-4,0-4s2.986,0,4,0c2.209,0,4,1.791,4,4S30.209,43,28,43z"
       />
     </svg>
-  );
+  )
 }
 
 export function VercelIcon() {
@@ -81,7 +81,7 @@ export function VercelIcon() {
     <svg aria-label="Vercel Logo" fill="var(--highContrast)" height="26" viewBox="0 0 75 65">
       <path d="M37.59.25l36.95 64H.64l36.95-64z"></path>
     </svg>
-  );
+  )
 }
 
 export function LinearIcon({ style }: { style?: Object }) {
@@ -104,7 +104,7 @@ export function LinearIcon({ style }: { style?: Object }) {
         fill="#5E6AD2"
       ></path>
     </svg>
-  );
+  )
 }
 
 export function Logo({ children, size = '20px' }: { children: React.ReactNode; size?: string }) {
@@ -121,7 +121,7 @@ export function Logo({ children, size = '20px' }: { children: React.ReactNode; s
       </div>
       <div className={styles.inner}>{children}</div>
     </div>
-  );
+  )
 }
 
 export function CopyIcon() {
@@ -140,7 +140,7 @@ export function CopyIcon() {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 }
 
 export function CopiedIcon() {
@@ -148,7 +148,7 @@ export function CopiedIcon() {
     <svg width="16" height="16" strokeWidth="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M5 13L9 17L19 7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
-  );
+  )
 }
 
 export function GitHubIcon() {
@@ -159,7 +159,7 @@ export function GitHubIcon() {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function FramerIcon() {
@@ -170,5 +170,5 @@ export function FramerIcon() {
         fill="var(--highContrast)"
       ></path>
     </svg>
-  );
+  )
 }

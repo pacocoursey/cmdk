@@ -272,7 +272,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       inputId,
       labelId,
     }),
-    []
+    [],
   )
 
   function score(value: string) {
@@ -568,7 +568,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const store = useStore()
   const selected = useCmdk((state) => state.value && state.value === value.current)
   const render = useCmdk((state) =>
-    context.filter() === false ? true : !state.search ? true : state.filtered.items.get(id) > 0
+    context.filter() === false ? true : !state.search ? true : state.filtered.items.get(id) > 0,
   )
 
   React.useEffect(() => {
@@ -884,7 +884,7 @@ function useCmdk<T = any>(selector: (state: State) => T) {
 function useValue(
   id: string,
   ref: React.RefObject<HTMLElement>,
-  deps: (string | React.ReactNode | React.RefObject<HTMLElement>)[]
+  deps: (string | React.ReactNode | React.RefObject<HTMLElement>)[],
 ) {
   const valueRef = React.useRef<string>()
   const context = useCommand()

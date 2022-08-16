@@ -1,18 +1,18 @@
-import React from 'react';
-import { useTheme } from 'next-themes';
-import * as Popover from '@radix-ui/react-popover';
-import { Command } from 'cmdk';
-import { Logo, LinearIcon, FigmaIcon, SlackIcon, YouTubeIcon, RaycastIcon } from 'components';
+import React from 'react'
+import { useTheme } from 'next-themes'
+import * as Popover from '@radix-ui/react-popover'
+import { Command } from 'cmdk'
+import { Logo, LinearIcon, FigmaIcon, SlackIcon, YouTubeIcon, RaycastIcon } from 'components'
 
 export function RaycastCMDK() {
-  const { resolvedTheme: theme } = useTheme();
-  const [value, setValue] = React.useState('linear');
-  const inputRef = React.useRef<HTMLInputElement | null>(null);
-  const listRef = React.useRef(null);
+  const { resolvedTheme: theme } = useTheme()
+  const [value, setValue] = React.useState('linear')
+  const inputRef = React.useRef<HTMLInputElement | null>(null)
+  const listRef = React.useRef(null)
 
   React.useEffect(() => {
-    inputRef?.current?.focus();
-  }, []);
+    inputRef?.current?.focus()
+  }, [])
 
   return (
     <div className="raycast">
@@ -91,7 +91,7 @@ export function RaycastCMDK() {
         </div>
       </Command>
     </div>
-  );
+  )
 }
 
 function Item({
@@ -99,16 +99,16 @@ function Item({
   value,
   isCommand = false,
 }: {
-  children: React.ReactNode;
-  value: string;
-  isCommand?: boolean;
+  children: React.ReactNode
+  value: string
+  isCommand?: boolean
 }) {
   return (
     <Command.Item value={value} onSelect={() => {}}>
       {children}
       <span cmdk-raycast-meta="">{isCommand ? 'Command' : 'Application'}</span>
     </Command.Item>
-  );
+  )
 }
 
 function SubCommand({
@@ -116,38 +116,38 @@ function SubCommand({
   listRef,
   selectedValue,
 }: {
-  inputRef: React.RefObject<HTMLInputElement>;
-  listRef: React.RefObject<HTMLElement>;
-  selectedValue: string;
+  inputRef: React.RefObject<HTMLInputElement>
+  listRef: React.RefObject<HTMLElement>
+  selectedValue: string
 }) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   React.useEffect(() => {
     function listener(e: KeyboardEvent) {
       if (e.key === 'k' && e.metaKey) {
-        e.preventDefault();
-        setOpen((o) => !o);
+        e.preventDefault()
+        setOpen((o) => !o)
       }
     }
 
-    document.addEventListener('keydown', listener);
+    document.addEventListener('keydown', listener)
 
     return () => {
-      document.removeEventListener('keydown', listener);
-    };
-  }, []);
+      document.removeEventListener('keydown', listener)
+    }
+  }, [])
 
   React.useEffect(() => {
-    const el = listRef.current;
+    const el = listRef.current
 
-    if (!el) return;
+    if (!el) return
 
     if (open) {
-      el.style.overflow = 'hidden';
+      el.style.overflow = 'hidden'
     } else {
-      el.style.overflow = '';
+      el.style.overflow = ''
     }
-  }, [open, listRef]);
+  }, [open, listRef])
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen} modal>
@@ -163,8 +163,8 @@ function SubCommand({
         sideOffset={16}
         alignOffset={0}
         onCloseAutoFocus={(e) => {
-          e.preventDefault();
-          inputRef?.current?.focus();
+          e.preventDefault()
+          inputRef?.current?.focus()
         }}
       >
         <Command>
@@ -192,7 +192,7 @@ function SubCommand({
         </Command>
       </Popover.Content>
     </Popover.Root>
-  );
+  )
 }
 
 function SubItem({ children, shortcut }: { children: React.ReactNode; shortcut: string }) {
@@ -201,11 +201,11 @@ function SubItem({ children, shortcut }: { children: React.ReactNode; shortcut: 
       {children}
       <div cmdk-raycast-submenu-shortcuts="">
         {shortcut.split(' ').map((key) => {
-          return <kbd key={key}>{key}</kbd>;
+          return <kbd key={key}>{key}</kbd>
         })}
       </div>
     </Command.Item>
-  );
+  )
 }
 
 function TerminalIcon() {
@@ -223,7 +223,7 @@ function TerminalIcon() {
       <polyline points="4 17 10 11 4 5"></polyline>
       <line x1="12" y1="19" x2="20" y2="19"></line>
     </svg>
-  );
+  )
 }
 
 function RaycastLightIcon() {
@@ -236,7 +236,7 @@ function RaycastLightIcon() {
         fill="#FF6363"
       />
     </svg>
-  );
+  )
 }
 
 function RaycastDarkIcon() {
@@ -249,7 +249,7 @@ function RaycastDarkIcon() {
         fill="#FF6363"
       />
     </svg>
-  );
+  )
 }
 
 function WindowIcon() {
@@ -263,7 +263,7 @@ function WindowIcon() {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 }
 
 function FinderIcon() {
@@ -277,7 +277,7 @@ function FinderIcon() {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 }
 
 function StarIcon() {
@@ -291,7 +291,7 @@ function StarIcon() {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 }
 
 function ClipboardIcon() {
@@ -307,7 +307,7 @@ function ClipboardIcon() {
         />
       </svg>
     </div>
-  );
+  )
 }
 
 function HammerIcon() {
@@ -323,5 +323,5 @@ function HammerIcon() {
         />
       </svg>
     </div>
-  );
+  )
 }

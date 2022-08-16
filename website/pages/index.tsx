@@ -1,6 +1,6 @@
-import styles from 'styles/index.module.scss';
-import React from 'react';
-import { AnimatePresence, AnimateSharedLayout, motion, MotionProps, useInView } from 'framer-motion';
+import styles from 'styles/index.module.scss'
+import React from 'react'
+import { AnimatePresence, AnimateSharedLayout, motion, MotionProps, useInView } from 'framer-motion'
 import {
   FramerCMDK,
   LinearCMDK,
@@ -14,20 +14,20 @@ import {
   GitHubIcon,
   Code,
   CopiedIcon,
-} from 'components';
-import packageJSON from '../../cmdk/package.json';
+} from 'components'
+import packageJSON from '../../cmdk/package.json'
 
 type TTheme = {
-  theme: Themes;
-  setTheme: Function;
-};
+  theme: Themes
+  setTheme: Function
+}
 
-type Themes = 'linear' | 'raycast' | 'vercel' | 'framer';
+type Themes = 'linear' | 'raycast' | 'vercel' | 'framer'
 
-const ThemeContext = React.createContext<TTheme>({} as TTheme);
+const ThemeContext = React.createContext<TTheme>({} as TTheme)
 
 export default function Index() {
-  const [theme, setTheme] = React.useState<Themes>('raycast');
+  const [theme, setTheme] = React.useState<Themes>('raycast')
 
   return (
     <>
@@ -80,7 +80,7 @@ export default function Index() {
         <Footer />
       </main>
     </>
-  );
+  )
 }
 
 function CMDKWrapper(props: MotionProps & { children: React.ReactNode }) {
@@ -95,31 +95,31 @@ function CMDKWrapper(props: MotionProps & { children: React.ReactNode }) {
       }}
       {...props}
     />
-  );
+  )
 }
 
 //////////////////////////////////////////////////////////////////
 
 function InstallButton() {
-  const [copied, setCopied] = React.useState(false);
+  const [copied, setCopied] = React.useState(false)
 
   return (
     <button
       className={styles.installButton}
       onClick={async () => {
         try {
-          await navigator.clipboard.writeText(`npm install cmdk`);
-          setCopied(true);
+          await navigator.clipboard.writeText(`npm install cmdk`)
+          setCopied(true)
           setTimeout(() => {
-            setCopied(false);
-          }, 2000);
+            setCopied(false)
+          }, 2000)
         } catch (e) {}
       }}
     >
       npm install cmdk
       <span>{copied ? <CopiedIcon /> : <CopyIcon />}</span>
     </button>
-  );
+  )
 }
 
 function GitHubButton() {
@@ -133,7 +133,7 @@ function GitHubButton() {
       <GitHubIcon />
       pacocoursey/cmdk
     </a>
-  );
+  )
 }
 
 //////////////////////////////////////////////////////////////////
@@ -155,45 +155,45 @@ const themes = [
     icon: <FramerIcon />,
     key: 'framer',
   },
-];
+]
 
 function ThemeSwitcher() {
-  const { theme, setTheme } = React.useContext(ThemeContext);
-  const ref = React.useRef<HTMLButtonElement | null>(null);
-  const [showArrowKeyHint, setShowArrowKeyHint] = React.useState(false);
+  const { theme, setTheme } = React.useContext(ThemeContext)
+  const ref = React.useRef<HTMLButtonElement | null>(null)
+  const [showArrowKeyHint, setShowArrowKeyHint] = React.useState(false)
 
   React.useEffect(() => {
     function listener(e: KeyboardEvent) {
-      const themeNames = themes.map((t) => t.key);
+      const themeNames = themes.map((t) => t.key)
 
       if (e.key === 'ArrowRight') {
-        const currentIndex = themeNames.indexOf(theme);
-        const nextIndex = currentIndex + 1;
-        const nextItem = themeNames[nextIndex];
+        const currentIndex = themeNames.indexOf(theme)
+        const nextIndex = currentIndex + 1
+        const nextItem = themeNames[nextIndex]
 
         if (nextItem) {
-          setTheme(nextItem);
+          setTheme(nextItem)
         }
       }
 
       if (e.key === 'ArrowLeft') {
-        const currentIndex = themeNames.indexOf(theme);
-        const prevIndex = currentIndex - 1;
-        const prevItem = themeNames[prevIndex];
+        const currentIndex = themeNames.indexOf(theme)
+        const prevIndex = currentIndex - 1
+        const prevItem = themeNames[prevIndex]
 
         if (prevItem) {
-          setTheme(prevItem);
+          setTheme(prevItem)
         }
       }
     }
 
-    document.addEventListener('keydown', listener);
+    document.addEventListener('keydown', listener)
 
     return () => {
-      document.removeEventListener('keydown', listener);
-    };
+      document.removeEventListener('keydown', listener)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [theme]);
+  }, [theme])
 
   return (
     <div className={styles.switcher}>
@@ -212,16 +212,16 @@ function ThemeSwitcher() {
       </motion.span>
       <AnimateSharedLayout>
         {themes.map(({ key, icon }) => {
-          const isActive = theme === key;
+          const isActive = theme === key
           return (
             <button
               ref={ref}
               key={key}
               data-selected={isActive}
               onClick={() => {
-                setTheme(key);
+                setTheme(key)
                 if (showArrowKeyHint === false) {
-                  setShowArrowKeyHint(true);
+                  setShowArrowKeyHint(true)
                 }
               }}
             >
@@ -240,7 +240,7 @@ function ThemeSwitcher() {
                 />
               )}
             </button>
-          );
+          )
         })}
       </AnimateSharedLayout>
       <motion.span
@@ -257,7 +257,7 @@ function ThemeSwitcher() {
         →
       </motion.span>
     </div>
-  );
+  )
 }
 //////////////////////////////////////////////////////////////////
 
@@ -282,7 +282,7 @@ function Codeblock() {
 
     <Command.Item>Fish</Command.Item>
   </Command.List>
-</Command.Dialog>`;
+</Command.Dialog>`
 
   return (
     <div className={styles.codeBlock}>
@@ -290,21 +290,21 @@ function Codeblock() {
       <div className={styles.line3} aria-hidden />
       <Code>{code}</Code>
     </div>
-  );
+  )
 }
 
 //////////////////////////////////////////////////////////////////
 
 function VersionBadge() {
-  return <span className={styles.versionBadge}>v{packageJSON.version}</span>;
+  return <span className={styles.versionBadge}>v{packageJSON.version}</span>
 }
 
 function Footer() {
-  const ref = React.useRef<HTMLElement | null>(null);
+  const ref = React.useRef<HTMLElement | null>(null)
   const isInView = useInView(ref, {
     once: true,
     margin: '100px',
-  });
+  })
   return (
     <footer ref={ref} className={styles.footer} data-animate={isInView}>
       <div className={styles.footerText}>
@@ -322,7 +322,7 @@ function Footer() {
       <RaunoSignature />
       <PacoSignature />
     </footer>
-  );
+  )
 }
 
 function RaunoSignature() {
@@ -346,7 +346,7 @@ function RaunoSignature() {
         pathLength={1}
       />
     </motion.svg>
-  );
+  )
 }
 
 function PacoSignature() {
@@ -382,5 +382,5 @@ function PacoSignature() {
         pathLength={1}
       />
     </motion.svg>
-  );
+  )
 }
