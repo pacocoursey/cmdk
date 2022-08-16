@@ -1,0 +1,26 @@
+name: Run E2E tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm install pnpm -g
+      - run: pnpm install
+      - run: pnpm playwright install --with-deps
+      - run: pnpm build
+      - run: pnpm test
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: playwright-report
+          path: playwright-report
