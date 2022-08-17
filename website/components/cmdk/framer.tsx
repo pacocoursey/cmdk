@@ -1,8 +1,8 @@
-import { Command } from 'cmdk';
-import React from 'react';
+import { Command } from 'cmdk'
+import React from 'react'
 
 export function FramerCMDK() {
-  const [value, setValue] = React.useState('button');
+  const [value, setValue] = React.useState('button')
   return (
     <div className="framer">
       <Command value={value} onValueChange={(v) => setValue(v)}>
@@ -51,19 +51,19 @@ export function FramerCMDK() {
         </Command.List>
       </Command>
     </div>
-  );
+  )
 }
 
 function Button() {
-  return <button>Primary</button>;
+  return <button>Primary</button>
 }
 
 function Input() {
-  return <input type="text" placeholder="Placeholder" />;
+  return <input type="text" placeholder="Placeholder" />
 }
 
 function Badge() {
-  return <div cmdk-framer-badge="">Badge</div>;
+  return <div cmdk-framer-badge="">Badge</div>
 }
 
 function Radio() {
@@ -72,7 +72,7 @@ function Radio() {
       <input type="radio" defaultChecked />
       Radio Button
     </label>
-  );
+  )
 }
 
 function Slider() {
@@ -80,15 +80,15 @@ function Slider() {
     <div cmdk-framer-slider="">
       <div />
     </div>
-  );
+  )
 }
 
 function Avatar() {
-  return <img src="/rauno.jpeg" alt="Avatar of Rauno" />;
+  return <img src="/rauno.jpeg" alt="Avatar of Rauno" />
 }
 
 function Container() {
-  return <div cmdk-framer-container="" />;
+  return <div cmdk-framer-container="" />
 }
 
 function Item({ children, value, subtitle }: { children: React.ReactNode; value: string; subtitle: string }) {
@@ -100,7 +100,7 @@ function Item({ children, value, subtitle }: { children: React.ReactNode; value:
         <span cmdk-framer-item-subtitle="">{subtitle}</span>
       </div>
     </Command.Item>
-  );
+  )
 }
 
 function ButtonIcon() {
@@ -113,7 +113,7 @@ function ButtonIcon() {
         clipRule="evenodd"
       ></path>
     </svg>
-  );
+  )
 }
 
 function InputIcon() {
@@ -126,7 +126,7 @@ function InputIcon() {
         clipRule="evenodd"
       ></path>
     </svg>
-  );
+  )
 }
 
 function RadioIcon() {
@@ -139,7 +139,7 @@ function RadioIcon() {
         clipRule="evenodd"
       ></path>
     </svg>
-  );
+  )
 }
 
 function BadgeIcon() {
@@ -152,7 +152,7 @@ function BadgeIcon() {
         clipRule="evenodd"
       ></path>
     </svg>
-  );
+  )
 }
 
 function ToggleIcon() {
@@ -165,7 +165,7 @@ function ToggleIcon() {
         clipRule="evenodd"
       ></path>
     </svg>
-  );
+  )
 }
 
 function AvatarIcon() {
@@ -178,7 +178,7 @@ function AvatarIcon() {
         clipRule="evenodd"
       ></path>
     </svg>
-  );
+  )
 }
 
 function ContainerIcon() {
@@ -191,7 +191,7 @@ function ContainerIcon() {
         clipRule="evenodd"
       ></path>
     </svg>
-  );
+  )
 }
 
 function SearchIcon() {
@@ -206,7 +206,7 @@ function SearchIcon() {
     >
       <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
     </svg>
-  );
+  )
 }
 
 function SliderIcon() {
@@ -219,5 +219,5 @@ function SliderIcon() {
         clipRule="evenodd"
       ></path>
     </svg>
-  );
+  )
 }

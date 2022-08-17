@@ -15,8 +15,9 @@ jobs:
       - uses: actions/setup-node@v3
       - run: npm install pnpm -g
       - run: pnpm install
-      - run: pnpm playwright install --with-deps
       - run: pnpm build
+      - run: pnpm test:format
+      - run: pnpm playwright install --with-deps
       - run: pnpm test
       - name: Upload test results
         if: always()

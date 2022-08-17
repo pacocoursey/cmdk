@@ -6,12 +6,15 @@
     "dev": "pnpm -F cmdk build --watch",
     "website": "pnpm -F cmdk-website dev",
     "testsite": "pnpm -F cmdk-tests dev",
+    "format": "prettier '**/*.{js,jsx,ts,tsx,json,md,mdx,css,scss,yaml,yml}' --write",
+    "test:format": "prettier '**/*.{js,jsx,ts,tsx,json,md,mdx,css,scss,yaml,yml}' --check",
     "test": "playwright test"
   },
   "devDependencies": {
     "@playwright/test": "1.24.1",
     "tsup": "6.2.1",
-    "typescript": "4.6.4"
+    "typescript": "4.6.4",
+    "prettier": "2.7.1"
   },
   "packageManager": "pnpm@7.9.0"
 }

@@ -1,5 +1,5 @@
 {
-    "headers": [
+  "headers": [
     {
       "source": "/inter-var-latin.woff2",
       "headers": [
@@ -8,6 +8,6 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
-    }    
+    }
   ]
 }
