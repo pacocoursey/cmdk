@@ -617,7 +617,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
   const headingRef = React.useRef<HTMLDivElement>(null)
   const headingId = React.useId()
   const context = useCommand()
-  const render = useCmdk((state) => (!state.search ? true : state.filtered.groups.has(id)))
+  const render = useCmdk((state) => context.filter() === false ? true : (!state.search ? true : state.filtered.groups.has(id)))
 
   useLayoutEffect(() => {
     return context.group(id)
