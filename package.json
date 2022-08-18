@@ -7,6 +7,7 @@
     "website": "pnpm -F cmdk-website dev",
     "testsite": "pnpm -F cmdk-tests dev",
     "format": "prettier '**/*.{js,jsx,ts,tsx,json,md,mdx,css,scss,yaml,yml}' --write",
+    "preinstall": "npx only-allow pnpm",
     "test:format": "prettier '**/*.{js,jsx,ts,tsx,json,md,mdx,css,scss,yaml,yml}' --check",
     "test": "playwright test"
   },
