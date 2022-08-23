@@ -904,6 +904,7 @@ function useValue(
       }
     })()
 
+    if (typeof value === 'undefined') return
     context.value(id, value)
     ref.current?.setAttribute(VALUE_ATTR, value)
     valueRef.current = value
