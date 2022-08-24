@@ -54,6 +54,14 @@ test.describe('basic behavior', async () => {
     await expect(page.locator(`[cmdk-empty]`)).toHaveText('No results.')
   })
 
+  test('items filtered back after the empty component and backspace', async ({ page }) => {
+    const input = page.locator('[cmdk-input]')
+    await input.type('Itemm')
+    await input.press('Backspace')
+    await expect(page.locator(`[cmdk-item]`)).toHaveCount(1)
+    await expect(page.locator(`[cmdk-item][data-value="item"]`)).toHaveText('Item')
+  })
+
   test('className is applied to each part', async ({ page }) => {
     await expect(page.locator(`.root`)).toHaveCount(1)
     await expect(page.locator(`.input`)).toHaveCount(1)

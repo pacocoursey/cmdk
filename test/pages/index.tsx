@@ -8,7 +8,8 @@ const Page = () => {
         <Command.List className="list">
           <Command.Empty className="empty">No results.</Command.Empty>
           <Command.Item onSelect={() => console.log('Item selected')} className="item">
-            Item
+            {/* <span> to force textValue instead of children */}
+            <span>Item</span>
           </Command.Item>
           <Command.Item value="xxx" className="item">
             Value
