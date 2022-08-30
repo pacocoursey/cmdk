@@ -11,7 +11,7 @@ Demo and examples: [cmdk.paco.me](https://cmdk.paco.me)
 ## Install
 
 ```bash
-$ npm install cmdk
+npm install cmdk
 ```
 
 ## Use
