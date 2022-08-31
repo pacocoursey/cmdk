@@ -14,12 +14,8 @@ type SeparatorProps = DivProps & {
   /** Whether this separator should always be rendered. Useful if you disable automatic filtering. */
   alwaysRender?: boolean
 }
-type DialogProps = RadixDialog.DialogProps & CommandProps & {
-  /**
-   * Pass an element which will be used as Dialog.Trigger inside Dialog.Root
-   */
-  trigger?: React.ReactNode
-}
+type DialogProps = RadixDialog.DialogProps & CommandProps
+type DialogPortalProps = RadixDialog.DialogPortalProps & CommandProps
 type ListProps = Children & DivProps & {}
 type ItemProps = Children &
   Omit<DivProps, 'disabled' | 'onSelect' | 'value'> & {
@@ -750,13 +746,26 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
 })
 
 /**
+ * Dialog Portal
+ */
+const DialogPortal = React.forwardRef<HTMLDivElement, DialogPortalProps>((props, forwardedRef) => {
+  return (
+    <RadixDialog.Portal>
+      <RadixDialog.Overlay cmdk-overlay="" />
+      <RadixDialog.Content aria-label={props.label} cmdk-dialog="">
+        <Command ref={forwardedRef} {...props} />
+      </RadixDialog.Content>
+    </RadixDialog.Portal>
+  )
+})
+
+/**
  * Renders the command menu in a Radix Dialog.
  */
 const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRef) => {
-  const { open, onOpenChange, trigger, ...etc } = props
+  const { open, onOpenChange, ...etc } = props
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
-      {trigger && <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger>}
       <RadixDialog.Portal>
         <RadixDialog.Overlay cmdk-overlay="" />
         <RadixDialog.Content aria-label={props.label} cmdk-dialog="">
@@ -811,6 +820,7 @@ const pkg = Object.assign(Command, {
   Group,
   Separator,
   Dialog,
+  DialogPortal,
   Empty,
   Loading,
 })
