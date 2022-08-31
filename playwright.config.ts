@@ -7,7 +7,7 @@ const config: PlaywrightTestConfig = {
   testDir: './test',
   use: {
     trace: 'on-first-retry',
-    baseURL: process.env.CI ? process.env.BASE_URL : 'http://localhost:3000',
+    baseURL: 'http://localhost:3000',
   },
   timeout: 5000,
   webServer: {

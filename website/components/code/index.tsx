@@ -1,8 +1,8 @@
-import React from 'react';
-import copy from 'copy-to-clipboard';
-import Highlight, { defaultProps } from 'prism-react-renderer';
-import styles from './code.module.scss';
-import { CopyIcon } from 'components/icons';
+import React from 'react'
+import copy from 'copy-to-clipboard'
+import Highlight, { defaultProps } from 'prism-react-renderer'
+import styles from './code.module.scss'
+import { CopyIcon } from 'components/icons'
 
 const theme = {
   plain: {
@@ -36,7 +36,7 @@ const theme = {
       },
     },
   ],
-};
+}
 
 export function Code({ children }: { children: string }) {
   return (
@@ -46,7 +46,7 @@ export function Code({ children }: { children: string }) {
           <button
             aria-label="Copy Code"
             onClick={() => {
-              copy(children);
+              copy(children)
             }}
           >
             <CopyIcon />
@@ -62,5 +62,5 @@ export function Code({ children }: { children: string }) {
         </pre>
       )}
     </Highlight>
-  );
+  )
 }

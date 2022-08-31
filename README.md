@@ -11,7 +11,7 @@ Demo and examples: [cmdk.paco.me](https://cmdk.paco.me)
 ## Install
 
 ```bash
-$ npm install cmdk
+npm install cmdk
 ```
 
 ## Use
@@ -222,14 +222,14 @@ const [loading, setLoading] = React.useState(false)
 return <Command.List>{loading && <Command.Loading>Hang on…</Command.Loading>}</Command.List>
 ```
 
-### `useCmdk(state => state.selectedField)`
+### `useCommandState(state => state.selectedField)`
 
 Hook that composes [`useSyncExternalStore`](https://reactjs.org/docs/hooks-reference.html#usesyncexternalstore). Pass a function that returns a slice of the command menu state to re-render when that slice changes. This hook is provided for advanced use cases and should not be commonly used.
 
 A good use case would be to render a more detailed empty state, like so:
 
 ```tsx
-const search = useCmdk((state) => state.search)
+const search = useCommandState((state) => state.search)
 return <Command.Empty>No results found for "{search}".</Command.Empty>
 ```
 
@@ -292,7 +292,7 @@ If your items have nested sub-items that you only want to reveal when searching,
 
 ```tsx
 const SubItem = (props) => {
-  const search = useCmdk((state) => state.search)
+  const search = useCommandState((state) => state.search)
   if (!search) return null
   return <Command.Item {...props} />
 }

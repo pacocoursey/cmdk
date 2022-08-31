@@ -1,46 +1,46 @@
-import React from 'react';
-import { Command } from 'cmdk';
+import React from 'react'
+import { Command } from 'cmdk'
 
 export function VercelCMDK() {
-  const ref = React.useRef<HTMLDivElement | null>(null);
-  const [inputValue, setInputValue] = React.useState('');
+  const ref = React.useRef<HTMLDivElement | null>(null)
+  const [inputValue, setInputValue] = React.useState('')
 
-  const [pages, setPages] = React.useState<string[]>(['home']);
-  const activePage = pages[pages.length - 1];
-  const isHome = activePage === 'home';
+  const [pages, setPages] = React.useState<string[]>(['home'])
+  const activePage = pages[pages.length - 1]
+  const isHome = activePage === 'home'
 
   const popPage = React.useCallback(() => {
     setPages((pages) => {
-      const x = [...pages];
-      x.splice(-1, 1);
-      return x;
-    });
-  }, []);
+      const x = [...pages]
+      x.splice(-1, 1)
+      return x
+    })
+  }, [])
 
   const onKeyDown = React.useCallback(
     (e: KeyboardEvent) => {
       if (isHome || inputValue.length) {
-        return;
+        return
       }
 
       if (e.key === 'Backspace') {
-        e.preventDefault();
-        popPage();
+        e.preventDefault()
+        popPage()
       }
     },
     [inputValue.length, isHome, popPage],
-  );
+  )
 
   function bounce() {
     if (ref.current) {
-      ref.current.style.transform = 'scale(0.96)';
+      ref.current.style.transform = 'scale(0.96)'
       setTimeout(() => {
         if (ref.current) {
-          ref.current.style.transform = '';
+          ref.current.style.transform = ''
         }
-      }, 100);
+      }, 100)
 
-      setInputValue('');
+      setInputValue('')
     }
   }
 
@@ -50,17 +50,17 @@ export function VercelCMDK() {
         ref={ref}
         onKeyDown={(e: React.KeyboardEvent) => {
           if (e.key === 'Enter') {
-            bounce();
+            bounce()
           }
 
           if (isHome || inputValue.length) {
-            return;
+            return
           }
 
           if (e.key === 'Backspace') {
-            e.preventDefault();
-            popPage();
-            bounce();
+            e.preventDefault()
+            popPage()
+            bounce()
           }
         }}
       >
@@ -75,7 +75,7 @@ export function VercelCMDK() {
           autoFocus
           placeholder="What do you need?"
           onValueChange={(value) => {
-            setInputValue(value);
+            setInputValue(value)
           }}
         />
         <Command.List>
@@ -85,7 +85,7 @@ export function VercelCMDK() {
         </Command.List>
       </Command>
     </div>
-  );
+  )
 }
 
 function Home({ searchProjects }: { searchProjects: Function }) {
@@ -95,7 +95,7 @@ function Home({ searchProjects }: { searchProjects: Function }) {
         <Item
           shortcut="S P"
           onSelect={() => {
-            searchProjects();
+            searchProjects()
           }}
         >
           <ProjectsIcon />
@@ -131,7 +131,7 @@ function Home({ searchProjects }: { searchProjects: Function }) {
         </Item>
       </Command.Group>
     </>
-  );
+  )
 }
 
 function Projects() {
@@ -144,7 +144,7 @@ function Projects() {
       <Item>Project 5</Item>
       <Item>Project 6</Item>
     </>
-  );
+  )
 }
 
 function Item({
@@ -152,9 +152,9 @@ function Item({
   shortcut,
   onSelect = () => {},
 }: {
-  children: React.ReactNode;
-  shortcut?: string;
-  onSelect?: (value: string) => void;
+  children: React.ReactNode
+  shortcut?: string
+  onSelect?: (value: string) => void
 }) {
   return (
     <Command.Item onSelect={onSelect}>
@@ -162,12 +162,12 @@ function Item({
       {shortcut && (
         <div cmdk-vercel-shortcuts="">
           {shortcut.split(' ').map((key) => {
-            return <kbd key={key}>{key}</kbd>;
+            return <kbd key={key}>{key}</kbd>
           })}
         </div>
       )}
     </Command.Item>
-  );
+  )
 }
 
 function ProjectsIcon() {
@@ -188,7 +188,7 @@ function ProjectsIcon() {
       <path d="M14 14h7v7h-7z"></path>
       <path d="M3 14h7v7H3z"></path>
     </svg>
-  );
+  )
 }
 
 function PlusIcon() {
@@ -207,7 +207,7 @@ function PlusIcon() {
       <path d="M12 5v14"></path>
       <path d="M5 12h14"></path>
     </svg>
-  );
+  )
 }
 
 function TeamsIcon() {
@@ -228,7 +228,7 @@ function TeamsIcon() {
       <path d="M23 21v-2a4 4 0 00-3-3.87"></path>
       <path d="M16 3.13a4 4 0 010 7.75"></path>
     </svg>
-  );
+  )
 }
 
 function CopyIcon() {
@@ -246,7 +246,7 @@ function CopyIcon() {
     >
       <path d="M8 17.929H6c-1.105 0-2-.912-2-2.036V5.036C4 3.91 4.895 3 6 3h8c1.105 0 2 .911 2 2.036v1.866m-6 .17h8c1.105 0 2 .91 2 2.035v10.857C20 21.09 19.105 22 18 22h-8c-1.105 0-2-.911-2-2.036V9.107c0-1.124.895-2.036 2-2.036z"></path>
     </svg>
-  );
+  )
 }
 
 function DocsIcon() {
@@ -268,7 +268,7 @@ function DocsIcon() {
       <path d="M16 17H8"></path>
       <path d="M10 9H8"></path>
     </svg>
-  );
+  )
 }
 
 function FeedbackIcon() {
@@ -286,7 +286,7 @@ function FeedbackIcon() {
     >
       <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path>
     </svg>
-  );
+  )
 }
 
 function ContactIcon() {
@@ -305,5 +305,5 @@ function ContactIcon() {
       <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
       <path d="M22 6l-10 7L2 6"></path>
     </svg>
-  );
+  )
 }

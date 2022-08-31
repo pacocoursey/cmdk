@@ -1,18 +1,18 @@
-import 'styles/globals.scss';
+import 'styles/globals.scss'
 
-import 'styles/cmdk/vercel.scss';
-import 'styles/cmdk/linear.scss';
-import 'styles/cmdk/raycast.scss';
-import 'styles/cmdk/framer.scss';
+import 'styles/cmdk/vercel.scss'
+import 'styles/cmdk/linear.scss'
+import 'styles/cmdk/raycast.scss'
+import 'styles/cmdk/framer.scss'
 
-import type { AppProps } from 'next/app';
-import { ThemeProvider } from 'next-themes';
-import { NextSeo } from 'next-seo';
-import Head from 'next/head';
+import type { AppProps } from 'next/app'
+import { ThemeProvider } from 'next-themes'
+import { NextSeo } from 'next-seo'
+import Head from 'next/head'
 
-const title = '⌘K';
-const description = 'Fast, composable, unstyled command menu for React';
-const siteUrl = 'https://cmdk.paco.me';
+const title = '⌘K'
+const description = 'Fast, composable, unstyled command menu for React'
+const siteUrl = 'https://cmdk.paco.me'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -41,5 +41,5 @@ export default function App({ Component, pageProps }: AppProps) {
         <Component {...pageProps} />
       </ThemeProvider>
     </>
-  );
+  )
 }
