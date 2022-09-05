@@ -13,7 +13,7 @@ test.describe('arrow keybinds', async () => {
     await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'first')
   })
 
-  test.only('meta arrow up/down goes to first and last item', async ({ page }) => {
+  test('meta arrow up/down goes to first and last item', async ({ page }) => {
     await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'first')
     await page.locator(`[cmdk-input]`).press('Meta+ArrowDown')
     await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'last')
