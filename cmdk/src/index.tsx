@@ -593,7 +593,6 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   return (
     <div
       ref={mergeRefs([ref, forwardedRef])}
-      id={id}
       {...etc}
       cmdk-item=""
       role="option"
