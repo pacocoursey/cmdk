@@ -440,7 +440,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     }
   }
 
-  const last = () => updateSelectedToIndex(state.current.filtered.count - 1)
+  const last = () => updateSelectedToIndex(getValidItems().length - 1)
 
   const next = (e: React.KeyboardEvent) => {
     e.preventDefault()
