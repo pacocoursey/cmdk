@@ -19,7 +19,7 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "@radix-ui/react-dialog": "0.1.7",
+    "@radix-ui/react-dialog": "1.0.0",
     "command-score": "0.1.2"
   },
   "devDependencies": {
