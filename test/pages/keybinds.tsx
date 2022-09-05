@@ -9,6 +9,10 @@ const Page = () => {
         <Command.List>
           <Command.Empty>No results.</Command.Empty>
 
+          <Command.Item value="disabled" disabled>
+            Disabled
+          </Command.Item>
+
           <Command.Item value="first">First</Command.Item>
 
           <Command.Group heading="Letters">
