@@ -419,7 +419,12 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     const index = items.findIndex((item) => item === selected)
 
     // Get item at this index
-    const newSelected = items[index + change]
+    const newSelected = index + change === -1
+      ? items[items.length-1]
+      : index + change === items.length
+        ? items[0]
+        : items[index + change]
+
     if (newSelected) store.setState('value', newSelected.getAttribute(VALUE_ATTR))
   }
 
