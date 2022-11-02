@@ -150,10 +150,13 @@ return (
 You can provide a `container` prop that accepts an HTML element that is forwarded to Radix UI's Dialog Portal component to specify which element the Dialog should portal into (defaults to `body`). See the [Radix Documentation](https://www.radix-ui.com/docs/primitives/components/dialog#portal) for more information.
 
 ```tsx
-const element = document.querySelector("#container")
+const containerElement = React.useRef(null)
 
 return (
-  <Command.Dialog container={element} />
+  <>
+    <Command.Dialog container={containerElement.current} />
+    <div ref={containerElement} />
+  </>
 )
 ```
 
