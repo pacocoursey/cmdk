@@ -426,9 +426,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     let newSelected = items[index + change]
 
     if (propsRef.current?.loop) {
-      newSelected = index + change < 0
-        ? items[items.length-1]
-        : index + change === items.length
+      newSelected =
+        index + change < 0
+          ? items[items.length - 1]
+          : index + change === items.length
           ? items[0]
           : items[index + change]
     }
