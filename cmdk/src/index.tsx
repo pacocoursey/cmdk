@@ -14,8 +14,11 @@ type SeparatorProps = DivProps & {
   /** Whether this separator should always be rendered. Useful if you disable automatic filtering. */
   alwaysRender?: boolean
 }
-/** `container`: Provide a custom element the Dialog should portal into. */
-type DialogProps = RadixDialog.DialogProps & CommandProps & { container?: HTMLElement }
+type DialogProps = RadixDialog.DialogProps &
+  CommandProps & {
+    /** Provide a custom element the Dialog should portal into. */
+    container?: HTMLElement
+  }
 type ListProps = Children & DivProps & {}
 type ItemProps = Children &
   Omit<DivProps, 'disabled' | 'onSelect' | 'value'> & {
