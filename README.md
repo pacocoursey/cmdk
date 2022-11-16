@@ -133,6 +133,10 @@ Or disable filtering and sorting entirely:
 </Command>
 ```
 
+You can make the arrow keys wrap around the list (when you reach the end, it goes back to the first item) by setting the `loop` prop:
+
+<Command loop />
+
 ### Dialog `[cmdk-dialog]` `[cmdk-overlay]`
 
 Props are forwarded to [Command](#command-cmdk-root). Composes Radix UI's Dialog component. The overlay is always rendered. See the [Radix Documentation](https://www.radix-ui.com/docs/primitives/components/dialog) for more information. Can be controlled with the `open` and `onOpenChange` props.

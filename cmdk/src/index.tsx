@@ -70,6 +70,10 @@ type CommandProps = Children &
      * Event handler called when the selected item of the menu changes.
      */
     onValueChange?: (value: string) => void
+    /**
+     * Optionally set to `true` to turn on looping around when using the arrow keys.
+     */
+    loop?: boolean
   }
 
 type Context = {
@@ -419,7 +423,17 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     const index = items.findIndex((item) => item === selected)
 
     // Get item at this index
-    const newSelected = items[index + change]
+    let newSelected = items[index + change]
+
+    if (propsRef.current?.loop) {
+      newSelected =
+        index + change < 0
+          ? items[items.length - 1]
+          : index + change === items.length
+          ? items[0]
+          : items[index + change]
+    }
+
     if (newSelected) store.setState('value', newSelected.getAttribute(VALUE_ATTR))
   }
 
