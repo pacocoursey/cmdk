@@ -738,12 +738,18 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
     if (height.current && ref.current) {
       const el = height.current
       const wrapper = ref.current
+      let animationFrame
       const observer = new ResizeObserver(() => {
-        const height = el.getBoundingClientRect().height
-        wrapper.style.setProperty(`--cmdk-list-height`, height.toFixed(1) + 'px')
+        animationFrame = requestAnimationFrame(() => {
+          const height = el.getBoundingClientRect().height
+          wrapper.style.setProperty(`--cmdk-list-height`, height.toFixed(1) + 'px')
+        })
       })
       observer.observe(el)
-      return () => observer.unobserve(el)
+      return () => {
+        cancelAnimationFrame(animationFrame)
+        observer.unobserve(el)
+      }
     }
   }, [])
 
