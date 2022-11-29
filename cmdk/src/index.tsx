@@ -157,7 +157,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   const schedule = useScheduleLayoutEffect()
 
-  const gridEl = ref.current?.querySelector('[cmdk-grid=""]')
+  const gridEl = ref.current?.querySelector('[data-columns]')
   const gridColumns = Number(gridEl?.getAttribute('data-columns'))
 
   /** Controlled mode `value` handling. */
@@ -818,44 +818,11 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
  */
 const Grid = React.forwardRef<HTMLDivElement, GridProps>((props, forwardedRef) => {
   const { children, columns, ...etc } = props
-  const ref = React.useRef<HTMLDivElement>(null)
-  const height = React.useRef<HTMLDivElement>(null)
-  const context = useCommand()
-
-  React.useEffect(() => {
-    if (height.current && ref.current) {
-      const el = height.current
-      const wrapper = ref.current
-      let animationFrame
-      const observer = new ResizeObserver(() => {
-        animationFrame = requestAnimationFrame(() => {
-          const height = el.getBoundingClientRect().height
-          wrapper.style.setProperty(`--cmdk-list-height`, height.toFixed(1) + 'px')
-        })
-      })
-      observer.observe(el)
-      return () => {
-        cancelAnimationFrame(animationFrame)
-        observer.unobserve(el)
-      }
-    }
-  }, [])
 
   return (
-    <div
-      ref={mergeRefs([ref, forwardedRef])}
-      {...etc}
-      cmdk-grid=""
-      data-columns={columns}
-      role="listbox"
-      aria-label="Suggestions"
-      id={context.listId}
-      aria-labelledby={context.inputId}
-    >
-      <div ref={height} cmdk-list-sizer="">
-        {children}
-      </div>
-    </div>
+    <List data-columns={columns} ref={forwardedRef} {...etc}>
+      {children}
+    </List>
   )
 })
 
