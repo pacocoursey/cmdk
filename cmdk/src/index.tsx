@@ -534,11 +534,15 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
               break
             }
             case 'ArrowLeft': {
-              prev(e)
+              if (gridColumns) {
+                prev(e)
+              }
               break
             }
             case 'ArrowRight': {
-              next(e)
+              if (gridColumns) {
+                next(e)
+              }
               break
             }
             case 'ArrowDown': {
