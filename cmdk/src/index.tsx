@@ -774,6 +774,8 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
   const { children, ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const height = React.useRef<HTMLDivElement>(null)
+  const isGrid = etc['data-columns']
+
   const context = useCommand()
 
   React.useEffect(() => {
@@ -799,7 +801,8 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
     <div
       ref={mergeRefs([ref, forwardedRef])}
       {...etc}
-      cmdk-list=""
+      cmdk-list={!isGrid ? '' : undefined}
+      cmdk-grid={isGrid ? '' : undefined}
       role="listbox"
       aria-label="Suggestions"
       id={context.listId}
