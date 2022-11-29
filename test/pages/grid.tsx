@@ -5,7 +5,7 @@ const Page = () => {
     <div>
       <Command className="root">
         <Command.Input placeholder="Search…" className="input" />
-        <Command.List className="list">
+        <Command.Grid columns={2} className="list">
           <Command.Empty className="empty">No results.</Command.Empty>
           <Command.Item onSelect={() => console.log('Item selected')} className="item">
             Item
@@ -13,7 +13,13 @@ const Page = () => {
           <Command.Item value="xxx" className="item">
             Value
           </Command.Item>
-        </Command.List>
+          <Command.Item value="ddd" className="item">
+            Value 2
+          </Command.Item>
+          <Command.Item value="fff" className="item">
+            Value 3
+          </Command.Item>
+        </Command.Grid>
       </Command>
     </div>
   )
