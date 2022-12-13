@@ -178,11 +178,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           // Filter synchronously before emitting back to children
           filterItems()
           sort()
-          schedule(1, () => {
-            // Select the first item and emit again
-            selectFirstItem()
-            store.emit()
-          })
+          schedule(1, selectFirstItem)
         } else if (key === 'value') {
           if (propsRef.current?.value !== undefined) {
             // If controlled, just call the callback instead of updating state internally
@@ -349,7 +345,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   function selectFirstItem() {
     const item = getValidItems().find((item) => !item.ariaDisabled)
     const value = item?.getAttribute(VALUE_ATTR)
-    state.current.value = value || undefined
+    store.setState('value', value || undefined)
   }
 
   /** Filters the current items. */
