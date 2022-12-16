@@ -20,6 +20,12 @@ type DialogProps = RadixDialog.DialogProps &
     container?: HTMLElement
   }
 type ListProps = Children & DivProps & {}
+type GridProps = ListProps &
+  Children &
+  DivProps & {
+    /** Amount of columns for the grid */
+    columns: number
+  }
 type ItemProps = Children &
   Omit<DivProps, 'disabled' | 'onSelect' | 'value'> & {
     /** Whether this item is currently disabled. */
@@ -150,6 +156,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const inputId = React.useId()
 
   const schedule = useScheduleLayoutEffect()
+
+  const gridEl = ref.current?.querySelector('[data-columns]')
+  const gridColumns = Number(gridEl?.getAttribute('data-columns'))
 
   /** Controlled mode `value` handling. */
   useLayoutEffect(() => {
@@ -486,6 +495,22 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     }
   }
 
+  const prevRow = (e: React.KeyboardEvent) => {
+    e.preventDefault()
+    const selected = getSelectedItem()
+    const items = getValidItems()
+    const index = items.findIndex((item) => item === selected)
+    updateSelectedToIndex(index - gridColumns)
+  }
+
+  const nextRow = (e: React.KeyboardEvent) => {
+    e.preventDefault()
+    const selected = getSelectedItem()
+    const items = getValidItems()
+    const index = items.findIndex((item) => item === selected)
+    updateSelectedToIndex(index + gridColumns)
+  }
+
   return (
     <div
       ref={mergeRefs([ref, forwardedRef])}
@@ -504,8 +529,24 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
               }
               break
             }
+            case 'ArrowLeft': {
+              if (gridColumns) {
+                prev(e)
+              }
+              break
+            }
+            case 'ArrowRight': {
+              if (gridColumns) {
+                next(e)
+              }
+              break
+            }
             case 'ArrowDown': {
-              next(e)
+              if (gridColumns) {
+                nextRow(e)
+              } else {
+                next(e)
+              }
               break
             }
             case 'p':
@@ -517,7 +558,12 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
               break
             }
             case 'ArrowUp': {
-              prev(e)
+              if (gridColumns) {
+                prevRow(e)
+              } else {
+                prev(e)
+              }
+
               break
             }
             case 'Home': {
@@ -728,6 +774,8 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
   const { children, ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const height = React.useRef<HTMLDivElement>(null)
+  const isGrid = etc['data-columns']
+
   const context = useCommand()
 
   React.useEffect(() => {
@@ -753,7 +801,8 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
     <div
       ref={mergeRefs([ref, forwardedRef])}
       {...etc}
-      cmdk-list=""
+      cmdk-list={!isGrid ? '' : undefined}
+      cmdk-grid={isGrid ? '' : undefined}
       role="listbox"
       aria-label="Suggestions"
       id={context.listId}
@@ -763,6 +812,20 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
         {children}
       </div>
     </div>
+  )
+})
+
+/**
+ * Contains `Item`, `Group`, and `Separator`.
+ * Use the `--cmdk-list-height` CSS variable to animate height based on the number of results.
+ */
+const Grid = React.forwardRef<HTMLDivElement, GridProps>((props, forwardedRef) => {
+  const { children, columns, ...etc } = props
+
+  return (
+    <List data-columns={columns} ref={forwardedRef} {...etc}>
+      {children}
+    </List>
   )
 })
 
@@ -822,6 +885,7 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwarded
 
 const pkg = Object.assign(Command, {
   List,
+  Grid,
   Item,
   Input,
   Group,
