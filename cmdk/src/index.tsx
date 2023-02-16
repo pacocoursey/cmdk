@@ -465,6 +465,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     } else if (e.altKey) {
       // Next group
       updateSelectedToGroup(1)
+    } else if (e.shiftKey) {
+      // Previous item for Shit+Tab
+      updateSelectedByChange(-1)
     } else {
       // Next item
       updateSelectedByChange(1)
@@ -505,6 +508,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
               break
             }
             case 'ArrowDown': {
+              next(e)
+              break
+            }
+            case 'Tab': {
               next(e)
               break
             }
