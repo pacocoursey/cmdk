@@ -154,7 +154,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   /** Controlled mode `value` handling. */
   useLayoutEffect(() => {
     if (value !== undefined) {
-      const v = value.trim().toLowerCase()
+      const v = value.trim()
       state.current.value = v
       schedule(6, scrollSelectedIntoView)
       store.emit()
@@ -916,11 +916,11 @@ function useValue(
     const value = (() => {
       for (const part of deps) {
         if (typeof part === 'string') {
-          return part.trim().toLowerCase()
+          return part.trim()
         }
 
         if (typeof part === 'object' && 'current' in part && part.current) {
-          return part.current.textContent?.trim().toLowerCase()
+          return part.current.textContent?.trim()
         }
       }
     })()
