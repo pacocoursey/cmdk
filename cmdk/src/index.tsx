@@ -36,7 +36,7 @@ type GroupProps = Children &
   Omit<DivProps, 'heading' | 'value'> & {
     /** Optional heading to render for this group. */
     heading?: React.ReactNode
-    /** If no heading is provided, you must provie a value that is unique for this group. */
+    /** If no heading is provided, you must provide a value that is unique for this group. */
     value?: string
   }
 type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> & {
