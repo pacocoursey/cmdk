@@ -831,8 +831,19 @@ const pkg = Object.assign(Command, {
   Empty,
   Loading,
 })
+
 export { useCmdk as useCommandState }
 export { pkg as Command }
+
+export { Command as CommandRoot }
+export { List as CommandList }
+export { Item as CommandItem }
+export { Input as CommandInput }
+export { Group as CommandGroup }
+export { Separator as CommandSeparator }
+export { Dialog as CommandDialog }
+export { Empty as CommandEmpty }
+export { Loading as CommandLoading }
 
 /**
  *
