@@ -18,4 +18,10 @@ test.describe('group', async () => {
     await expect(page.locator(`[cmdk-group][data-value="letters"]`)).not.toBeVisible()
     await expect(page.locator(`[cmdk-group][data-value="numbers"]`)).toBeVisible()
   })
+
+  test('mounted group still rendered with filter using forceMount', async ({ page }) => {
+    await page.locator(`data-testid=forceMount`).click()
+    await page.locator(`[cmdk-input]`).type('Giraffe')
+    await expect(page.locator(`[cmdk-group][data-value="letters"]`)).toBeVisible()
+  })
 })
