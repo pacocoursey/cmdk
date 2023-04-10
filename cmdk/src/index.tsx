@@ -183,7 +183,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         } else if (key === 'value') {
           if (propsRef.current?.value !== undefined) {
             // If controlled, just call the callback instead of updating state internally
-            propsRef.current.onValueChange?.(value as string)
+            const newValue = (value ?? '') as string
+            propsRef.current.onValueChange?.(newValue)
             return
             // opts is a boolean referring to whether it should NOT be scrolled into view
           } else if (!opts) {
