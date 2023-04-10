@@ -21,6 +21,15 @@ test.describe('props', async () => {
     await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveAttribute('data-value', 'anteater')
   })
 
+  test('keep controlled value if empty results', async ({ page }) => {
+    await page.goto('/props')
+    await expect(page.locator(`[data-testid=value]`)).toHaveText('ant')
+    await page.locator(`[cmdk-input]`).fill('d')
+    await expect(page.locator(`[data-testid=value]`)).toHaveText('')
+    await page.locator(`[cmdk-input]`).fill('ant')
+    await expect(page.locator(`[data-testid=value]`)).toHaveText('ant')
+  })
+
   test('controlled search', async ({ page }) => {
     await page.goto('/props')
     await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveAttribute('data-value', 'ant')
