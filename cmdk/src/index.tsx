@@ -86,6 +86,7 @@ type Context = {
   group: (id: string) => () => void
   filter: () => boolean
   label: string
+  commandRef: React.RefObject<HTMLDivElement | null>
   // Ids
   listId: string
   labelId: string
@@ -273,6 +274,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         return propsRef.current.shouldFilter
       },
       label: label || props['aria-label'],
+      commandRef: ref,
       listId,
       inputId,
       labelId,
@@ -609,6 +611,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
     <div
       ref={mergeRefs([ref, forwardedRef])}
       {...etc}
+      id={id}
       cmdk-item=""
       role="option"
       aria-disabled={disabled || undefined}
@@ -687,7 +690,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
   const isControlled = props.value != null
   const store = useStore()
   const search = useCmdk((state) => state.search)
+  const value = useCmdk((state) => state.value)
   const context = useCommand()
+
+  const selectedItemId = React.useMemo(() => {
+    const item = context.commandRef.current?.querySelector(`${ITEM_SELECTOR}[${VALUE_ATTR}="${value}"]`)
+    return item?.getAttribute('id')
+  }, [value, context.commandRef])
 
   React.useEffect(() => {
     if (props.value != null) {
@@ -708,6 +717,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
       aria-expanded={true}
       aria-controls={context.listId}
       aria-labelledby={context.labelId}
+      aria-activedescendant={selectedItemId}
       id={context.inputId}
       type="text"
       value={isControlled ? props.value : search}
