@@ -31,6 +31,8 @@ type ItemProps = Children &
      * If no value is provided, it will be inferred from `children` or the rendered `textContent`. If your `textContent` changes between renders, you _must_ provide a stable, unique `value`.
      */
     value?: string
+    /** Whether this item is forcibly rendered regardless of filtering. */
+    forceMount?: boolean
   }
 type GroupProps = Children &
   Omit<DivProps, 'heading' | 'value'> & {
@@ -38,6 +40,8 @@ type GroupProps = Children &
     heading?: React.ReactNode
     /** If no heading is provided, you must provide a value that is unique for this group. */
     value?: string
+    /** Whether this group is forcibly rendered regardless of filtering. */
+    forceMount?: boolean
   }
 type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> & {
   /**
@@ -585,7 +589,13 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const store = useStore()
   const selected = useCmdk((state) => state.value && state.value === value.current)
   const render = useCmdk((state) =>
-    context.filter() === false ? true : !state.search ? true : state.filtered.items.get(id) > 0,
+    props.forceMount
+      ? true
+      : context.filter() === false
+      ? true
+      : !state.search
+      ? true
+      : state.filtered.items.get(id) > 0,
   )
 
   React.useEffect(() => {
@@ -637,7 +647,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
   const headingId = React.useId()
   const context = useCommand()
   const render = useCmdk((state) =>
-    context.filter() === false ? true : !state.search ? true : state.filtered.groups.has(id),
+    props.forceMount ? true : context.filter() === false ? true : !state.search ? true : state.filtered.groups.has(id),
   )
 
   useLayoutEffect(() => {
