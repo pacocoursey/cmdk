@@ -438,8 +438,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         index + change < 0
           ? items[items.length - 1]
           : index + change === items.length
-            ? items[0]
-            : items[index + change]
+          ? items[0]
+          : items[index + change]
     }
 
     if (newSelected) store.setState('value', newSelected.getAttribute(VALUE_ATTR))
@@ -593,10 +593,10 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
     props.forceMount
       ? true
       : context.filter() === false
-        ? true
-        : !state.search
-          ? true
-          : state.filtered.items.get(id) > 0,
+      ? true
+      : !state.search
+      ? true
+      : state.filtered.items.get(id) > 0,
   )
 
   React.useEffect(() => {
@@ -924,7 +924,7 @@ function mergeRefs<T = any>(refs: Array<React.MutableRefObject<T> | React.Legacy
       if (typeof ref === 'function') {
         ref(value)
       } else if (ref != null) {
-        ; (ref as React.MutableRefObject<T | null>).current = value
+        ;(ref as React.MutableRefObject<T | null>).current = value
       }
     })
   }
