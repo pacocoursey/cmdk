@@ -137,7 +137,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     /** Value of the search query. */
     search: '',
     /** Currently selected item value. */
-    value: '',
+    value: props.value ?? '',
     filtered: {
       /** The count of all visible items. */
       count: 0,
@@ -254,14 +254,15 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           ids.current.delete(id)
           allItems.current.delete(id)
           state.current.filtered.items.delete(id)
+          const selectedItem = getSelectedItem()
 
           // Batch this, multiple items could be removed in one pass
           schedule(4, () => {
             filterItems()
 
-            // The item removed could have been the selected one,
+            // The item removed have been the selected one,
             // so selection should be moved to the first
-            selectFirstItem()
+            if (selectedItem?.getAttribute('id') === id) selectFirstItem()
 
             store.emit()
           })
@@ -413,7 +414,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   /** Getters */
 
   function getSelectedItem() {
-    return ref.current.querySelector(`${ITEM_SELECTOR}[aria-selected="true"]`)
+    return ref.current?.querySelector(`${ITEM_SELECTOR}[aria-selected="true"]`)
   }
 
   function getValidItems() {

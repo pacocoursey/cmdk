@@ -13,6 +13,7 @@ const Page = () => {
     if (router.isReady) {
       setShouldFilter(router.query.shouldFilter === 'false' ? false : true)
       setCustomFilter(router.query.customFilter === 'true' ? true : false)
+      setValue((router.query.initialValue as string) ?? 'ant')
     }
   }, [router.isReady])
 

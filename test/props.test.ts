@@ -36,4 +36,9 @@ test.describe('props', async () => {
     await page.locator(`data-testid=controlledSearch`).click()
     await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveAttribute('data-value', 'anteater')
   })
+
+  test('keep focus on the provided initial value', async ({ page }) => {
+    await page.goto('/props?initialValue=anteater')
+    await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveAttribute('data-value', 'anteater')
+  })
 })
