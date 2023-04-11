@@ -606,6 +606,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   }, [render, props.onSelect, props.disabled])
 
   function onSelect() {
+    select()
     propsRef.current.onSelect?.(value.current)
   }
 
