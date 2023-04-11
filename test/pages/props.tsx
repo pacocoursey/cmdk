@@ -13,7 +13,7 @@ const Page = () => {
     if (router.isReady) {
       setShouldFilter(router.query.shouldFilter === 'false' ? false : true)
       setCustomFilter(router.query.customFilter === 'true' ? true : false)
-      setValue(router.query.initialValue as string ?? 'ant')
+      setValue((router.query.initialValue as string) ?? 'ant')
     }
   }, [router.isReady])
 
@@ -36,10 +36,10 @@ const Page = () => {
         filter={
           customFilter
             ? (item: string | undefined, search: string | undefined) => {
-              console.log(item, search)
-              if (!search || !item) return 1
-              return item.endsWith(search) ? 1 : 0
-            }
+                console.log(item, search)
+                if (!search || !item) return 1
+                return item.endsWith(search) ? 1 : 0
+              }
             : undefined
         }
       >
