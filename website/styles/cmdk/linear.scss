@@ -75,7 +75,7 @@
     transition-property: none;
     position: relative;
 
-    &[aria-selected='true'] {
+    &:is([aria-selected='true'], :hover) {
       background: var(--gray3);
 
       svg {

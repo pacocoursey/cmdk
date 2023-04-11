@@ -66,7 +66,7 @@
     transition: all 150ms ease;
     transition-property: none;
 
-    &[aria-selected='true'] {
+    &:is([aria-selected='true'], :hover) {
       background: var(--grayA3);
       color: var(--gray12);
     }
