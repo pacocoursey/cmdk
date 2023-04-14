@@ -111,6 +111,10 @@ type Store = {
   setState: <K extends keyof State>(key: K, value: State[K], opts?: any) => void
   emit: () => void
 }
+type Group = {
+  id: string
+  forceMount?: boolean
+}
 
 const LIST_SELECTOR = `[cmdk-list-sizer=""]`
 const GROUP_SELECTOR = `[cmdk-group=""]`
@@ -129,7 +133,7 @@ const useCommand = () => React.useContext(CommandContext)
 const StoreContext = React.createContext<Store>(undefined)
 const useStore = () => React.useContext(StoreContext)
 // @ts-ignore
-const GroupContext = React.createContext<string>(undefined)
+const GroupContext = React.createContext<Group>(undefined)
 
 const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const ref = React.useRef<HTMLDivElement>(null)
@@ -581,12 +585,13 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) => {
   const id = React.useId()
   const ref = React.useRef<HTMLDivElement>(null)
-  const groupId = React.useContext(GroupContext)
+  const groupContext = React.useContext(GroupContext)
   const context = useCommand()
   const propsRef = useAsRef(props)
+  const forceMount = propsRef.current.forceMount ?? groupContext.forceMount
 
   useLayoutEffect(() => {
-    return context.item(id, groupId)
+    return context.item(id, groupContext.id)
   }, [])
 
   const value = useValue(id, ref, [props.value, props.children, ref])
@@ -594,13 +599,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const store = useStore()
   const selected = useCmdk((state) => state.value && state.value === value.current)
   const render = useCmdk((state) =>
-    props.forceMount
-      ? true
-      : context.filter() === false
-      ? true
-      : !state.search
-      ? true
-      : state.filtered.items.get(id) > 0,
+    forceMount ? true : context.filter() === false ? true : !state.search ? true : state.filtered.items.get(id) > 0,
   )
 
   React.useEffect(() => {
@@ -646,14 +645,14 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
  * Grouped items are always shown together.
  */
 const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef) => {
-  const { heading, children, ...etc } = props
+  const { heading, children, forceMount, ...etc } = props
   const id = React.useId()
   const ref = React.useRef<HTMLDivElement>(null)
   const headingRef = React.useRef<HTMLDivElement>(null)
   const headingId = React.useId()
   const context = useCommand()
   const render = useCmdk((state) =>
-    props.forceMount ? true : context.filter() === false ? true : !state.search ? true : state.filtered.groups.has(id),
+    forceMount ? true : context.filter() === false ? true : !state.search ? true : state.filtered.groups.has(id),
   )
 
   useLayoutEffect(() => {
@@ -662,7 +661,8 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
 
   useValue(id, ref, [props.value, props.heading, headingRef])
 
-  const inner = <GroupContext.Provider value={id}>{children}</GroupContext.Provider>
+  const contextValue = React.useMemo(() => ({ id, forceMount }), [])
+  const inner = <GroupContext.Provider value={contextValue}>{children}</GroupContext.Provider>
 
   return (
     <div
