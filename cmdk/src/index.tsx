@@ -591,7 +591,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const forceMount = propsRef.current?.forceMount ?? groupContext?.forceMount
 
   useLayoutEffect(() => {
-    return context.item(id, groupContext.id)
+    return context.item(id, groupContext?.id)
   }, [])
 
   const value = useValue(id, ref, [props.value, props.children, ref])
