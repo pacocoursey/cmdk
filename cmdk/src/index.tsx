@@ -766,7 +766,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
       let animationFrame
       const observer = new ResizeObserver(() => {
         animationFrame = requestAnimationFrame(() => {
-          const height = el.getBoundingClientRect().height
+          const height = el.offsetHeight
           wrapper.style.setProperty(`--cmdk-list-height`, height.toFixed(1) + 'px')
         })
       })
