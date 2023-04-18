@@ -75,6 +75,10 @@ type CommandProps = Children &
      */
     filter?: (value: string, search: string) => number
     /**
+      * Optional default item value when it is initially rendered.
+      */
+    defaultValue?: string
+    /**
      * Optional controlled state of the selected command menu item.
      */
     value?: string
@@ -137,7 +141,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     /** Value of the search query. */
     search: '',
     /** Currently selected item value. */
-    value: props.value ?? '',
+    value: props.value ?? props.defaultValue.toLowerCase() ?? '',
     filtered: {
       /** The count of all visible items. */
       count: 0,

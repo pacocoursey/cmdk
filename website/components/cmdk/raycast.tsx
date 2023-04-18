@@ -16,7 +16,7 @@ export function RaycastCMDK() {
 
   return (
     <div className="raycast">
-      <Command value={value} onValueChange={(v) => setValue(v)}>
+      <Command defaultValue="Slack">
         <div cmdk-raycast-top-shine="" />
         <Command.Input ref={inputRef} autoFocus placeholder="Search for apps and commands..." />
         <hr cmdk-raycast-loader="" />
