@@ -632,6 +632,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       role="option"
       aria-disabled={disabled || undefined}
       aria-selected={selected || undefined}
+      data-disabled={disabled || undefined}
       data-selected={selected || undefined}
       onPointerMove={disabled ? undefined : select}
       onClick={disabled ? undefined : onSelect}
