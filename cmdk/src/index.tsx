@@ -75,8 +75,8 @@ type CommandProps = Children &
      */
     filter?: (value: string, search: string) => number
     /**
-      * Optional default item value when it is initially rendered.
-      */
+     * Optional default item value when it is initially rendered.
+     */
     defaultValue?: string
     /**
      * Optional controlled state of the selected command menu item.
