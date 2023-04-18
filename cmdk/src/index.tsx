@@ -141,7 +141,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     /** Value of the search query. */
     search: '',
     /** Currently selected item value. */
-    value: props.value ?? props.defaultValue.toLowerCase() ?? '',
+    value: props.value ?? props.defaultValue?.toLowerCase() ?? '',
     filtered: {
       /** The count of all visible items. */
       count: 0,
