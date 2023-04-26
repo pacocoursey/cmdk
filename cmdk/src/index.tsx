@@ -661,7 +661,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
 
   useValue(id, ref, [props.value, props.heading, headingRef])
 
-  const contextValue = React.useMemo(() => ({ id, forceMount }), [])
+  const contextValue = React.useMemo(() => ({ id, forceMount }), [forceMount])
   const inner = <GroupContext.Provider value={contextValue}>{children}</GroupContext.Provider>
 
   return (
