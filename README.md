@@ -196,7 +196,7 @@ To scroll item into view earlier near the edges of the viewport, use scroll-padd
 }
 ```
 
-### Item `[cmdk-item]` `[aria-disabled?]` `[aria-selected?]`
+### Item `[cmdk-item]` `[data-disabled?]` `[data-selected?]`
 
 Item that becomes active on pointer enter. You should provide a unique `value` for each item, but it will be automatically inferred from the `.textContent`.
 
