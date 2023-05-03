@@ -16,6 +16,10 @@ type SeparatorProps = DivProps & {
 }
 type DialogProps = RadixDialog.DialogProps &
   CommandProps & {
+    /** Provide a className to the Dialog overlay. */
+    overlayClassName?: string
+    /** Provide a className to the Dialog content. */
+    contentClassName?: string
     /** Provide a custom element the Dialog should portal into. */
     container?: HTMLElement
   }
@@ -31,13 +35,17 @@ type ItemProps = Children &
      * If no value is provided, it will be inferred from `children` or the rendered `textContent`. If your `textContent` changes between renders, you _must_ provide a stable, unique `value`.
      */
     value?: string
+    /** Whether this item is forcibly rendered regardless of filtering. */
+    forceMount?: boolean
   }
 type GroupProps = Children &
   Omit<DivProps, 'heading' | 'value'> & {
     /** Optional heading to render for this group. */
     heading?: React.ReactNode
-    /** If no heading is provided, you must provie a value that is unique for this group. */
+    /** If no heading is provided, you must provide a value that is unique for this group. */
     value?: string
+    /** Whether this group is forcibly rendered regardless of filtering. */
+    forceMount?: boolean
   }
 type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> & {
   /**
@@ -67,6 +75,10 @@ type CommandProps = Children &
      */
     filter?: (value: string, search: string) => number
     /**
+     * Optional default item value when it is initially rendered.
+     */
+    defaultValue?: string
+    /**
      * Optional controlled state of the selected command menu item.
      */
     value?: string
@@ -86,6 +98,7 @@ type Context = {
   group: (id: string) => () => void
   filter: () => boolean
   label: string
+  commandRef: React.RefObject<HTMLDivElement | null>
   // Ids
   listId: string
   labelId: string
@@ -101,6 +114,10 @@ type Store = {
   snapshot: () => State
   setState: <K extends keyof State>(key: K, value: State[K], opts?: any) => void
   emit: () => void
+}
+type Group = {
+  id: string
+  forceMount?: boolean
 }
 
 const LIST_SELECTOR = `[cmdk-list-sizer=""]`
@@ -120,7 +137,7 @@ const useCommand = () => React.useContext(CommandContext)
 const StoreContext = React.createContext<Store>(undefined)
 const useStore = () => React.useContext(StoreContext)
 // @ts-ignore
-const GroupContext = React.createContext<string>(undefined)
+const GroupContext = React.createContext<Group>(undefined)
 
 const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const ref = React.useRef<HTMLDivElement>(null)
@@ -128,7 +145,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     /** Value of the search query. */
     search: '',
     /** Currently selected item value. */
-    value: '',
+    value: props.value ?? props.defaultValue?.toLowerCase() ?? '',
     filtered: {
       /** The count of all visible items. */
       count: 0,
@@ -182,7 +199,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         } else if (key === 'value') {
           if (propsRef.current?.value !== undefined) {
             // If controlled, just call the callback instead of updating state internally
-            propsRef.current.onValueChange?.(value as string)
+            const newValue = (value ?? '') as string
+            propsRef.current.onValueChange?.(newValue)
             return
             // opts is a boolean referring to whether it should NOT be scrolled into view
           } else if (!opts) {
@@ -244,14 +262,15 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           ids.current.delete(id)
           allItems.current.delete(id)
           state.current.filtered.items.delete(id)
+          const selectedItem = getSelectedItem()
 
           // Batch this, multiple items could be removed in one pass
           schedule(4, () => {
             filterItems()
 
-            // The item removed could have been the selected one,
+            // The item removed have been the selected one,
             // so selection should be moved to the first
-            selectFirstItem()
+            if (selectedItem?.getAttribute('id') === id) selectFirstItem()
 
             store.emit()
           })
@@ -272,6 +291,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         return propsRef.current.shouldFilter
       },
       label: label || props['aria-label'],
+      commandRef: ref,
       listId,
       inputId,
       labelId,
@@ -402,7 +422,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   /** Getters */
 
   function getSelectedItem() {
-    return ref.current.querySelector(`${ITEM_SELECTOR}[aria-selected="true"]`)
+    return ref.current?.querySelector(`${ITEM_SELECTOR}[aria-selected="true"]`)
   }
 
   function getValidItems() {
@@ -569,12 +589,13 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) => {
   const id = React.useId()
   const ref = React.useRef<HTMLDivElement>(null)
-  const groupId = React.useContext(GroupContext)
+  const groupContext = React.useContext(GroupContext)
   const context = useCommand()
   const propsRef = useAsRef(props)
+  const forceMount = propsRef.current?.forceMount ?? groupContext?.forceMount
 
   useLayoutEffect(() => {
-    return context.item(id, groupId)
+    return context.item(id, groupContext?.id)
   }, [])
 
   const value = useValue(id, ref, [props.value, props.children, ref])
@@ -582,7 +603,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const store = useStore()
   const selected = useCmdk((state) => state.value && state.value === value.current)
   const render = useCmdk((state) =>
-    context.filter() === false ? true : !state.search ? true : state.filtered.items.get(id) > 0,
+    forceMount ? true : context.filter() === false ? true : !state.search ? true : state.filtered.items.get(id) > 0,
   )
 
   React.useEffect(() => {
@@ -593,6 +614,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   }, [render, props.onSelect, props.disabled])
 
   function onSelect() {
+    select()
     propsRef.current.onSelect?.(value.current)
   }
 
@@ -608,10 +630,12 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
     <div
       ref={mergeRefs([ref, forwardedRef])}
       {...etc}
+      id={id}
       cmdk-item=""
       role="option"
       aria-disabled={disabled ?? undefined}
       aria-selected={selected ?? undefined}
+      data-disabled={disabled ?? undefined}
       data-selected={selected ?? undefined}
       onPointerMove={disabled ? undefined : select}
       onClick={disabled ? undefined : onSelect}
@@ -626,14 +650,14 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
  * Grouped items are always shown together.
  */
 const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef) => {
-  const { heading, children, ...etc } = props
+  const { heading, children, forceMount, ...etc } = props
   const id = React.useId()
   const ref = React.useRef<HTMLDivElement>(null)
   const headingRef = React.useRef<HTMLDivElement>(null)
   const headingId = React.useId()
   const context = useCommand()
   const render = useCmdk((state) =>
-    context.filter() === false ? true : !state.search ? true : state.filtered.groups.has(id),
+    forceMount ? true : context.filter() === false ? true : !state.search ? true : state.filtered.groups.has(id),
   )
 
   useLayoutEffect(() => {
@@ -642,7 +666,8 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
 
   useValue(id, ref, [props.value, props.heading, headingRef])
 
-  const inner = <GroupContext.Provider value={id}>{children}</GroupContext.Provider>
+  const contextValue = React.useMemo(() => ({ id, forceMount }), [forceMount])
+  const inner = <GroupContext.Provider value={contextValue}>{children}</GroupContext.Provider>
 
   return (
     <div
@@ -686,7 +711,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
   const isControlled = props.value != null
   const store = useStore()
   const search = useCmdk((state) => state.search)
+  const value = useCmdk((state) => state.value)
   const context = useCommand()
+
+  const selectedItemId = React.useMemo(() => {
+    const item = context.commandRef.current?.querySelector(`${ITEM_SELECTOR}[${VALUE_ATTR}="${value}"]`)
+    return item?.getAttribute('id')
+  }, [value, context.commandRef])
 
   React.useEffect(() => {
     if (props.value != null) {
@@ -707,6 +738,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
       aria-expanded={true}
       aria-controls={context.listId}
       aria-labelledby={context.labelId}
+      aria-activedescendant={selectedItemId}
       id={context.inputId}
       type="text"
       value={isControlled ? props.value : search}
@@ -738,7 +770,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
       let animationFrame
       const observer = new ResizeObserver(() => {
         animationFrame = requestAnimationFrame(() => {
-          const height = el.getBoundingClientRect().height
+          const height = el.offsetHeight
           wrapper.style.setProperty(`--cmdk-list-height`, height.toFixed(1) + 'px')
         })
       })
@@ -771,12 +803,12 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
  * Renders the command menu in a Radix Dialog.
  */
 const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRef) => {
-  const { open, onOpenChange, container, ...etc } = props
+  const { open, onOpenChange, overlayClassName, contentClassName, container, ...etc } = props
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <RadixDialog.Portal container={container}>
-        <RadixDialog.Overlay cmdk-overlay="" />
-        <RadixDialog.Content aria-label={props.label} cmdk-dialog="">
+        <RadixDialog.Overlay cmdk-overlay="" className={overlayClassName} />
+        <RadixDialog.Content aria-label={props.label} cmdk-dialog="" className={contentClassName}>
           <Command ref={forwardedRef} {...etc} />
         </RadixDialog.Content>
       </RadixDialog.Portal>
@@ -831,8 +863,19 @@ const pkg = Object.assign(Command, {
   Empty,
   Loading,
 })
+
 export { useCmdk as useCommandState }
 export { pkg as Command }
+
+export { Command as CommandRoot }
+export { List as CommandList }
+export { Item as CommandItem }
+export { Input as CommandInput }
+export { Group as CommandGroup }
+export { Separator as CommandSeparator }
+export { Dialog as CommandDialog }
+export { Empty as CommandEmpty }
+export { Loading as CommandLoading }
 
 /**
  *
