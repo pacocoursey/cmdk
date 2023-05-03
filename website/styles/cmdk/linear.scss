@@ -75,7 +75,7 @@
     transition-property: none;
     position: relative;
 
-    &[aria-selected='true'] {
+    &[data-selected='true'] {
       background: var(--gray3);
 
       svg {
@@ -93,7 +93,7 @@
       }
     }
 
-    &[aria-disabled='true'] {
+    &[data-disabled='true'] {
       color: var(--gray8);
       cursor: not-allowed;
     }
