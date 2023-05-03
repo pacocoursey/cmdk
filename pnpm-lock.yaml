@@ -18,10 +18,8 @@ importers:
     specifiers:
       '@radix-ui/react-dialog': 1.0.0
       '@types/react': 18.0.15
-      command-score: 0.1.2
     dependencies:
       '@radix-ui/react-dialog': 1.0.0_@types+react@18.0.15
-      command-score: 0.1.2
     devDependencies:
       '@types/react': 18.0.15
 
@@ -1439,10 +1437,6 @@ packages:
   /colorette/2.0.19:
     resolution: {integrity: sha512-3tlv/dIP7FWvj3BsbHrGLJ6l/oKh1O3TcgBqMn+yyCagOxc23fyzDS6HypQbgxWbkpDnf52p1LuR4eWDQ/K9WQ==}
     dev: true
-
-  /command-score/0.1.2:
-    resolution: {integrity: sha512-VtDvQpIJBvBatnONUsPzXYFVKQQAhuf3XTNOAsdBxCNO/QCtUUd8LSgjn0GVarBkCad6aJCZfXgrjYbl/KRr7w==}
-    dev: false
 
   /commander/4.1.1:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
