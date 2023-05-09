@@ -637,8 +637,22 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       data-disabled={disabled || undefined}
       data-selected={selected || undefined}
       {...etc}
-      onPointerMove={disabled ? undefined : select}
-      onClick={disabled ? undefined : onSelect}
+      onPointerMove={
+        disabled
+          ? etc.onPointerMove
+          : (event) => {
+              etc.onPointerMove(event)
+              select()
+            }
+      }
+      onClick={
+        disabled
+          ? etc.onClick
+          : (event) => {
+              etc.onClick(event)
+              onSelect()
+            }
+      }
     >
       {props.children}
     </div>
