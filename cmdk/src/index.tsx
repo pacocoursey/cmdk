@@ -1,6 +1,6 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
 import * as React from 'react'
-import commandScore from 'command-score'
+import { commandScore } from './command-score'
 
 type Children = { children?: React.ReactNode }
 type DivProps = React.HTMLAttributes<HTMLDivElement>
@@ -75,6 +75,10 @@ type CommandProps = Children &
      */
     filter?: (value: string, search: string) => number
     /**
+     * Optional default item value when it is initially rendered.
+     */
+    defaultValue?: string
+    /**
      * Optional controlled state of the selected command menu item.
      */
     value?: string
@@ -111,6 +115,10 @@ type Store = {
   setState: <K extends keyof State>(key: K, value: State[K], opts?: any) => void
   emit: () => void
 }
+type Group = {
+  id: string
+  forceMount?: boolean
+}
 
 const LIST_SELECTOR = `[cmdk-list-sizer=""]`
 const GROUP_SELECTOR = `[cmdk-group=""]`
@@ -129,7 +137,7 @@ const useCommand = () => React.useContext(CommandContext)
 const StoreContext = React.createContext<Store>(undefined)
 const useStore = () => React.useContext(StoreContext)
 // @ts-ignore
-const GroupContext = React.createContext<string>(undefined)
+const GroupContext = React.createContext<Group>(undefined)
 
 const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const ref = React.useRef<HTMLDivElement>(null)
@@ -137,7 +145,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     /** Value of the search query. */
     search: '',
     /** Currently selected item value. */
-    value: props.value ?? '',
+    value: props.value ?? props.defaultValue?.toLowerCase() ?? '',
     filtered: {
       /** The count of all visible items. */
       count: 0,
@@ -581,12 +589,13 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) => {
   const id = React.useId()
   const ref = React.useRef<HTMLDivElement>(null)
-  const groupId = React.useContext(GroupContext)
+  const groupContext = React.useContext(GroupContext)
   const context = useCommand()
   const propsRef = useAsRef(props)
+  const forceMount = propsRef.current?.forceMount ?? groupContext?.forceMount
 
   useLayoutEffect(() => {
-    return context.item(id, groupId)
+    return context.item(id, groupContext?.id)
   }, [])
 
   const value = useValue(id, ref, [props.value, props.children, ref])
@@ -594,13 +603,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const store = useStore()
   const selected = useCmdk((state) => state.value && state.value === value.current)
   const render = useCmdk((state) =>
-    props.forceMount
-      ? true
-      : context.filter() === false
-      ? true
-      : !state.search
-      ? true
-      : state.filtered.items.get(id) > 0,
+    forceMount ? true : context.filter() === false ? true : !state.search ? true : state.filtered.items.get(id) > 0,
   )
 
   React.useEffect(() => {
@@ -631,6 +634,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       role="option"
       aria-disabled={disabled || undefined}
       aria-selected={selected || undefined}
+      data-disabled={disabled || undefined}
       data-selected={selected || undefined}
       {...etc}
       onPointerMove={disabled ? undefined : select}
@@ -646,14 +650,14 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
  * Grouped items are always shown together.
  */
 const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef) => {
-  const { heading, children, ...etc } = props
+  const { heading, children, forceMount, ...etc } = props
   const id = React.useId()
   const ref = React.useRef<HTMLDivElement>(null)
   const headingRef = React.useRef<HTMLDivElement>(null)
   const headingId = React.useId()
   const context = useCommand()
   const render = useCmdk((state) =>
-    props.forceMount ? true : context.filter() === false ? true : !state.search ? true : state.filtered.groups.has(id),
+    forceMount ? true : context.filter() === false ? true : !state.search ? true : state.filtered.groups.has(id),
   )
 
   useLayoutEffect(() => {
@@ -662,7 +666,8 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
 
   useValue(id, ref, [props.value, props.heading, headingRef])
 
-  const inner = <GroupContext.Provider value={id}>{children}</GroupContext.Provider>
+  const contextValue = React.useMemo(() => ({ id, forceMount }), [forceMount])
+  const inner = <GroupContext.Provider value={contextValue}>{children}</GroupContext.Provider>
 
   return (
     <div
@@ -765,7 +770,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
       let animationFrame
       const observer = new ResizeObserver(() => {
         animationFrame = requestAnimationFrame(() => {
-          const height = el.getBoundingClientRect().height
+          const height = el.offsetHeight
           wrapper.style.setProperty(`--cmdk-list-height`, height.toFixed(1) + 'px')
         })
       })
