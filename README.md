@@ -209,7 +209,7 @@ Item that becomes active on pointer enter. You should provide a unique `value` f
 </Command.Item>
 ```
 
-You can force an item to always render, regardless of the search, with `forceMount` prop
+You can force an item to always render, regardless of filtering, by passing the `forceMount` prop.
 
 ### Group `[cmdk-group]` `[hidden?]`
 
@@ -223,7 +223,7 @@ Groups items together with the given `heading` (`[cmdk-group-heading]`).
 
 Groups will not unmount from the DOM, rather the `hidden` attribute is applied to hide it from view. This may be relevant in your styling.
 
-And you can force a group to always render with `forceMount` prop
+You can force a group to always render, regardless of filtering, by passing the `forceMount` prop.
 
 ### Separator `[cmdk-separator]`
 
