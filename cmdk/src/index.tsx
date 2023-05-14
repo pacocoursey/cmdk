@@ -178,11 +178,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }, [value])
 
   useLayoutEffect(() => {
-    let isFirstRender = true
-    if (isFirstRender) {
-      schedule(6, scrollSelectedIntoView)
-      isFirstRender = false
-    }
+    schedule(6, scrollSelectedIntoView)
   }, [])
 
   const store: Store = React.useMemo(() => {
