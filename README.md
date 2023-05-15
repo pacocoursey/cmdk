@@ -51,7 +51,8 @@ const CommandMenu = () => {
   // Toggle the menu when ⌘K is pressed
   React.useEffect(() => {
     const down = (e) => {
-      if (e.key === 'k' && e.metaKey) {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
         setOpen((open) => !open)
       }
     }
