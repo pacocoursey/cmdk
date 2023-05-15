@@ -1,14 +1,29 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
 import * as React from 'react'
 import { commandScore } from './command-score'
+import { Slot, Slottable } from '@radix-ui/react-slot'
 
 type Children = { children?: React.ReactNode }
-type DivProps = React.HTMLAttributes<HTMLDivElement>
+type DivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>
 
-type LoadingProps = Children & {
-  /** Estimated progress of loading asynchronous options. */
-  progress?: number
+type PrimitiveForwardRefComponent<E extends React.ElementType> = React.ForwardRefExoticComponent<
+  PrimitivePropsWithRef<E>
+>
+type Primitives = { [E in typeof NODES[number]]: PrimitiveForwardRefComponent<E> }
+
+type PrimitivePropsWithRef<E extends React.ElementType> = React.ComponentPropsWithRef<E> & {
+  /**
+   * Change the component to the HTML tag or custom component of the only child. This will merge the original component props with the props of the supplied element/component and change the underlying DOM node.
+   */
+  asChild?: boolean
 }
+
+type LoadingProps = Children &
+  DivProps & {
+    /** Estimated progress of loading asynchronous options. */
+    progress?: number
+  }
+
 type EmptyProps = Children & DivProps & {}
 type SeparatorProps = DivProps & {
   /** Whether this separator should always be rendered. Useful if you disable automatic filtering. */
@@ -47,7 +62,7 @@ type GroupProps = Children &
     /** Whether this group is forcibly rendered regardless of filtering. */
     forceMount?: boolean
   }
-type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> & {
+type InputProps = Omit<React.ComponentPropsWithoutRef<typeof Primitive.input>, 'value' | 'onChange' | 'type'> & {
   /**
    * Optional controlled state for the value of the search input.
    */
@@ -129,6 +144,7 @@ const VALID_ITEM_SELECTOR = `${ITEM_SELECTOR}:not([aria-disabled="true"])`
 const SELECT_EVENT = `cmdk-item-select`
 const VALUE_ATTR = `data-value`
 const defaultFilter: CommandProps['filter'] = (value, search) => commandScore(value, search)
+const NODES = ['div', 'input'] as const
 
 // @ts-ignore
 const CommandContext = React.createContext<Context>(undefined)
@@ -507,7 +523,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }
 
   return (
-    <div
+    <Primitive.div
       ref={mergeRefs([ref, forwardedRef])}
       {...etc}
       cmdk-root=""
@@ -574,10 +590,23 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       >
         {label}
       </label>
-      <StoreContext.Provider value={store}>
-        <CommandContext.Provider value={context}>{children}</CommandContext.Provider>
-      </StoreContext.Provider>
-    </div>
+      {props.asChild ? (
+        <Slottable>
+          {React.isValidElement(children) &&
+            React.cloneElement(
+              children,
+              undefined,
+              <StoreContext.Provider value={store}>
+                <CommandContext.Provider value={context}>{children.props.children}</CommandContext.Provider>
+              </StoreContext.Provider>,
+            )}
+        </Slottable>
+      ) : (
+        <StoreContext.Provider value={store}>
+          <CommandContext.Provider value={context}>{children}</CommandContext.Provider>
+        </StoreContext.Provider>
+      )}
+    </Primitive.div>
   )
 })
 
@@ -627,7 +656,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const { disabled, value: _, onSelect: __, ...etc } = props
 
   return (
-    <div
+    <Primitive.div
       ref={mergeRefs([ref, forwardedRef])}
       {...etc}
       id={id}
@@ -641,7 +670,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       onClick={disabled ? undefined : onSelect}
     >
       {props.children}
-    </div>
+    </Primitive.div>
   )
 })
 
@@ -667,10 +696,9 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
   useValue(id, ref, [props.value, props.heading, headingRef])
 
   const contextValue = React.useMemo(() => ({ id, forceMount }), [forceMount])
-  const inner = <GroupContext.Provider value={contextValue}>{children}</GroupContext.Provider>
 
   return (
-    <div
+    <Primitive.div
       ref={mergeRefs([ref, forwardedRef])}
       {...etc}
       cmdk-group=""
@@ -682,10 +710,23 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
           {heading}
         </div>
       )}
-      <div cmdk-group-items="" role="group" aria-labelledby={heading ? headingId : undefined}>
-        {inner}
-      </div>
-    </div>
+      {props.asChild ? (
+        <Slottable>
+          {React.isValidElement(children) &&
+            React.cloneElement(
+              children,
+              undefined,
+              <div cmdk-group-items="" role="group" aria-labelledby={heading ? headingId : undefined}>
+                <GroupContext.Provider value={contextValue}>{children.props.children}</GroupContext.Provider>
+              </div>,
+            )}
+        </Slottable>
+      ) : (
+        <div cmdk-group-items="" role="group" aria-labelledby={heading ? headingId : undefined}>
+          <GroupContext.Provider value={contextValue}>{children}</GroupContext.Provider>
+        </div>
+      )}
+    </Primitive.div>
   )
 })
 
@@ -699,7 +740,7 @@ const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>((props, forwa
   const render = useCmdk((state) => !state.search)
 
   if (!alwaysRender && !render) return null
-  return <div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-separator="" role="separator" />
+  return <Primitive.div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-separator="" role="separator" />
 })
 
 /**
@@ -726,7 +767,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
   }, [props.value])
 
   return (
-    <input
+    <Primitive.input
       ref={forwardedRef}
       {...etc}
       cmdk-input=""
@@ -783,7 +824,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
   }, [])
 
   return (
-    <div
+    <Primitive.div
       ref={mergeRefs([ref, forwardedRef])}
       {...etc}
       cmdk-list=""
@@ -792,10 +833,21 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
       id={context.listId}
       aria-labelledby={context.inputId}
     >
-      <div ref={height} cmdk-list-sizer="">
-        {children}
-      </div>
-    </div>
+      {props.asChild ? (
+        React.isValidElement(children) &&
+        React.cloneElement(
+          children,
+          undefined,
+          <div ref={height} cmdk-list-sizer="">
+            {children.props.children}
+          </div>,
+        )
+      ) : (
+        <div ref={height} cmdk-list-sizer="">
+          {children}
+        </div>
+      )}
+    </Primitive.div>
   )
 })
 
@@ -828,7 +880,7 @@ const Empty = React.forwardRef<HTMLDivElement, EmptyProps>((props, forwardedRef)
   }, [])
 
   if (isFirstRender.current || !render) return null
-  return <div ref={forwardedRef} {...props} cmdk-empty="" role="presentation" />
+  return <Primitive.div ref={forwardedRef} {...props} cmdk-empty="" role="presentation" />
 })
 
 /**
@@ -838,7 +890,7 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwarded
   const { progress, children, ...etc } = props
 
   return (
-    <div
+    <Primitive.div
       ref={forwardedRef}
       {...etc}
       cmdk-loading=""
@@ -848,8 +900,13 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwarded
       aria-valuemax={100}
       aria-label="Loading..."
     >
-      <div aria-hidden>{children}</div>
-    </div>
+      {props.asChild ? (
+        React.isValidElement(children) &&
+        React.cloneElement(children, undefined, <div aria-hidden>{children.props.children}</div>)
+      ) : (
+        <div aria-hidden>{children}</div>
+      )}
+    </Primitive.div>
   )
 })
 
@@ -991,6 +1048,19 @@ const useScheduleLayoutEffect = () => {
     ss({})
   }
 }
+
+const Primitive = NODES.reduce((primitive, node) => {
+  const Node = React.forwardRef((props: PrimitivePropsWithRef<typeof node>, forwardedRef: any) => {
+    const { asChild, ...primitiveProps } = props
+    const Comp: any = asChild ? Slot : node
+
+    return <Comp {...primitiveProps} ref={forwardedRef} />
+  })
+
+  Node.displayName = `Primitive.${node}`
+
+  return { ...primitive, [node]: Node }
+}, {} as Primitives)
 
 const srOnlyStyles = {
   position: 'absolute',

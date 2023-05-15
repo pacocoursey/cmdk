@@ -19,7 +19,8 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "@radix-ui/react-dialog": "1.0.0"
+    "@radix-ui/react-dialog": "1.0.0",
+    "@radix-ui/react-slot": "1.0.1"
   },
   "devDependencies": {
     "@types/react": "18.0.15"
