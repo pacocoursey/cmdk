@@ -51,7 +51,8 @@ const CommandMenu = () => {
   // Toggle the menu when ⌘K is pressed
   React.useEffect(() => {
     const down = (e) => {
-      if (e.key === 'k' && e.metaKey) {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
         setOpen((open) => !open)
       }
     }
@@ -196,7 +197,7 @@ To scroll item into view earlier near the edges of the viewport, use scroll-padd
 }
 ```
 
-### Item `[cmdk-item]` `[aria-disabled?]` `[aria-selected?]`
+### Item `[cmdk-item]` `[data-disabled?]` `[data-selected?]`
 
 Item that becomes active on pointer enter. You should provide a unique `value` for each item, but it will be automatically inferred from the `.textContent`.
 
@@ -209,6 +210,8 @@ Item that becomes active on pointer enter. You should provide a unique `value` f
 </Command.Item>
 ```
 
+You can force an item to always render, regardless of filtering, by passing the `forceMount` prop.
+
 ### Group `[cmdk-group]` `[hidden?]`
 
 Groups items together with the given `heading` (`[cmdk-group-heading]`).
@@ -220,6 +223,8 @@ Groups items together with the given `heading` (`[cmdk-group-heading]`).
 ```
 
 Groups will not unmount from the DOM, rather the `hidden` attribute is applied to hide it from view. This may be relevant in your styling.
+
+You can force a group to always render, regardless of filtering, by passing the `forceMount` prop.
 
 ### Separator `[cmdk-separator]`
 
