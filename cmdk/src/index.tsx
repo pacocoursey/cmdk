@@ -595,8 +595,10 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const forceMount = propsRef.current?.forceMount ?? groupContext?.forceMount
 
   useLayoutEffect(() => {
-    return context.item(id, groupContext?.id)
-  }, [])
+    if (!forceMount) {
+      return context.item(id, groupContext?.id)
+    }
+  }, [forceMount])
 
   const value = useValue(id, ref, [props.value, props.children, ref])
 
@@ -624,7 +626,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 
   if (!render) return null
 
-  const { disabled, value: _, onSelect: __, ...etc } = props
+  const { disabled, value: _, onSelect: __, forceMount: ___, ...etc } = props
 
   return (
     <div
