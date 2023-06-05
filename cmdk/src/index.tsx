@@ -90,6 +90,10 @@ type CommandProps = Children &
      * Optionally set to `true` to turn on looping around when using the arrow keys.
      */
     loop?: boolean
+    /**
+     * Optionally set to `true` to disable selection via pointer events.
+     */
+    disablePointerSelection?: boolean
   }
 
 type Context = {
@@ -98,6 +102,7 @@ type Context = {
   group: (id: string) => () => void
   filter: () => boolean
   label: string
+  disablePointerSelection: boolean
   commandRef: React.RefObject<HTMLDivElement | null>
   // Ids
   listId: string
@@ -160,7 +165,17 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const ids = useLazyRef<Map<string, string>>(() => new Map()) // id → value
   const listeners = useLazyRef<Set<() => void>>(() => new Set()) // [...rerenders]
   const propsRef = useAsRef(props)
-  const { label, children, value, onValueChange, filter, shouldFilter, ...etc } = props
+  const {
+    label,
+    children,
+    value,
+    onValueChange,
+    filter,
+    shouldFilter,
+    loop,
+    disablePointerSelection = false,
+    ...etc
+  } = props
 
   const listId = React.useId()
   const labelId = React.useId()
@@ -291,6 +306,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         return propsRef.current.shouldFilter
       },
       label: label || props['aria-label'],
+      disablePointerSelection,
       commandRef: ref,
       listId,
       inputId,
@@ -637,6 +653,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       aria-selected={selected || undefined}
       data-disabled={disabled || undefined}
       data-selected={selected || undefined}
+      onPointerMove={disabled || context.disablePointerSelection ? undefined : select}
       onClick={disabled ? undefined : onSelect}
     >
       {props.children}
