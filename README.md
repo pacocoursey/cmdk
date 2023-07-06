@@ -136,7 +136,9 @@ Or disable filtering and sorting entirely:
 
 You can make the arrow keys wrap around the list (when you reach the end, it goes back to the first item) by setting the `loop` prop:
 
+```tsx
 <Command loop />
+```
 
 ### Dialog `[cmdk-dialog]` `[cmdk-overlay]`
 
