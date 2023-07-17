@@ -1,7 +1,7 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
 import * as React from 'react'
 import { commandScore } from './command-score'
-import { Slot, Slottable } from '@radix-ui/react-slot'
+import { Slot } from '@radix-ui/react-slot'
 
 type Children = { children?: React.ReactNode }
 type DivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>
@@ -590,22 +590,11 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       >
         {label}
       </label>
-      {props.asChild ? (
-        <Slottable>
-          {React.isValidElement(children) &&
-            React.cloneElement(
-              children,
-              undefined,
-              <StoreContext.Provider value={store}>
-                <CommandContext.Provider value={context}>{children.props.children}</CommandContext.Provider>
-              </StoreContext.Provider>,
-            )}
-        </Slottable>
-      ) : (
+      {SlottableWithNestedChildren(props, (child) => (
         <StoreContext.Provider value={store}>
-          <CommandContext.Provider value={context}>{children}</CommandContext.Provider>
+          <CommandContext.Provider value={context}>{child}</CommandContext.Provider>
         </StoreContext.Provider>
-      )}
+      ))}
     </Primitive.div>
   )
 })
@@ -710,22 +699,11 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
           {heading}
         </div>
       )}
-      {props.asChild ? (
-        <Slottable>
-          {React.isValidElement(children) &&
-            React.cloneElement(
-              children,
-              undefined,
-              <div cmdk-group-items="" role="group" aria-labelledby={heading ? headingId : undefined}>
-                <GroupContext.Provider value={contextValue}>{children.props.children}</GroupContext.Provider>
-              </div>,
-            )}
-        </Slottable>
-      ) : (
+      {SlottableWithNestedChildren(props, (child) => (
         <div cmdk-group-items="" role="group" aria-labelledby={heading ? headingId : undefined}>
-          <GroupContext.Provider value={contextValue}>{children}</GroupContext.Provider>
+          <GroupContext.Provider value={contextValue}>{child}</GroupContext.Provider>
         </div>
-      )}
+      ))}
     </Primitive.div>
   )
 })
@@ -833,20 +811,11 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
       id={context.listId}
       aria-labelledby={context.inputId}
     >
-      {props.asChild ? (
-        React.isValidElement(children) &&
-        React.cloneElement(
-          children,
-          undefined,
-          <div ref={height} cmdk-list-sizer="">
-            {children.props.children}
-          </div>,
-        )
-      ) : (
+      {SlottableWithNestedChildren(props, (child) => (
         <div ref={height} cmdk-list-sizer="">
-          {children}
+          {child}
         </div>
-      )}
+      ))}
     </Primitive.div>
   )
 })
@@ -900,12 +869,9 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwarded
       aria-valuemax={100}
       aria-label="Loading..."
     >
-      {props.asChild ? (
-        React.isValidElement(children) &&
-        React.cloneElement(children, undefined, <div aria-hidden>{children.props.children}</div>)
-      ) : (
-        <div aria-hidden>{children}</div>
-      )}
+      {SlottableWithNestedChildren(props, (child) => (
+        <div aria-hidden>{child}</div>
+      ))}
     </Primitive.div>
   )
 })
@@ -1047,6 +1013,26 @@ const useScheduleLayoutEffect = () => {
     fns.current.set(id, cb)
     ss({})
   }
+}
+
+function renderChildren(children: React.ReactElement) {
+  const childrenType = children.type as any
+  // The children is a component
+  if (typeof childrenType === 'function') return childrenType(children.props)
+  // The children is a component with `forwardRef`
+  else if ('render' in childrenType) return childrenType.render(children.props)
+  // Doesn't a component. It's a string, boolean, etc.
+  else return children
+}
+
+function SlottableWithNestedChildren(
+  { asChild, children }: { asChild?: boolean; children?: React.ReactNode },
+  render: (child: React.ReactNode) => JSX.Element,
+) {
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(renderChildren(children), { ref: (children as any).ref }, render(children.props.children))
+  }
+  return render(children)
 }
 
 const Primitive = NODES.reduce((primitive, node) => {
