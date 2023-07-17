@@ -1021,7 +1021,7 @@ function renderChildren(children: React.ReactElement) {
   if (typeof childrenType === 'function') return childrenType(children.props)
   // The children is a component with `forwardRef`
   else if ('render' in childrenType) return childrenType.render(children.props)
-  // Doesn't a component. It's a string, boolean, etc.
+  // It's a string, boolean, etc.
   else return children
 }
 
