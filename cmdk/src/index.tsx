@@ -5,7 +5,7 @@ import { commandScore } from './command-score'
 type Children = { children?: React.ReactNode }
 type DivProps = React.HTMLAttributes<HTMLDivElement>
 
-type LoadingProps = Children & {
+type LoadingProps = Children & DivProps & {
   /** Estimated progress of loading asynchronous options. */
   progress?: number
 }

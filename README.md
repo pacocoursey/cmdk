@@ -2,7 +2,7 @@
 <img src="./website/public/og.png" />
 </p>
 
-# ⌘K ![cmdk minzip package size](https://img.shields.io/bundlephobia/minzip/cmdk) ![cmdk package version](https://img.shields.io/npm/v/cmdk.svg?colorB=green)
+# ⌘K [![cmdk minzip package size](https://img.shields.io/bundlephobia/minzip/cmdk)](https://www.npmjs.com/package/cmdk?activeTab=code) [![cmdk package version](https://img.shields.io/npm/v/cmdk.svg?colorB=green)](https://www.npmjs.com/package/cmdk)
 
 ⌘K is a command menu React component that can also be used as an accessible combobox. You render items, it filters and sorts them automatically. ⌘K supports a fully composable API <sup>[How?](/ARCHITECTURE.md)</sup>, so you can wrap items in other components or even as static JSX.
 
@@ -136,7 +136,9 @@ Or disable filtering and sorting entirely:
 
 You can make the arrow keys wrap around the list (when you reach the end, it goes back to the first item) by setting the `loop` prop:
 
+```tsx
 <Command loop />
+```
 
 ### Dialog `[cmdk-dialog]` `[cmdk-overlay]`
 
