@@ -118,6 +118,18 @@ You can provide a custom `filter` function that is called to rank each item. Bot
 />
 ```
 
+A third argument, `keywords`, can also be provided to the filter function. Keywords act as aliases for the item value, and can also affect the rank of the item. Keywords are normalized as lowercase and trimmed.
+
+```tsx
+<Command
+  filter={(value, search, keywords) => {
+    const extendValue = value + ' ' + keywords.join(' ')
+    if (extendValue.includes(search)) return 1
+    return 0
+  }}
+/>
+```
+
 Or disable filtering and sorting entirely:
 
 ```tsx
@@ -202,6 +214,21 @@ To scroll item into view earlier near the edges of the viewport, use scroll-padd
 ### Item `[cmdk-item]` `[data-disabled?]` `[data-selected?]`
 
 Item that becomes active on pointer enter. You should provide a unique `value` for each item, but it will be automatically inferred from the `.textContent`.
+
+```tsx
+<Command.Item
+  onSelect={(value) => console.log('Selected', value)}
+  // Value is implicity "apple" because of the provided text content
+>
+  Apple
+</Command.Item>
+```
+
+You can also provide a `keywords` prop to help with filtering. Keywords are normalized as lowercase and trimmed.
+
+```tsx
+<Command.Item keywords={['fruit', 'apple']}>Apple</Command.Item>
+```
 
 ```tsx
 <Command.Item
