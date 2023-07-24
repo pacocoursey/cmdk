@@ -9,6 +9,10 @@ const Page = () => {
         <Command.List>
           <Command.Empty>No results.</Command.Empty>
 
+          <Command.Item value="disabled" disabled>
+            Disabled
+          </Command.Item>
+
           <Command.Item value="first">First</Command.Item>
 
           <Command.Group heading="Letters">
@@ -21,10 +25,15 @@ const Page = () => {
             <Command.Item>Apple</Command.Item>
             <Command.Item>Banana</Command.Item>
             <Command.Item>Orange</Command.Item>
+            <Command.Item disabled>Dragon Fruit</Command.Item>
             <Command.Item>Pear</Command.Item>
           </Command.Group>
 
           <Command.Item value="last">Last</Command.Item>
+
+          <Command.Item value="disabled-3" disabled>
+            Disabled 3
+          </Command.Item>
         </Command.List>
       </Command>
     </div>
