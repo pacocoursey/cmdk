@@ -63,7 +63,7 @@
     transition: all 150ms ease;
     transition-property: none;
 
-    &[aria-selected='true'] {
+    &[data-selected='true'] {
       background: var(--blue9);
       color: #ffffff;
 
@@ -72,7 +72,7 @@
       }
     }
 
-    &[aria-disabled='true'] {
+    &[data-disabled='true'] {
       color: var(--gray8);
       cursor: not-allowed;
     }

@@ -47,6 +47,12 @@ test.describe('item', async () => {
     await page.locator(`data-testid=many`).click()
     await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveText('B')
   })
+
+  test('mounted item still rendered with filter usingForceMount', async ({ page }) => {
+    await page.locator(`data-testid=forceMount`).click()
+    await page.locator(`[cmdk-input]`).type('z')
+    await expect(page.locator(`[cmdk-item]`)).toHaveCount(1)
+  })
 })
 
 test.describe('item advanced', async () => {
