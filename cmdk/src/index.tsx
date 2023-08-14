@@ -1,23 +1,10 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
 import * as React from 'react'
 import { commandScore } from './command-score'
-import { Slot } from '@radix-ui/react-slot'
+import { Primitive } from '@radix-ui/react-primitive'
 
 type Children = { children?: React.ReactNode }
 type DivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>
-
-type PrimitiveForwardRefComponent<E extends React.ElementType> = React.ForwardRefExoticComponent<
-  PrimitivePropsWithRef<E>
->
-type Primitives = { [E in typeof NODES[number]]: PrimitiveForwardRefComponent<E> }
-
-type PrimitivePropsWithRef<E extends React.ElementType> = React.ComponentPropsWithRef<E> & {
-  /**
-   * Change the component to the HTML tag or custom component of the only child. This will merge the original component props with the props of the supplied element/component and change the underlying DOM node.
-   */
-  asChild?: boolean
-}
-
 
 type LoadingProps = Children &
   DivProps & {
@@ -149,7 +136,6 @@ const VALID_ITEM_SELECTOR = `${ITEM_SELECTOR}:not([aria-disabled="true"])`
 const SELECT_EVENT = `cmdk-item-select`
 const VALUE_ATTR = `data-value`
 const defaultFilter: CommandProps['filter'] = (value, search) => commandScore(value, search)
-const NODES = ['div', 'input'] as const
 
 // @ts-ignore
 const CommandContext = React.createContext<Context>(undefined)
@@ -1043,19 +1029,6 @@ function SlottableWithNestedChildren(
   }
   return render(children)
 }
-
-const Primitive = NODES.reduce((primitive, node) => {
-  const Node = React.forwardRef((props: PrimitivePropsWithRef<typeof node>, forwardedRef: any) => {
-    const { asChild, ...primitiveProps } = props
-    const Comp: any = asChild ? Slot : node
-
-    return <Comp {...primitiveProps} ref={forwardedRef} />
-  })
-
-  Node.displayName = `Primitive.${node}`
-
-  return { ...primitive, [node]: Node }
-}, {} as Primitives)
 
 const srOnlyStyles = {
   position: 'absolute',

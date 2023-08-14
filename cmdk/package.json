@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@radix-ui/react-dialog": "1.0.0",
-    "@radix-ui/react-slot": "1.0.1"
+    "@radix-ui/react-primitive": "1.0.3"
   },
   "devDependencies": {
     "@types/react": "18.0.15"
