@@ -17,11 +17,11 @@ importers:
   cmdk:
     specifiers:
       '@radix-ui/react-dialog': 1.0.0
-      '@radix-ui/react-slot': 1.0.1
+      '@radix-ui/react-primitive': 1.0.3
       '@types/react': 18.0.15
     dependencies:
       '@radix-ui/react-dialog': 1.0.0_@types+react@18.0.15
-      '@radix-ui/react-slot': 1.0.1
+      '@radix-ui/react-primitive': 1.0.3_@types+react@18.0.15
     devDependencies:
       '@types/react': 18.0.15
 
@@ -668,6 +668,19 @@ packages:
       '@babel/runtime': 7.18.9
     dev: false
 
+  /@radix-ui/react-compose-refs/1.0.1_@types+react@18.0.15:
+    resolution: {integrity: sha512-fDSBgd44FKHa1FRMU59qBMPFcl2PZE+2nmqunj+BWFyYYjnhIDWL2ItDs3rrbJDQOtzt5nIebLCQc4QRfz6LJw==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.8 || ^17.0 || ^18.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.18.9
+      '@types/react': 18.0.15
+    dev: false
+
   /@radix-ui/react-context/0.1.1_react@18.2.0:
     resolution: {integrity: sha512-PkyVX1JsLBioeu0jB9WvRpDBBLtLZohVDT3BB5CTSJqActma8S8030P57mWZb4baZifMvN7KKWPAA40UmWKkQg==}
     peerDependencies:
@@ -908,6 +921,24 @@ packages:
       '@radix-ui/react-slot': 1.0.0
     dev: false
 
+  /@radix-ui/react-primitive/1.0.3_@types+react@18.0.15:
+    resolution: {integrity: sha512-yi58uVyoAcK/Nq1inRY56ZSjKypBNKTa/1mcL8qdl6oJeEaDbOldlzrGn7P6Q3Id5d+SYNGc5AJgc4vGhjs5+g==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.18.9
+      '@radix-ui/react-slot': 1.0.2_@types+react@18.0.15
+      '@types/react': 18.0.15
+    dev: false
+
   /@radix-ui/react-slot/0.1.2_react@18.2.0:
     resolution: {integrity: sha512-ADkqfL+agEzEguU3yS26jfB50hRrwf7U4VTwAOZEmi/g+ITcBWe12yM46ueS/UCIMI9Py+gFUaAdxgxafFvY2Q==}
     peerDependencies:
@@ -927,13 +958,18 @@ packages:
       '@radix-ui/react-compose-refs': 1.0.0
     dev: false
 
-  /@radix-ui/react-slot/1.0.1:
-    resolution: {integrity: sha512-avutXAFL1ehGvAXtPquu0YK5oz6ctS474iM3vNGQIkswrVhdrS52e3uoMQBzZhNRAIE0jBnUyXWNmSjGHhCFcw==}
+  /@radix-ui/react-slot/1.0.2_@types+react@18.0.15:
+    resolution: {integrity: sha512-YeTpuq4deV+6DusvVUW4ivBgnkHwECUu0BiN43L5UCDFgdhsRUWAghhTF5MbvNTPzmiFOx90asDSUjWuCNapwg==}
     peerDependencies:
+      '@types/react': '*'
       react: ^16.8 || ^17.0 || ^18.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
     dependencies:
       '@babel/runtime': 7.18.9
-      '@radix-ui/react-compose-refs': 1.0.0
+      '@radix-ui/react-compose-refs': 1.0.1_@types+react@18.0.15
+      '@types/react': 18.0.15
     dev: false
 
   /@radix-ui/react-use-body-pointer-events/0.1.1_react@18.2.0:
