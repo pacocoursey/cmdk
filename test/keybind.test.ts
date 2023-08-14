@@ -101,3 +101,25 @@ test.describe('vim np keybinds', async () => {
     await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'first')
   })
 })
+
+test.describe('no-vim keybinds', async () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/keybinds?noVim=true')
+  })
+
+  test('ctrl j/k does nothing', async ({ page }) => {
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'first')
+    await page.locator(`[cmdk-input]`).press('Control+j')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'first')
+    await page.locator(`[cmdk-input]`).press('Control+k')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'first')
+  })
+
+  test('ctrl n/p does nothing', async ({ page }) => {
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'first')
+    await page.locator(`[cmdk-input]`).press('Control+n')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'first')
+    await page.locator(`[cmdk-input]`).press('Control+p')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'first')
+  })
+})
