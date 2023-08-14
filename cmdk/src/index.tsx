@@ -18,6 +18,7 @@ type PrimitivePropsWithRef<E extends React.ElementType> = React.ComponentPropsWi
   asChild?: boolean
 }
 
+
 type LoadingProps = Children &
   DivProps & {
     /** Estimated progress of loading asynchronous options. */
@@ -105,6 +106,10 @@ type CommandProps = Children &
      * Optionally set to `true` to turn on looping around when using the arrow keys.
      */
     loop?: boolean
+    /**
+     * Set to `false` to disable ctrl+n/j/p/k shortcuts. Defaults to `true`.
+     */
+    vimBindings?: boolean
   }
 
 type Context = {
@@ -176,7 +181,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const ids = useLazyRef<Map<string, string>>(() => new Map()) // id → value
   const listeners = useLazyRef<Set<() => void>>(() => new Set()) // [...rerenders]
   const propsRef = useAsRef(props)
-  const { label, children, value, onValueChange, filter, shouldFilter, ...etc } = props
+  const { label, children, value, onValueChange, filter, shouldFilter, vimBindings = true, ...etc } = props
 
   const listId = React.useId()
   const labelId = React.useId()
@@ -535,7 +540,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
             case 'n':
             case 'j': {
               // vim keybind down
-              if (e.ctrlKey) {
+              if (vimBindings && e.ctrlKey) {
                 next(e)
               }
               break
@@ -547,7 +552,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
             case 'p':
             case 'k': {
               // vim keybind up
-              if (e.ctrlKey) {
+              if (vimBindings && e.ctrlKey) {
                 prev(e)
               }
               break
@@ -569,12 +574,16 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
               break
             }
             case 'Enter': {
-              // Trigger item onSelect
-              e.preventDefault()
-              const item = getSelectedItem()
-              if (item) {
-                const event = new Event(SELECT_EVENT)
-                item.dispatchEvent(event)
+              // Check if IME composition is finished before triggering onSelect
+              // This prevents unwanted triggering while user is still inputting text with IME
+              if (!e.nativeEvent.isComposing) {
+                // Trigger item onSelect
+                e.preventDefault()
+                const item = getSelectedItem()
+                if (item) {
+                  const event = new Event(SELECT_EVENT)
+                  item.dispatchEvent(event)
+                }
               }
             }
           }

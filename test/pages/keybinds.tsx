@@ -1,10 +1,14 @@
 import { Command } from 'cmdk'
+import { useRouter } from 'next/router'
 import * as React from 'react'
 
 const Page = () => {
+  const {
+    query: { noVim },
+  } = useRouter()
   return (
     <div>
-      <Command>
+      <Command vimBindings={!noVim}>
         <Command.Input />
         <Command.List>
           <Command.Empty>No results.</Command.Empty>
