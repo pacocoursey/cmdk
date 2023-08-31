@@ -971,8 +971,11 @@ function useValue(
           return part.trim().toLowerCase()
         }
 
-        if (typeof part === 'object' && 'current' in part && part.current) {
-          return part.current.textContent?.trim().toLowerCase()
+        if (typeof part === 'object' && 'current' in part) {
+          if (part.current) {
+            return part.current.textContent?.trim().toLowerCase()
+          }
+          return valueRef.current
         }
       }
     })()
