@@ -1,6 +1,8 @@
 {
   "name": "cmdk-root",
   "private": true,
+  "repository": "github:pacocoursey/cmdk",
+  "homepage": "https://cmdk.paco.me",
   "scripts": {
     "build": "pnpm -F cmdk build",
     "dev": "pnpm -F cmdk build --watch",
