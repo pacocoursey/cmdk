@@ -24,7 +24,13 @@ type DialogProps = RadixDialog.DialogProps &
     /** Provide a custom element the Dialog should portal into. */
     container?: HTMLElement
   }
-type ListProps = Children & DivProps & {}
+type ListProps = Children &
+  DivProps & {
+    /**
+     * Accessible label for this List of suggestions. Not shown visibly.
+     */
+    label?: string
+  }
 type ItemProps = Children &
   Omit<DivProps, 'disabled' | 'onSelect' | 'value'> & {
     /** Whether this item is currently disabled. */
@@ -767,7 +773,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
  * Use the `--cmdk-list-height` CSS variable to animate height based on the number of results.
  */
 const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) => {
-  const { children, ...etc } = props
+  const { children, label = "Suggestions", ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const height = React.useRef<HTMLDivElement>(null)
   const context = useCommand()
@@ -797,9 +803,8 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
       {...etc}
       cmdk-list=""
       role="listbox"
-      aria-label="Suggestions"
+      aria-label={label}
       id={context.listId}
-      aria-labelledby={context.inputId}
     >
       <div ref={height} cmdk-list-sizer="">
         {children}
