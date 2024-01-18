@@ -9,6 +9,10 @@ type LoadingProps = Children &
   DivProps & {
     /** Estimated progress of loading asynchronous options. */
     progress?: number
+    /**
+     * Accessible label for this loading progressbar. Not shown visibly.
+     */
+    label?: string
   }
 type EmptyProps = Children & DivProps & {}
 type SeparatorProps = DivProps & {
@@ -849,7 +853,7 @@ const Empty = React.forwardRef<HTMLDivElement, EmptyProps>((props, forwardedRef)
  * You should conditionally render this with `progress` while loading asynchronous items.
  */
 const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwardedRef) => {
-  const { progress, children, ...etc } = props
+  const { progress, children, label = "Loading...", ...etc } = props
 
   return (
     <div
@@ -860,7 +864,7 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwarded
       aria-valuenow={progress}
       aria-valuemin={0}
       aria-valuemax={100}
-      aria-label="Loading..."
+      aria-label={label}
     >
       <div aria-hidden>{children}</div>
     </div>
