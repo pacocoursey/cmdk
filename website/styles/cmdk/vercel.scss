@@ -10,6 +10,7 @@
     border: 1px solid var(--gray6);
     box-shadow: var(--cmdk-shadow);
     transition: transform 100ms ease;
+    outline: none;
 
     .dark & {
       background: rgba(22, 22, 22, 0.7);

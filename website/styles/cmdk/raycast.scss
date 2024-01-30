@@ -9,6 +9,7 @@
     box-shadow: var(--cmdk-shadow);
     border: 1px solid var(--gray6);
     position: relative;
+    outline: none;
 
     .dark & {
       background: var(--gray2);
