@@ -21,7 +21,7 @@
   },
   "packageManager": "pnpm@8.8.0",
   "lint-staged": {
-    "*.{js,ts,jsx,tsx,json,css,yaml,html}": [
+    "*.{js,jsx,ts,tsx,json,md,mdx,css,scss,yaml,yml}": [
       "prettier --write"
     ]
   }
