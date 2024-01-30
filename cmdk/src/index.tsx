@@ -15,15 +15,19 @@ type SeparatorProps = DivProps & {
   /** Whether this separator should always be rendered. Useful if you disable automatic filtering. */
   alwaysRender?: boolean
 }
-type DialogProps = RadixDialog.DialogProps &
-  CommandProps & {
-    /** Provide a className to the Dialog overlay. */
-    overlayClassName?: string
-    /** Provide a className to the Dialog content. */
-    contentClassName?: string
-    /** Provide a custom element the Dialog should portal into. */
-    container?: HTMLElement
-  }
+type CommonDialogProps = {
+  /** Provide a className to the Dialog overlay. */
+  overlayClassName?: string
+  /** Provide a className to the Dialog content. */
+  contentClassName?: string
+  /** Provide a custom element the Dialog should portal into. */
+  container?: HTMLElement
+}
+type DialogProps = RadixDialog.DialogProps & CommandProps & CommonDialogProps
+type DialogPortalWrapperProps = RadixDialog.DialogPortalProps & CommandProps & CommonDialogProps
+type DialogPortalProps = {
+  ref: React.ForwardedRef<HTMLDivElement>
+} & (DialogProps | DialogPortalWrapperProps)
 type ListProps = Children & DivProps & {}
 type ItemProps = Children &
   Omit<DivProps, 'disabled' | 'onSelect' | 'value'> & {
@@ -827,6 +831,17 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
   )
 })
 
+const DialogPortal = ({ overlayClassName, contentClassName, container, label, ref, ...etc }: DialogPortalProps) => {
+  return (
+    <RadixDialog.Portal container={container}>
+      <RadixDialog.Overlay cmdk-overlay="" className={overlayClassName} />
+      <RadixDialog.Content aria-label={label} cmdk-dialog="" className={contentClassName}>
+        <Command ref={ref} {...etc} />
+      </RadixDialog.Content>
+    </RadixDialog.Portal>
+  )
+}
+
 /**
  * Renders the command menu in a Radix Dialog.
  */
@@ -834,14 +849,17 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRe
   const { open, onOpenChange, overlayClassName, contentClassName, container, ...etc } = props
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
-      <RadixDialog.Portal container={container}>
-        <RadixDialog.Overlay cmdk-overlay="" className={overlayClassName} />
-        <RadixDialog.Content aria-label={props.label} cmdk-dialog="" className={contentClassName}>
-          <Command ref={forwardedRef} {...etc} />
-        </RadixDialog.Content>
-      </RadixDialog.Portal>
+      <DialogPortal ref={forwardedRef} {...etc} />
     </RadixDialog.Root>
   )
+})
+
+/**
+ * Renders the command menu in a Radix Dialog without the root element
+ */
+const DialogPortalWrapper = React.forwardRef<HTMLDivElement, DialogPortalWrapperProps>((props, forwardedRef) => {
+  const { overlayClassName, contentClassName, container, ...etc } = props
+  return <DialogPortal ref={forwardedRef} {...etc} />
 })
 
 /**
@@ -888,6 +906,7 @@ const pkg = Object.assign(Command, {
   Group,
   Separator,
   Dialog,
+  DialogPortal: DialogPortalWrapper,
   Empty,
   Loading,
 })
