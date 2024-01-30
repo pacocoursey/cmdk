@@ -600,7 +600,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
             case 'Enter': {
               // Check if IME composition is finished before triggering onSelect
               // This prevents unwanted triggering while user is still inputting text with IME
-              if (!e.nativeEvent.isComposing) {
+              // e.keyCode === 229 is for the Japanese IME and Safari.
+              // isComposing does not work with Japanese IME and Safari combination.
+              if (!e.nativeEvent.isComposing && e.keyCode !== 229) {
                 // Trigger item onSelect
                 e.preventDefault()
                 const item = getSelectedItem()
