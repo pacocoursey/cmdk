@@ -92,6 +92,10 @@ type CommandProps = Children &
      */
     loop?: boolean
     /**
+     * Optionally set to `true` to disable selection via pointer events.
+     */
+    disablePointerSelection?: boolean
+    /**
      * Set to `false` to disable ctrl+n/j/p/k shortcuts. Defaults to `true`.
      */
     vimBindings?: boolean
@@ -103,6 +107,7 @@ type Context = {
   group: (id: string) => () => void
   filter: () => boolean
   label: string
+  disablePointerSelection: boolean
   commandRef: React.RefObject<HTMLDivElement | null>
   // Ids
   listId: string
@@ -165,7 +170,18 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const ids = useLazyRef<Map<string, string>>(() => new Map()) // id → value
   const listeners = useLazyRef<Set<() => void>>(() => new Set()) // [...rerenders]
   const propsRef = useAsRef(props)
-  const { label, children, value, onValueChange, filter, shouldFilter, vimBindings = true, ...etc } = props
+  const {
+    label,
+    children,
+    value,
+    onValueChange,
+    filter,
+    shouldFilter,
+    loop,
+    disablePointerSelection = false,
+    vimBindings = true,
+    ...etc
+  } = props
 
   const listId = React.useId()
   const labelId = React.useId()
@@ -296,6 +312,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         return propsRef.current.shouldFilter
       },
       label: label || props['aria-label'],
+      disablePointerSelection,
       commandRef: ref,
       listId,
       inputId,
@@ -646,7 +663,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       aria-selected={selected || undefined}
       data-disabled={disabled || undefined}
       data-selected={selected || undefined}
-      onPointerMove={disabled ? undefined : select}
+      onPointerMove={disabled || context.disablePointerSelection ? undefined : select}
       onClick={disabled ? undefined : onSelect}
     >
       {props.children}
