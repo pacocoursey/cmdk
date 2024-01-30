@@ -1,15 +1,17 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
 import * as React from 'react'
 import { commandScore } from './command-score'
+import { Primitive } from '@radix-ui/react-primitive'
 
 type Children = { children?: React.ReactNode }
-type DivProps = React.HTMLAttributes<HTMLDivElement>
+type DivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>
 
 type LoadingProps = Children &
   DivProps & {
     /** Estimated progress of loading asynchronous options. */
     progress?: number
   }
+
 type EmptyProps = Children & DivProps & {}
 type SeparatorProps = DivProps & {
   /** Whether this separator should always be rendered. Useful if you disable automatic filtering. */
@@ -50,7 +52,7 @@ type GroupProps = Children &
     /** Whether this group is forcibly rendered regardless of filtering. */
     forceMount?: boolean
   }
-type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> & {
+type InputProps = Omit<React.ComponentPropsWithoutRef<typeof Primitive.input>, 'value' | 'onChange' | 'type'> & {
   /**
    * Optional controlled state for the value of the search input.
    */
@@ -536,7 +538,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }
 
   return (
-    <div
+    <Primitive.div
       ref={mergeRefs([ref, forwardedRef])}
       {...etc}
       cmdk-root=""
@@ -607,10 +609,12 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       >
         {label}
       </label>
-      <StoreContext.Provider value={store}>
-        <CommandContext.Provider value={context}>{children}</CommandContext.Provider>
-      </StoreContext.Provider>
-    </div>
+      {SlottableWithNestedChildren(props, (child) => (
+        <StoreContext.Provider value={store}>
+          <CommandContext.Provider value={context}>{child}</CommandContext.Provider>
+        </StoreContext.Provider>
+      ))}
+    </Primitive.div>
   )
 })
 
@@ -662,7 +666,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const { disabled, value: _, onSelect: __, forceMount: ___, ...etc } = props
 
   return (
-    <div
+    <Primitive.div
       ref={mergeRefs([ref, forwardedRef])}
       {...etc}
       id={id}
@@ -676,7 +680,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       onClick={disabled ? undefined : onSelect}
     >
       {props.children}
-    </div>
+    </Primitive.div>
   )
 })
 
@@ -702,10 +706,9 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
   useValue(id, ref, [props.value, props.heading, headingRef])
 
   const contextValue = React.useMemo(() => ({ id, forceMount }), [forceMount])
-  const inner = <GroupContext.Provider value={contextValue}>{children}</GroupContext.Provider>
 
   return (
-    <div
+    <Primitive.div
       ref={mergeRefs([ref, forwardedRef])}
       {...etc}
       cmdk-group=""
@@ -717,10 +720,12 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
           {heading}
         </div>
       )}
-      <div cmdk-group-items="" role="group" aria-labelledby={heading ? headingId : undefined}>
-        {inner}
-      </div>
-    </div>
+      {SlottableWithNestedChildren(props, (child) => (
+        <div cmdk-group-items="" role="group" aria-labelledby={heading ? headingId : undefined}>
+          <GroupContext.Provider value={contextValue}>{child}</GroupContext.Provider>
+        </div>
+      ))}
+    </Primitive.div>
   )
 })
 
@@ -734,7 +739,7 @@ const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>((props, forwa
   const render = useCmdk((state) => !state.search)
 
   if (!alwaysRender && !render) return null
-  return <div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-separator="" role="separator" />
+  return <Primitive.div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-separator="" role="separator" />
 })
 
 /**
@@ -761,7 +766,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
   }, [props.value])
 
   return (
-    <input
+    <Primitive.input
       ref={forwardedRef}
       {...etc}
       cmdk-input=""
@@ -818,7 +823,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
   }, [])
 
   return (
-    <div
+    <Primitive.div
       ref={mergeRefs([ref, forwardedRef])}
       {...etc}
       cmdk-list=""
@@ -827,10 +832,12 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
       id={context.listId}
       aria-labelledby={context.inputId}
     >
-      <div ref={height} cmdk-list-sizer="">
-        {children}
-      </div>
-    </div>
+      {SlottableWithNestedChildren(props, (child) => (
+        <div ref={height} cmdk-list-sizer="">
+          {child}
+        </div>
+      ))}
+    </Primitive.div>
   )
 })
 
@@ -863,7 +870,7 @@ const Empty = React.forwardRef<HTMLDivElement, EmptyProps>((props, forwardedRef)
   }, [])
 
   if (isFirstRender.current || !render) return null
-  return <div ref={forwardedRef} {...props} cmdk-empty="" role="presentation" />
+  return <Primitive.div ref={forwardedRef} {...props} cmdk-empty="" role="presentation" />
 })
 
 /**
@@ -873,7 +880,7 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwarded
   const { progress, children, ...etc } = props
 
   return (
-    <div
+    <Primitive.div
       ref={forwardedRef}
       {...etc}
       cmdk-loading=""
@@ -883,8 +890,10 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwarded
       aria-valuemax={100}
       aria-label="Loading..."
     >
-      <div aria-hidden>{children}</div>
-    </div>
+      {SlottableWithNestedChildren(props, (child) => (
+        <div aria-hidden>{child}</div>
+      ))}
+    </Primitive.div>
   )
 })
 
@@ -1031,6 +1040,26 @@ const useScheduleLayoutEffect = () => {
     fns.current.set(id, cb)
     ss({})
   }
+}
+
+function renderChildren(children: React.ReactElement) {
+  const childrenType = children.type as any
+  // The children is a component
+  if (typeof childrenType === 'function') return childrenType(children.props)
+  // The children is a component with `forwardRef`
+  else if ('render' in childrenType) return childrenType.render(children.props)
+  // It's a string, boolean, etc.
+  else return children
+}
+
+function SlottableWithNestedChildren(
+  { asChild, children }: { asChild?: boolean; children?: React.ReactNode },
+  render: (child: React.ReactNode) => JSX.Element,
+) {
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(renderChildren(children), { ref: (children as any).ref }, render(children.props.children))
+  }
+  return render(children)
 }
 
 const srOnlyStyles = {
