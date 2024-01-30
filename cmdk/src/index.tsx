@@ -169,7 +169,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     /** Value of the search query. */
     search: '',
     /** Currently selected item value. */
-    value: props.value ?? props.defaultValue?.toLowerCase() ?? '',
+    value: props.value ?? props.defaultValue ?? '',
     filtered: {
       /** The count of all visible items. */
       count: 0,
@@ -206,7 +206,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   /** Controlled mode `value` handling. */
   useLayoutEffect(() => {
     if (value !== undefined) {
-      const v = value.trim().toLowerCase()
+      const v = value.trim()
       state.current.value = v
       store.emit()
     }
@@ -1016,19 +1016,19 @@ function useValue(
     const value = (() => {
       for (const part of deps) {
         if (typeof part === 'string') {
-          return part.trim().toLowerCase()
+          return part.trim()
         }
 
         if (typeof part === 'object' && 'current' in part) {
           if (part.current) {
-            return part.current.textContent?.trim().toLowerCase()
+            return part.current.textContent?.trim()
           }
           return valueRef.current
         }
       }
     })()
 
-    const keywords = (() => aliases.map((alias) => alias.trim().toLowerCase()))()
+    const keywords = aliases.map((alias) => alias.trim())
 
     context.value(id, value, keywords)
     ref.current?.setAttribute(VALUE_ATTR, value)

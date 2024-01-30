@@ -91,7 +91,7 @@ Render this to show the command menu inline, or use [Dialog](#dialog-cmdk-dialog
 
 > **Note**
 >
-> Values are always converted to lowercase and trimmed. Use `apple`, not `Apple`.
+> Values are always trimmed. Use `apple`, not `Apple`.
 
 ```tsx
 const [value, setValue] = React.useState('apple')
@@ -107,7 +107,7 @@ return (
 )
 ```
 
-You can provide a custom `filter` function that is called to rank each item. Both strings are normalized as lowercase and trimmed.
+You can provide a custom `filter` function that is called to rank each item. Both strings are trimmed.
 
 ```tsx
 <Command
@@ -118,7 +118,7 @@ You can provide a custom `filter` function that is called to rank each item. Bot
 />
 ```
 
-A third argument, `keywords`, can also be provided to the filter function. Keywords act as aliases for the item value, and can also affect the rank of the item. Keywords are normalized as lowercase and trimmed.
+A third argument, `keywords`, can also be provided to the filter function. Keywords act as aliases for the item value, and can also affect the rank of the item. Keywords are trimmed.
 
 ```tsx
 <Command
@@ -224,7 +224,7 @@ Item that becomes active on pointer enter. You should provide a unique `value` f
 </Command.Item>
 ```
 
-You can also provide a `keywords` prop to help with filtering. Keywords are normalized as lowercase and trimmed.
+You can also provide a `keywords` prop to help with filtering. Keywords are trimmed.
 
 ```tsx
 <Command.Item keywords={['fruit', 'apple']}>Apple</Command.Item>
