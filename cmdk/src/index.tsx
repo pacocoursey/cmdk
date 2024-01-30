@@ -95,6 +95,7 @@ type CommandProps = Children &
      * Optionally set to `true` to disable selection via pointer events.
      */
     disablePointerSelection?: boolean
+    /**
      * Set to `false` to disable ctrl+n/j/p/k shortcuts. Defaults to `true`.
      */
     vimBindings?: boolean
