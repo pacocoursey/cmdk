@@ -107,7 +107,7 @@ return (
 )
 ```
 
-You can provide a custom `filter` function that is called to rank each item. Both strings are trimmed.
+You can provide a custom `filter` function that is called to rank each item. Note that the value will be trimmed.
 
 ```tsx
 <Command
