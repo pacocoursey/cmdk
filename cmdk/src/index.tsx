@@ -842,7 +842,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
 
   return (
     <Primitive.div
-      ref={mergeRefs([ref, forwardedRef, context.listInnerRef])}
+      ref={mergeRefs([ref, forwardedRef])}
       {...etc}
       cmdk-list=""
       role="listbox"
@@ -850,7 +850,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
       id={context.listId}
     >
       {SlottableWithNestedChildren(props, (child) => (
-        <div ref={height} cmdk-list-sizer="">
+        <div ref={mergeRefs([height, context.listInnerRef])} cmdk-list-sizer="">
           {child}
         </div>
       ))}
