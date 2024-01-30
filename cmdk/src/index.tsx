@@ -809,7 +809,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
  * Use the `--cmdk-list-height` CSS variable to animate height based on the number of results.
  */
 const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) => {
-  const { children, label = "Suggestions", ...etc } = props
+  const { children, label = 'Suggestions', ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const height = React.useRef<HTMLDivElement>(null)
   const context = useCommand()
@@ -887,7 +887,7 @@ const Empty = React.forwardRef<HTMLDivElement, EmptyProps>((props, forwardedRef)
  * You should conditionally render this with `progress` while loading asynchronous items.
  */
 const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwardedRef) => {
-  const { progress, children, label = "Loading...", ...etc } = props
+  const { progress, children, label = 'Loading...', ...etc } = props
 
   return (
     <Primitive.div
