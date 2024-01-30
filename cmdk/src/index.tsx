@@ -674,7 +674,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 
   if (!render) return null
 
-  const { disabled, value: _, onSelect: __, forceMount: ___, ...etc } = props
+  const { disabled, value: _, onSelect: __, forceMount: ___, keywords: ____, ...etc } = props
 
   return (
     <Primitive.div
@@ -683,10 +683,10 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       id={id}
       cmdk-item=""
       role="option"
-      aria-disabled={disabled || undefined}
-      aria-selected={selected || undefined}
-      data-disabled={disabled || undefined}
-      data-selected={selected || undefined}
+      aria-disabled={Boolean(disabled)}
+      aria-selected={Boolean(selected)}
+      data-disabled={Boolean(disabled)}
+      data-selected={Boolean(selected)}
       onPointerMove={disabled || context.disablePointerSelection ? undefined : select}
       onClick={disabled ? undefined : onSelect}
     >
