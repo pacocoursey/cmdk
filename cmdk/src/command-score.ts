@@ -152,10 +152,11 @@ function formatInput(string) {
   return string.toLowerCase().replace(COUNT_SPACE_REGEXP, ' ')
 }
 
-export function commandScore(string: string, abbreviation: string): number {
+export function commandScore(string: string, abbreviation: string, aliases: string[]): number {
   /* NOTE:
    * in the original, we used to do the lower-casing on each recursive call, but this meant that toLowerCase()
    * was the dominating cost in the algorithm, passing both is a little ugly, but considerably faster.
    */
+  string = aliases && aliases.length > 0 ? `${string + ' ' + aliases.join(' ')}` : string;
   return commandScoreInner(string, abbreviation, formatInput(string), formatInput(abbreviation), 0, 0, {})
 }

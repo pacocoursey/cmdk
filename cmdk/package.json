@@ -1,6 +1,6 @@
 {
   "name": "cmdk",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -8,6 +8,13 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "scripts": {
     "prepublishOnly": "cp ../README.md . && pnpm build",
     "postpublish": "rm README.md",
@@ -19,7 +26,7 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "@radix-ui/react-dialog": "1.0.0",
+    "@radix-ui/react-dialog": "1.0.5",
     "@radix-ui/react-primitive": "1.0.3"
   },
   "devDependencies": {

@@ -38,6 +38,8 @@ type ItemProps = Children &
      * If no value is provided, it will be inferred from `children` or the rendered `textContent`. If your `textContent` changes between renders, you _must_ provide a stable, unique `value`.
      */
     value?: string
+    /** Optional keywords to match against when filtering. */
+    keywords?: string[]
     /** Whether this item is forcibly rendered regardless of filtering. */
     forceMount?: boolean
   }
@@ -76,7 +78,7 @@ type CommandProps = Children &
      * It should return a number between 0 and 1, with 1 being the best match and 0 being hidden entirely.
      * By default, uses the `command-score` library.
      */
-    filter?: (value: string, search: string) => number
+    filter?: (value: string, search: string, keywords?: string[]) => number
     /**
      * Optional default item value when it is initially rendered.
      */
@@ -94,17 +96,22 @@ type CommandProps = Children &
      */
     loop?: boolean
     /**
+     * Optionally set to `true` to disable selection via pointer events.
+     */
+    disablePointerSelection?: boolean
+    /**
      * Set to `false` to disable ctrl+n/j/p/k shortcuts. Defaults to `true`.
      */
     vimBindings?: boolean
   }
 
 type Context = {
-  value: (id: string, value: string) => void
+  value: (id: string, value: string, keywords?: string[]) => void
   item: (id: string, groupId: string) => () => void
   group: (id: string) => () => void
   filter: () => boolean
   label: string
+  disablePointerSelection: boolean
   commandRef: React.RefObject<HTMLDivElement | null>
   // Ids
   listId: string
@@ -135,7 +142,7 @@ const ITEM_SELECTOR = `[cmdk-item=""]`
 const VALID_ITEM_SELECTOR = `${ITEM_SELECTOR}:not([aria-disabled="true"])`
 const SELECT_EVENT = `cmdk-item-select`
 const VALUE_ATTR = `data-value`
-const defaultFilter: CommandProps['filter'] = (value, search) => commandScore(value, search)
+const defaultFilter: CommandProps['filter'] = (value, search, keywords) => commandScore(value, search, keywords)
 
 // @ts-ignore
 const CommandContext = React.createContext<Context>(undefined)
@@ -164,10 +171,21 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }))
   const allItems = useLazyRef<Set<string>>(() => new Set()) // [...itemIds]
   const allGroups = useLazyRef<Map<string, Set<string>>>(() => new Map()) // groupId → [...itemIds]
-  const ids = useLazyRef<Map<string, string>>(() => new Map()) // id → value
+  const ids = useLazyRef<Map<string, { value: string, keywords?: string[] }>>(() => new Map()) // id → { value, keywords }
   const listeners = useLazyRef<Set<() => void>>(() => new Set()) // [...rerenders]
   const propsRef = useAsRef(props)
-  const { label, children, value, onValueChange, filter, shouldFilter, vimBindings = true, ...etc } = props
+  const {
+    label,
+    children,
+    value,
+    onValueChange,
+    filter,
+    shouldFilter,
+    loop,
+    disablePointerSelection = false,
+    vimBindings = true,
+    ...etc
+  } = props
 
   const listId = React.useId()
   const labelId = React.useId()
@@ -180,10 +198,13 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     if (value !== undefined) {
       const v = value.trim().toLowerCase()
       state.current.value = v
-      schedule(6, scrollSelectedIntoView)
       store.emit()
     }
   }, [value])
+
+  useLayoutEffect(() => {
+    schedule(6, scrollSelectedIntoView)
+  }, [])
 
   const store: Store = React.useMemo(() => {
     return {
@@ -204,15 +225,16 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           sort()
           schedule(1, selectFirstItem)
         } else if (key === 'value') {
+          // opts is a boolean referring to whether it should NOT be scrolled into view
+          if (!opts) {
+            // Scroll the selected item into view
+            schedule(5, scrollSelectedIntoView)
+          }
           if (propsRef.current?.value !== undefined) {
             // If controlled, just call the callback instead of updating state internally
             const newValue = (value ?? '') as string
             propsRef.current.onValueChange?.(newValue)
             return
-            // opts is a boolean referring to whether it should NOT be scrolled into view
-          } else if (!opts) {
-            // Scroll the selected item into view
-            schedule(5, scrollSelectedIntoView)
           }
         }
 
@@ -227,11 +249,11 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   const context: Context = React.useMemo(
     () => ({
-      // Keep id → value mapping up-to-date
-      value: (id, value) => {
-        if (value !== ids.current.get(id)) {
-          ids.current.set(id, value)
-          state.current.filtered.items.set(id, score(value))
+      // Keep id → {value, keywords} mapping up-to-date
+      value: (id, value, keywords) => {
+        if (value !== ids.current.get(id)?.value) {
+          ids.current.set(id, { value, keywords })
+          state.current.filtered.items.set(id, score(value, keywords))
           schedule(2, () => {
             sort()
             store.emit()
@@ -298,6 +320,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         return propsRef.current.shouldFilter
       },
       label: label || props['aria-label'],
+      disablePointerSelection,
       commandRef: ref,
       listId,
       inputId,
@@ -306,9 +329,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     [],
   )
 
-  function score(value: string) {
+  function score(value: string, keywords?: string[]) {
     const filter = propsRef.current?.filter ?? defaultFilter
-    return value ? filter(value, state.current.search) : 0
+    return value ? filter(value, state.current.search, keywords) : 0
   }
 
   /** Sorts items by score, and groups by highest item score. */
@@ -347,8 +370,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     // Sort the items
     getValidItems()
       .sort((a, b) => {
-        const valueA = a.getAttribute(VALUE_ATTR)
-        const valueB = b.getAttribute(VALUE_ATTR)
+        const valueA = a.getAttribute('id')
+        const valueB = b.getAttribute('id')
         return (scores.get(valueB) ?? 0) - (scores.get(valueA) ?? 0)
       })
       .forEach((item) => {
@@ -393,8 +416,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
     // Check which items should be included
     for (const id of allItems.current) {
-      const value = ids.current.get(id)
-      const rank = score(value)
+      const value = ids.current.get(id)?.value ?? ''
+      const keywords = ids.current.get(id)?.keywords ?? []
+      const rank = score(value, keywords)
       state.current.filtered.items.set(id, rank)
       if (rank > 0) itemCount++
     }
@@ -608,10 +632,12 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const forceMount = propsRef.current?.forceMount ?? groupContext?.forceMount
 
   useLayoutEffect(() => {
-    return context.item(id, groupContext?.id)
-  }, [])
+    if (!forceMount) {
+      return context.item(id, groupContext?.id)
+    }
+  }, [forceMount])
 
-  const value = useValue(id, ref, [props.value, props.children, ref])
+  const value = useValue(id, ref, [props.value, props.children, ref], props.keywords)
 
   const store = useStore()
   const selected = useCmdk((state) => state.value && state.value === value.current)
@@ -637,7 +663,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 
   if (!render) return null
 
-  const { disabled, value: _, onSelect: __, ...etc } = props
+  const { disabled, value: _, onSelect: __, forceMount: ___, ...etc } = props
 
   return (
     <Primitive.div
@@ -650,7 +676,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       aria-selected={selected || undefined}
       data-disabled={disabled || undefined}
       data-selected={selected || undefined}
-      onPointerMove={disabled ? undefined : select}
+      onPointerMove={disabled || context.disablePointerSelection ? undefined : select}
       onClick={disabled ? undefined : onSelect}
     >
       {props.children}
@@ -969,6 +995,7 @@ function useValue(
   id: string,
   ref: React.RefObject<HTMLElement>,
   deps: (string | React.ReactNode | React.RefObject<HTMLElement>)[],
+  aliases: string[] = []
 ) {
   const valueRef = React.useRef<string>()
   const context = useCommand()
@@ -980,13 +1007,18 @@ function useValue(
           return part.trim().toLowerCase()
         }
 
-        if (typeof part === 'object' && 'current' in part && part.current) {
-          return part.current.textContent?.trim().toLowerCase()
+        if (typeof part === 'object' && 'current' in part) {
+          if (part.current) {
+            return part.current.textContent?.trim().toLowerCase()
+          }
+          return valueRef.current
         }
       }
     })()
 
-    context.value(id, value)
+    const keywords = (() => aliases.map((alias) => alias.trim().toLowerCase()))()
+
+    context.value(id, value, keywords)
     ref.current?.setAttribute(VALUE_ATTR, value)
     valueRef.current = value
   })
