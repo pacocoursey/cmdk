@@ -633,7 +633,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 
   if (!render) return null
 
-  const { disabled, value: _, onSelect: __, ...etc } = props
+  const { disabled, value: _, onSelect: __, forceMount: ___, ...etc } = props
 
   return (
     <div
