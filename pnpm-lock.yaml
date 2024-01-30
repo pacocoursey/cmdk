@@ -24,7 +24,7 @@ importers:
   cmdk:
     dependencies:
       '@radix-ui/react-dialog':
-        specifier: ^1.0.5
+        specifier: 1.0.5
         version: 1.0.5(@types/react@18.0.15)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: ^18.0.0
@@ -123,7 +123,7 @@ importers:
         version: 8.5.0(eslint@8.21.0)
       eslint-plugin-prettier:
         specifier: ^4.2.1
-        version: 4.2.1(eslint-config-prettier@8.5.0)(eslint@8.21.0)(prettier@3.1.0)
+        version: 4.2.1(eslint-config-prettier@8.5.0)(eslint@8.21.0)(prettier@2.7.1)
       eslint-plugin-react:
         specifier: ^7.30.1
         version: 7.30.1(eslint@8.21.0)
@@ -2163,7 +2163,7 @@ packages:
       semver: 6.3.0
     dev: true
 
-  /eslint-plugin-prettier@4.2.1(eslint-config-prettier@8.5.0)(eslint@8.21.0)(prettier@3.1.0):
+  /eslint-plugin-prettier@4.2.1(eslint-config-prettier@8.5.0)(eslint@8.21.0)(prettier@2.7.1):
     resolution: {integrity: sha512-f/0rXLXUt0oFYs8ra4w49wYZBG5GKZpAYsJSm6rnYL5uVDjd+zowwMwVZHnAjf4edNrKpCDYfXDgmRE/Ak7QyQ==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
@@ -2176,7 +2176,7 @@ packages:
     dependencies:
       eslint: 8.21.0
       eslint-config-prettier: 8.5.0(eslint@8.21.0)
-      prettier: 3.1.0
+      prettier: 2.7.1
       prettier-linter-helpers: 1.0.0
     dev: true
 
@@ -3436,12 +3436,6 @@ packages:
   /prettier@2.7.1:
     resolution: {integrity: sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==}
     engines: {node: '>=10.13.0'}
-    hasBin: true
-    dev: true
-
-  /prettier@3.1.0:
-    resolution: {integrity: sha512-TQLvXjq5IAibjh8EpBIkNKxO749UEWABoiIZehEPiY4GNpVdhaFKqSTu+QrlU6D2dPAfubRmtJTi4K4YkQ5eXw==}
-    engines: {node: '>=14'}
     hasBin: true
     dev: true
 
