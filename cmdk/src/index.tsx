@@ -477,7 +477,6 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       ref={mergeRefs([ref, forwardedRef])}
       tabIndex={-1}
       {...etc}
-      style={{ outline: 'none', ...etc.style }}
       cmdk-root=""
       onKeyDown={(e) => {
         etc.onKeyDown?.(e)
