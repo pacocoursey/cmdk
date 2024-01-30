@@ -157,6 +157,6 @@ export function commandScore(string: string, abbreviation: string, aliases: stri
    * in the original, we used to do the lower-casing on each recursive call, but this meant that toLowerCase()
    * was the dominating cost in the algorithm, passing both is a little ugly, but considerably faster.
    */
-  string = aliases && aliases.length > 0 ? `${string + ' ' + aliases.join(' ')}` : string;
+  string = aliases && aliases.length > 0 ? `${string + ' ' + aliases.join(' ')}` : string
   return commandScoreInner(string, abbreviation, formatInput(string), formatInput(abbreviation), 0, 0, {})
 }

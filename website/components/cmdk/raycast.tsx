@@ -23,7 +23,7 @@ export function RaycastCMDK() {
         <Command.List ref={listRef}>
           <Command.Empty>No results found.</Command.Empty>
           <Command.Group heading="Suggestions">
-            <Item value="Linear" keywords={["issue", "sprint"]}>
+            <Item value="Linear" keywords={['issue', 'sprint']}>
               <Logo>
                 <LinearIcon
                   style={{
@@ -34,25 +34,25 @@ export function RaycastCMDK() {
               </Logo>
               Linear
             </Item>
-            <Item value="Figma" keywords={["design", "ui", "ux"]}>
+            <Item value="Figma" keywords={['design', 'ui', 'ux']}>
               <Logo>
                 <FigmaIcon />
               </Logo>
               Figma
             </Item>
-            <Item value="Slack" keywords={["chat", "team", "communication"]}>
+            <Item value="Slack" keywords={['chat', 'team', 'communication']}>
               <Logo>
                 <SlackIcon />
               </Logo>
               Slack
             </Item>
-            <Item value="YouTube" keywords={["video", "watch", "stream"]}>
+            <Item value="YouTube" keywords={['video', 'watch', 'stream']}>
               <Logo>
                 <YouTubeIcon />
               </Logo>
               YouTube
             </Item>
-            <Item value="Raycast" keywords={["productivity", "tools", "apps"]}>
+            <Item value="Raycast" keywords={['productivity', 'tools', 'apps']}>
               <Logo>
                 <RaycastIcon />
               </Logo>
@@ -60,17 +60,17 @@ export function RaycastCMDK() {
             </Item>
           </Command.Group>
           <Command.Group heading="Commands">
-            <Item isCommand value="Clipboard History" keywords={["copy", "paste", "clipboard"]}>
+            <Item isCommand value="Clipboard History" keywords={['copy', 'paste', 'clipboard']}>
               <Logo>
                 <ClipboardIcon />
               </Logo>
               Clipboard History
             </Item>
-            <Item isCommand value="Import Extension" keywords={["import", "extension"]}>
+            <Item isCommand value="Import Extension" keywords={['import', 'extension']}>
               <HammerIcon />
               Import Extension
             </Item>
-            <Item isCommand value="Manage Extensions" keywords={["manage", "extension"]}>
+            <Item isCommand value="Manage Extensions" keywords={['manage', 'extension']}>
               <HammerIcon />
               Manage Extensions
             </Item>
@@ -101,7 +101,7 @@ function Item({
   isCommand = false,
 }: {
   children: React.ReactNode
-  value: string,
+  value: string
   keywords?: string[]
   isCommand?: boolean
 }) {

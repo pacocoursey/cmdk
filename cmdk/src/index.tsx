@@ -171,7 +171,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }))
   const allItems = useLazyRef<Set<string>>(() => new Set()) // [...itemIds]
   const allGroups = useLazyRef<Map<string, Set<string>>>(() => new Map()) // groupId → [...itemIds]
-  const ids = useLazyRef<Map<string, { value: string, keywords?: string[] }>>(() => new Map()) // id → { value, keywords }
+  const ids = useLazyRef<Map<string, { value: string; keywords?: string[] }>>(() => new Map()) // id → { value, keywords }
   const listeners = useLazyRef<Set<() => void>>(() => new Set()) // [...rerenders]
   const propsRef = useAsRef(props)
   const {
@@ -995,7 +995,7 @@ function useValue(
   id: string,
   ref: React.RefObject<HTMLElement>,
   deps: (string | React.ReactNode | React.RefObject<HTMLElement>)[],
-  aliases: string[] = []
+  aliases: string[] = [],
 ) {
   const valueRef = React.useRef<string>()
   const context = useCommand()
