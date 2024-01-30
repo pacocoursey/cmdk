@@ -8,6 +8,7 @@
     padding: 0;
     font-family: var(--font-sans);
     box-shadow: var(--cmdk-shadow);
+    outline: none;
 
     .dark & {
       background: linear-gradient(136.61deg, rgb(39, 40, 43) 13.72%, rgb(45, 46, 49) 74.3%);
@@ -75,7 +76,7 @@
     transition-property: none;
     position: relative;
 
-    &[aria-selected='true'] {
+    &[data-selected='true'] {
       background: var(--gray3);
 
       svg {
@@ -93,7 +94,7 @@
       }
     }
 
-    &[aria-disabled='true'] {
+    &[data-disabled='true'] {
       color: var(--gray8);
       cursor: not-allowed;
     }

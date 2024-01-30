@@ -10,6 +10,7 @@
     border: 1px solid var(--gray6);
     box-shadow: var(--cmdk-shadow);
     transition: transform 100ms ease;
+    outline: none;
 
     .dark & {
       background: rgba(22, 22, 22, 0.7);
@@ -66,12 +67,12 @@
     transition: all 150ms ease;
     transition-property: none;
 
-    &[aria-selected='true'] {
+    &[data-selected='true'] {
       background: var(--grayA3);
       color: var(--gray12);
     }
 
-    &[aria-disabled='true'] {
+    &[data-disabled='true'] {
       color: var(--gray8);
       cursor: not-allowed;
     }

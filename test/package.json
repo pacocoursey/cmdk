@@ -5,6 +5,7 @@
     "dev": "next"
   },
   "dependencies": {
+    "@radix-ui/react-portal": "^1.0.4",
     "@types/node": "18.0.4",
     "@types/react": "18.0.15",
     "@types/react-dom": "18.0.6",

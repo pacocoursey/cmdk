@@ -21,10 +21,10 @@ test.describe('item', async () => {
 
   test('unmount item that is selected', async ({ page }) => {
     await page.locator(`data-testid=mount`).click()
-    await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveText('A')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveText('A')
     await page.locator(`data-testid=unmount`).click()
     await expect(page.locator(`[cmdk-item]`)).toHaveCount(1)
-    await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveText('B')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveText('B')
   })
 
   test('unmount item that is the only result', async ({ page }) => {
@@ -43,9 +43,15 @@ test.describe('item', async () => {
   test('selected does not change when mounting new items', async ({ page }) => {
     await page.locator(`data-testid=mount`).click()
     await page.locator(`[cmdk-item][data-value="b"]`).click()
-    await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveText('B')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveText('B')
     await page.locator(`data-testid=many`).click()
-    await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveText('B')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveText('B')
+  })
+
+  test('mounted item still rendered with filter usingForceMount', async ({ page }) => {
+    await page.locator(`data-testid=forceMount`).click()
+    await page.locator(`[cmdk-input]`).type('z')
+    await expect(page.locator(`[cmdk-item]`)).toHaveCount(1)
   })
 })
 

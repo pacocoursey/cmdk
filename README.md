@@ -2,16 +2,16 @@
 <img src="./website/public/og.png" />
 </p>
 
-# ⌘K ![cmdk minzip package size](https://img.shields.io/bundlephobia/minzip/cmdk) ![cmdk package version](https://img.shields.io/npm/v/cmdk.svg?colorB=green)
+# ⌘K [![cmdk minzip package size](https://img.shields.io/bundlephobia/minzip/cmdk)](https://www.npmjs.com/package/cmdk?activeTab=code) [![cmdk package version](https://img.shields.io/npm/v/cmdk.svg?colorB=green)](https://www.npmjs.com/package/cmdk)
 
-⌘K is a command menu React component that can also be used as an accessible combobox. You render items, it filters and sorts them automatically. ⌘K supports a fully composable API <sup>[How?](/ARCHITECTURE.md)</sup>, so you can wrap items in other components or even as static JSX.
+⌘K is a command menu React component that can also be used as an accessible combobox. You render items, it filters and sorts them automatically. ⌘K supports a fully composable API <sup><sup>[How?](/ARCHITECTURE.md)</sup></sup>, so you can wrap items in other components or even as static JSX.
 
 Demo and examples: [cmdk.paco.me](https://cmdk.paco.me)
 
 ## Install
 
 ```bash
-npm install cmdk
+pnpm install cmdk
 ```
 
 ## Use
@@ -51,7 +51,8 @@ const CommandMenu = () => {
   // Toggle the menu when ⌘K is pressed
   React.useEffect(() => {
     const down = (e) => {
-      if (e.key === 'k' && e.metaKey) {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
         setOpen((open) => !open)
       }
     }
@@ -90,7 +91,7 @@ Render this to show the command menu inline, or use [Dialog](#dialog-cmdk-dialog
 
 > **Note**
 >
-> Values are always converted to lowercase and trimmed. Use `apple`, not `Apple`.
+> Values are always trimmed. Use `apple`, not `Apple`.
 
 ```tsx
 const [value, setValue] = React.useState('apple')
@@ -106,12 +107,24 @@ return (
 )
 ```
 
-You can provide a custom `filter` function that is called to rank each item. Both strings are normalized as lowercase and trimmed.
+You can provide a custom `filter` function that is called to rank each item. Both strings are trimmed.
 
 ```tsx
 <Command
   filter={(value, search) => {
     if (value.includes(search)) return 1
+    return 0
+  }}
+/>
+```
+
+A third argument, `keywords`, can also be provided to the filter function. Keywords act as aliases for the item value, and can also affect the rank of the item. Keywords are trimmed.
+
+```tsx
+<Command
+  filter={(value, search, keywords) => {
+    const extendValue = value + ' ' + keywords.join(' ')
+    if (extendValue.includes(search)) return 1
     return 0
   }}
 />
@@ -135,7 +148,9 @@ Or disable filtering and sorting entirely:
 
 You can make the arrow keys wrap around the list (when you reach the end, it goes back to the first item) by setting the `loop` prop:
 
+```tsx
 <Command loop />
+```
 
 ### Dialog `[cmdk-dialog]` `[cmdk-overlay]`
 
@@ -196,7 +211,7 @@ To scroll item into view earlier near the edges of the viewport, use scroll-padd
 }
 ```
 
-### Item `[cmdk-item]` `[aria-disabled?]` `[aria-selected?]`
+### Item `[cmdk-item]` `[data-disabled?]` `[data-selected?]`
 
 Item that becomes active on pointer enter. You should provide a unique `value` for each item, but it will be automatically inferred from the `.textContent`.
 
@@ -209,6 +224,23 @@ Item that becomes active on pointer enter. You should provide a unique `value` f
 </Command.Item>
 ```
 
+You can also provide a `keywords` prop to help with filtering. Keywords are trimmed.
+
+```tsx
+<Command.Item keywords={['fruit', 'apple']}>Apple</Command.Item>
+```
+
+```tsx
+<Command.Item
+  onSelect={(value) => console.log('Selected', value)}
+  // Value is implicity "apple" because of the provided text content
+>
+  Apple
+</Command.Item>
+```
+
+You can force an item to always render, regardless of filtering, by passing the `forceMount` prop.
+
 ### Group `[cmdk-group]` `[hidden?]`
 
 Groups items together with the given `heading` (`[cmdk-group-heading]`).
@@ -220,6 +252,8 @@ Groups items together with the given `heading` (`[cmdk-group-heading]`).
 ```
 
 Groups will not unmount from the DOM, rather the `hidden` attribute is applied to hide it from view. This may be relevant in your styling.
+
+You can force a group to always render, regardless of filtering, by passing the `forceMount` prop.
 
 ### Separator `[cmdk-separator]`
 
@@ -367,7 +401,7 @@ return (
 We recommend using the [Radix UI popover](https://www.radix-ui.com/docs/primitives/components/popover) component. ⌘K relies on the Radix UI Dialog component, so this will reduce your bundle size a bit due to shared dependencies.
 
 ```bash
-$ npm install @radix-ui/react-popover
+$ pnpm install @radix-ui/react-popover
 ```
 
 Render `Command` inside of the popover content:
@@ -426,3 +460,24 @@ You can find global stylesheets to drop in as a starting point for styling. See 
 Written in 2019 by Paco ([@pacocoursey](https://twitter.com/pacocoursey)) to see if a composable combobox API was possible. Used for the Vercel command menu and autocomplete by Rauno ([@raunofreiberg](https://twitter.com/raunofreiberg)) in 2020. Re-written independently in 2022 with a simpler and more performant approach. Ideas and help from Shu ([@shuding\_](https://twitter.com/shuding_)).
 
 [use-descendants](https://github.com/pacocoursey/use-descendants) was extracted from the 2019 version.
+
+## Testing
+
+First, install dependencies and Playwright browsers:
+
+```bash
+pnpm install
+pnpm playwright install
+```
+
+Then ensure you've built the library:
+
+```bash
+pnpm build
+```
+
+Then run the tests using your local build against real browser engines:
+
+```bash
+pnpm test
+```

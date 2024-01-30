@@ -30,56 +30,54 @@ export default function Index() {
   const [theme, setTheme] = React.useState<Themes>('raycast')
 
   return (
-    <>
-      <main className={styles.main}>
-        <div className={styles.content}>
-          <div className={styles.meta}>
-            <div className={styles.info}>
-              <VersionBadge />
-              <h1>⌘K</h1>
-              <p>Fast, composable, unstyled command menu for React.</p>
-            </div>
-
-            <div className={styles.buttons}>
-              <InstallButton />
-              <GitHubButton />
-            </div>
+    <main className={styles.main}>
+      <div className={styles.content}>
+        <div className={styles.meta}>
+          <div className={styles.info}>
+            <VersionBadge />
+            <h1>⌘K</h1>
+            <p>Fast, composable, unstyled command menu for React.</p>
           </div>
 
-          <AnimatePresence exitBeforeEnter initial={false}>
-            {theme === 'framer' && (
-              <CMDKWrapper key="framer">
-                <FramerCMDK />
-              </CMDKWrapper>
-            )}
-            {theme === 'vercel' && (
-              <CMDKWrapper key="vercel">
-                <VercelCMDK />
-              </CMDKWrapper>
-            )}
-            {theme === 'linear' && (
-              <CMDKWrapper key="linear">
-                <LinearCMDK />
-              </CMDKWrapper>
-            )}
-            {theme === 'raycast' && (
-              <CMDKWrapper key="raycast">
-                <RaycastCMDK />
-              </CMDKWrapper>
-            )}
-          </AnimatePresence>
-
-          <ThemeContext.Provider value={{ theme, setTheme }}>
-            <ThemeSwitcher />
-          </ThemeContext.Provider>
-
-          <div aria-hidden className={styles.line} />
-
-          <Codeblock />
+          <div className={styles.buttons}>
+            <InstallButton />
+            <GitHubButton />
+          </div>
         </div>
-        <Footer />
-      </main>
-    </>
+
+        <AnimatePresence exitBeforeEnter initial={false}>
+          {theme === 'framer' && (
+            <CMDKWrapper key="framer">
+              <FramerCMDK />
+            </CMDKWrapper>
+          )}
+          {theme === 'vercel' && (
+            <CMDKWrapper key="vercel">
+              <VercelCMDK />
+            </CMDKWrapper>
+          )}
+          {theme === 'linear' && (
+            <CMDKWrapper key="linear">
+              <LinearCMDK />
+            </CMDKWrapper>
+          )}
+          {theme === 'raycast' && (
+            <CMDKWrapper key="raycast">
+              <RaycastCMDK />
+            </CMDKWrapper>
+          )}
+        </AnimatePresence>
+
+        <ThemeContext.Provider value={{ theme, setTheme }}>
+          <ThemeSwitcher />
+        </ThemeContext.Provider>
+
+        <div aria-hidden className={styles.line} />
+
+        <Codeblock />
+      </div>
+      <Footer />
+    </main>
   )
 }
 
