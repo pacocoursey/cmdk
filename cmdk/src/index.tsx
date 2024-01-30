@@ -92,6 +92,10 @@ type CommandProps = Children &
      */
     loop?: boolean
     /**
+     * Optionally set to `true` to disable selection via pointer events.
+     */
+    disablePointerSelection?: boolean
+    /**
      * Set to `false` to disable ctrl+n/j/p/k shortcuts. Defaults to `true`.
      */
     vimBindings?: boolean
@@ -103,6 +107,7 @@ type Context = {
   group: (id: string) => () => void
   filter: () => boolean
   label: string
+  disablePointerSelection: boolean
   commandRef: React.RefObject<HTMLDivElement | null>
   // Ids
   listId: string
@@ -165,7 +170,18 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const ids = useLazyRef<Map<string, string>>(() => new Map()) // id → value
   const listeners = useLazyRef<Set<() => void>>(() => new Set()) // [...rerenders]
   const propsRef = useAsRef(props)
-  const { label, children, value, onValueChange, filter, shouldFilter, vimBindings = true, ...etc } = props
+  const {
+    label,
+    children,
+    value,
+    onValueChange,
+    filter,
+    shouldFilter,
+    loop,
+    disablePointerSelection = false,
+    vimBindings = true,
+    ...etc
+  } = props
 
   const listId = React.useId()
   const labelId = React.useId()
@@ -178,10 +194,13 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     if (value !== undefined) {
       const v = value.trim().toLowerCase()
       state.current.value = v
-      schedule(6, scrollSelectedIntoView)
       store.emit()
     }
   }, [value])
+
+  useLayoutEffect(() => {
+    schedule(6, scrollSelectedIntoView)
+  }, [])
 
   const store: Store = React.useMemo(() => {
     return {
@@ -202,15 +221,16 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           sort()
           schedule(1, selectFirstItem)
         } else if (key === 'value') {
+          // opts is a boolean referring to whether it should NOT be scrolled into view
+          if (!opts) {
+            // Scroll the selected item into view
+            schedule(5, scrollSelectedIntoView)
+          }
           if (propsRef.current?.value !== undefined) {
             // If controlled, just call the callback instead of updating state internally
             const newValue = (value ?? '') as string
             propsRef.current.onValueChange?.(newValue)
             return
-            // opts is a boolean referring to whether it should NOT be scrolled into view
-          } else if (!opts) {
-            // Scroll the selected item into view
-            schedule(5, scrollSelectedIntoView)
           }
         }
 
@@ -296,6 +316,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         return propsRef.current.shouldFilter
       },
       label: label || props['aria-label'],
+      disablePointerSelection,
       commandRef: ref,
       listId,
       inputId,
@@ -604,8 +625,10 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   const forceMount = propsRef.current?.forceMount ?? groupContext?.forceMount
 
   useLayoutEffect(() => {
-    return context.item(id, groupContext?.id)
-  }, [])
+    if (!forceMount) {
+      return context.item(id, groupContext?.id)
+    }
+  }, [forceMount])
 
   const value = useValue(id, ref, [props.value, props.children, ref])
 
@@ -633,7 +656,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 
   if (!render) return null
 
-  const { disabled, value: _, onSelect: __, ...etc } = props
+  const { disabled, value: _, onSelect: __, forceMount: ___, ...etc } = props
 
   return (
     <div
@@ -646,7 +669,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       aria-selected={selected || undefined}
       data-disabled={disabled || undefined}
       data-selected={selected || undefined}
-      onPointerMove={disabled ? undefined : select}
+      onPointerMove={disabled || context.disablePointerSelection ? undefined : select}
       onClick={disabled ? undefined : onSelect}
     >
       {props.children}
