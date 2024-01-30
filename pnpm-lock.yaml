@@ -11,6 +11,9 @@ importers:
       '@playwright/test':
         specifier: 1.41.1
         version: 1.41.1
+      lint-staged:
+        specifier: ^13.0.3
+        version: 13.0.3
       prettier:
         specifier: 2.7.1
         version: 2.7.1
@@ -3033,7 +3036,7 @@ packages:
       object-inspect: 1.12.2
       pidtree: 0.6.0
       string-argv: 0.3.1
-      yaml: 2.1.1
+      yaml: 2.3.4
     transitivePeerDependencies:
       - enquirer
       - supports-color
@@ -4306,11 +4309,6 @@ packages:
 
   /yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
-    dev: true
-
-  /yaml@2.1.1:
-    resolution: {integrity: sha512-o96x3OPo8GjWeSLF+wOAbrPfhFOGY0W00GNaxCDv+9hkcDJEnev1yh8S7pgHF0ik6zc8sQLuL8hjHjJULZp8bw==}
-    engines: {node: '>= 14'}
     dev: true
 
   /yaml@2.3.4:
