@@ -9,6 +9,7 @@
     font-family: var(--font-sans);
     border: 1px solid var(--gray6);
     box-shadow: var(--cmdk-shadow);
+    outline: none;
 
     .dark & {
       background: var(--gray2);
