@@ -11,7 +11,7 @@ Demo and examples: [cmdk.paco.me](https://cmdk.paco.me)
 ## Install
 
 ```bash
-npm install cmdk
+pnpm install cmdk
 ```
 
 ## Use
@@ -374,7 +374,7 @@ return (
 We recommend using the [Radix UI popover](https://www.radix-ui.com/docs/primitives/components/popover) component. ⌘K relies on the Radix UI Dialog component, so this will reduce your bundle size a bit due to shared dependencies.
 
 ```bash
-$ npm install @radix-ui/react-popover
+$ pnpm install @radix-ui/react-popover
 ```
 
 Render `Command` inside of the popover content:
