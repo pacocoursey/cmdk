@@ -5,10 +5,11 @@ import { commandScore } from './command-score'
 type Children = { children?: React.ReactNode }
 type DivProps = React.HTMLAttributes<HTMLDivElement>
 
-type LoadingProps = Children & {
-  /** Estimated progress of loading asynchronous options. */
-  progress?: number
-}
+type LoadingProps = Children &
+  DivProps & {
+    /** Estimated progress of loading asynchronous options. */
+    progress?: number
+  }
 type EmptyProps = Children & DivProps & {}
 type SeparatorProps = DivProps & {
   /** Whether this separator should always be rendered. Useful if you disable automatic filtering. */
@@ -94,6 +95,9 @@ type CommandProps = Children &
      * Optionally set to `true` to disable selection via pointer events.
      */
     disablePointerSelection?: boolean
+     * Set to `false` to disable ctrl+n/j/p/k shortcuts. Defaults to `true`.
+     */
+    vimBindings?: boolean
   }
 
 type Context = {
@@ -174,6 +178,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     shouldFilter,
     loop,
     disablePointerSelection = false,
+    vimBindings = true,
     ...etc
   } = props
 
@@ -535,7 +540,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
             case 'n':
             case 'j': {
               // vim keybind down
-              if (e.ctrlKey) {
+              if (vimBindings && e.ctrlKey) {
                 next(e)
               }
               break
@@ -547,7 +552,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
             case 'p':
             case 'k': {
               // vim keybind up
-              if (e.ctrlKey) {
+              if (vimBindings && e.ctrlKey) {
                 prev(e)
               }
               break
@@ -569,12 +574,16 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
               break
             }
             case 'Enter': {
-              // Trigger item onSelect
-              e.preventDefault()
-              const item = getSelectedItem()
-              if (item) {
-                const event = new Event(SELECT_EVENT)
-                item.dispatchEvent(event)
+              // Check if IME composition is finished before triggering onSelect
+              // This prevents unwanted triggering while user is still inputting text with IME
+              if (!e.nativeEvent.isComposing) {
+                // Trigger item onSelect
+                e.preventDefault()
+                const item = getSelectedItem()
+                if (item) {
+                  const event = new Event(SELECT_EVENT)
+                  item.dispatchEvent(event)
+                }
               }
             }
           }
@@ -640,7 +649,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 
   if (!render) return null
 
-  const { disabled, value: _, onSelect: __, ...etc } = props
+  const { disabled, value: _, onSelect: __, forceMount: ___, ...etc } = props
 
   return (
     <div
@@ -978,8 +987,11 @@ function useValue(
           return part.trim().toLowerCase()
         }
 
-        if (typeof part === 'object' && 'current' in part && part.current) {
-          return part.current.textContent?.trim().toLowerCase()
+        if (typeof part === 'object' && 'current' in part) {
+          if (part.current) {
+            return part.current.textContent?.trim().toLowerCase()
+          }
+          return valueRef.current
         }
       }
     })()

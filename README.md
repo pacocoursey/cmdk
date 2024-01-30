@@ -2,16 +2,16 @@
 <img src="./website/public/og.png" />
 </p>
 
-# ⌘K ![cmdk minzip package size](https://img.shields.io/bundlephobia/minzip/cmdk) ![cmdk package version](https://img.shields.io/npm/v/cmdk.svg?colorB=green)
+# ⌘K [![cmdk minzip package size](https://img.shields.io/bundlephobia/minzip/cmdk)](https://www.npmjs.com/package/cmdk?activeTab=code) [![cmdk package version](https://img.shields.io/npm/v/cmdk.svg?colorB=green)](https://www.npmjs.com/package/cmdk)
 
-⌘K is a command menu React component that can also be used as an accessible combobox. You render items, it filters and sorts them automatically. ⌘K supports a fully composable API <sup>[How?](/ARCHITECTURE.md)</sup>, so you can wrap items in other components or even as static JSX.
+⌘K is a command menu React component that can also be used as an accessible combobox. You render items, it filters and sorts them automatically. ⌘K supports a fully composable API <sup><sup>[How?](/ARCHITECTURE.md)</sup></sup>, so you can wrap items in other components or even as static JSX.
 
 Demo and examples: [cmdk.paco.me](https://cmdk.paco.me)
 
 ## Install
 
 ```bash
-npm install cmdk
+pnpm install cmdk
 ```
 
 ## Use
@@ -136,7 +136,9 @@ Or disable filtering and sorting entirely:
 
 You can make the arrow keys wrap around the list (when you reach the end, it goes back to the first item) by setting the `loop` prop:
 
+```tsx
 <Command loop />
+```
 
 ### Dialog `[cmdk-dialog]` `[cmdk-overlay]`
 
@@ -372,7 +374,7 @@ return (
 We recommend using the [Radix UI popover](https://www.radix-ui.com/docs/primitives/components/popover) component. ⌘K relies on the Radix UI Dialog component, so this will reduce your bundle size a bit due to shared dependencies.
 
 ```bash
-$ npm install @radix-ui/react-popover
+$ pnpm install @radix-ui/react-popover
 ```
 
 Render `Command` inside of the popover content:
@@ -431,3 +433,24 @@ You can find global stylesheets to drop in as a starting point for styling. See 
 Written in 2019 by Paco ([@pacocoursey](https://twitter.com/pacocoursey)) to see if a composable combobox API was possible. Used for the Vercel command menu and autocomplete by Rauno ([@raunofreiberg](https://twitter.com/raunofreiberg)) in 2020. Re-written independently in 2022 with a simpler and more performant approach. Ideas and help from Shu ([@shuding\_](https://twitter.com/shuding_)).
 
 [use-descendants](https://github.com/pacocoursey/use-descendants) was extracted from the 2019 version.
+
+## Testing
+
+First, install dependencies and Playwright browsers:
+
+```bash
+pnpm install
+pnpm playwright install
+```
+
+Then ensure you've built the library:
+
+```bash
+pnpm build
+```
+
+Then run the tests using your local build against real browser engines:
+
+```bash
+pnpm test
+```
