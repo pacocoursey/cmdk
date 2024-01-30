@@ -10,6 +10,10 @@ type LoadingProps = Children &
   DivProps & {
     /** Estimated progress of loading asynchronous options. */
     progress?: number
+    /**
+     * Accessible label for this loading progressbar. Not shown visibly.
+     */
+    label?: string
   }
 
 type EmptyProps = Children & DivProps & {}
@@ -26,7 +30,13 @@ type DialogProps = RadixDialog.DialogProps &
     /** Provide a custom element the Dialog should portal into. */
     container?: HTMLElement
   }
-type ListProps = Children & DivProps & {}
+type ListProps = Children &
+  DivProps & {
+    /**
+     * Accessible label for this List of suggestions. Not shown visibly.
+     */
+    label?: string
+  }
 type ItemProps = Children &
   Omit<DivProps, 'disabled' | 'onSelect' | 'value'> & {
     /** Whether this item is currently disabled. */
@@ -798,7 +808,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
  * Use the `--cmdk-list-height` CSS variable to animate height based on the number of results.
  */
 const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) => {
-  const { children, ...etc } = props
+  const { children, label = "Suggestions", ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const height = React.useRef<HTMLDivElement>(null)
   const context = useCommand()
@@ -828,9 +838,8 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
       {...etc}
       cmdk-list=""
       role="listbox"
-      aria-label="Suggestions"
+      aria-label={label}
       id={context.listId}
-      aria-labelledby={context.inputId}
     >
       {SlottableWithNestedChildren(props, (child) => (
         <div ref={height} cmdk-list-sizer="">
@@ -877,7 +886,7 @@ const Empty = React.forwardRef<HTMLDivElement, EmptyProps>((props, forwardedRef)
  * You should conditionally render this with `progress` while loading asynchronous items.
  */
 const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwardedRef) => {
-  const { progress, children, ...etc } = props
+  const { progress, children, label = "Loading...", ...etc } = props
 
   return (
     <Primitive.div
@@ -888,7 +897,7 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwarded
       aria-valuenow={progress}
       aria-valuemin={0}
       aria-valuemax={100}
-      aria-label="Loading..."
+      aria-label={label}
     >
       {SlottableWithNestedChildren(props, (child) => (
         <div aria-hidden>{child}</div>
