@@ -145,7 +145,6 @@ type Group = {
   forceMount?: boolean
 }
 
-const LIST_SELECTOR = `[cmdk-list-sizer=""]`
 const GROUP_SELECTOR = `[cmdk-group=""]`
 const GROUP_ITEMS_SELECTOR = `[cmdk-group-items=""]`
 const GROUP_HEADING_SELECTOR = `[cmdk-group-heading=""]`
@@ -376,7 +375,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     // Sort items within groups to bottom
     // Sort items outside of groups
     // Sort groups to bottom (pushes all non-grouped items to the top)
-    const listInsertionElement = listInnerRef.current.querySelector(LIST_SELECTOR)
+    const listInsertionElement = listInnerRef.current
 
     // Sort the items
     getValidItems()
