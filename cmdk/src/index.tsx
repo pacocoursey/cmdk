@@ -766,7 +766,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
   const context = useCommand()
 
   const selectedItemId = React.useMemo(() => {
-    const item = context.commandRef.current?.querySelector(`${ITEM_SELECTOR}[${VALUE_ATTR}="${value}"]`)
+    const item = context.commandRef.current?.querySelector(
+      `${ITEM_SELECTOR}[${VALUE_ATTR}="${encodeURIComponent(value)}"]`,
+    )
     return item?.getAttribute('id')
   }, [value, context.commandRef])
 
