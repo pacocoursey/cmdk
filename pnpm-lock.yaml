@@ -11,6 +11,9 @@ importers:
       '@playwright/test':
         specifier: 1.41.1
         version: 1.41.1
+      husky:
+        specifier: ^8.0.1
+        version: 8.0.1
       lint-staged:
         specifier: ^13.0.3
         version: 13.0.3
