@@ -122,11 +122,12 @@ type Context = {
   filter: () => boolean
   label: string
   disablePointerSelection: boolean
-  commandRef: React.RefObject<HTMLDivElement | null>
   // Ids
   listId: string
   labelId: string
   inputId: string
+  // Refs
+  listInnerRef: React.RefObject<HTMLDivElement | null>
 }
 type State = {
   search: string
@@ -164,7 +165,6 @@ const useStore = () => React.useContext(StoreContext)
 const GroupContext = React.createContext<Group>(undefined)
 
 const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
-  const ref = React.useRef<HTMLDivElement>(null)
   const state = useLazyRef<State>(() => ({
     /** Value of the search query. */
     search: '',
@@ -200,6 +200,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const listId = React.useId()
   const labelId = React.useId()
   const inputId = React.useId()
+
+  const listInnerRef = React.useRef<HTMLDivElement>(null)
 
   const schedule = useScheduleLayoutEffect()
 
@@ -331,10 +333,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       },
       label: label || props['aria-label'],
       disablePointerSelection,
-      commandRef: ref,
       listId,
       inputId,
       labelId,
+      listInnerRef,
     }),
     [],
   )
@@ -347,7 +349,6 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   /** Sorts items by score, and groups by highest item score. */
   function sort() {
     if (
-      !ref.current ||
       !state.current.search ||
       // Explicitly false, because true | undefined is the default
       propsRef.current.shouldFilter === false
@@ -375,7 +376,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     // Sort items within groups to bottom
     // Sort items outside of groups
     // Sort groups to bottom (pushes all non-grouped items to the top)
-    const list = ref.current.querySelector(LIST_SELECTOR)
+    const listInsertionElement = listInnerRef.current.querySelector(LIST_SELECTOR)
 
     // Sort the items
     getValidItems()
@@ -390,14 +391,16 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         if (group) {
           group.appendChild(item.parentElement === group ? item : item.closest(`${GROUP_ITEMS_SELECTOR} > *`))
         } else {
-          list.appendChild(item.parentElement === list ? item : item.closest(`${GROUP_ITEMS_SELECTOR} > *`))
+          listInsertionElement.appendChild(
+            item.parentElement === listInsertionElement ? item : item.closest(`${GROUP_ITEMS_SELECTOR} > *`),
+          )
         }
       })
 
     groups
       .sort((a, b) => b[1] - a[1])
       .forEach((group) => {
-        const element = ref.current.querySelector(`${GROUP_SELECTOR}[${VALUE_ATTR}="${group[0]}"]`)
+        const element = listInnerRef.current.querySelector(`${GROUP_SELECTOR}[${VALUE_ATTR}="${group[0]}"]`)
         element?.parentElement.appendChild(element)
       })
   }
@@ -463,11 +466,11 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   /** Getters */
 
   function getSelectedItem() {
-    return ref.current?.querySelector(`${ITEM_SELECTOR}[aria-selected="true"]`)
+    return listInnerRef.current?.querySelector(`${ITEM_SELECTOR}[aria-selected="true"]`)
   }
 
   function getValidItems() {
-    return Array.from(ref.current.querySelectorAll(VALID_ITEM_SELECTOR))
+    return Array.from(listInnerRef.current?.querySelectorAll(VALID_ITEM_SELECTOR))
   }
 
   /** Setters */
@@ -478,7 +481,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     if (item) store.setState('value', item.getAttribute(VALUE_ATTR))
   }
 
-  function updateSelectedByChange(change: 1 | -1) {
+  function updateSelectedByItem(change: 1 | -1) {
     const selected = getSelectedItem()
     const items = getValidItems()
     const index = items.findIndex((item) => item === selected)
@@ -498,7 +501,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     if (newSelected) store.setState('value', newSelected.getAttribute(VALUE_ATTR))
   }
 
-  function updateSelectedToGroup(change: 1 | -1) {
+  function updateSelectedByGroup(change: 1 | -1) {
     const selected = getSelectedItem()
     let group = selected?.closest(GROUP_SELECTOR)
     let item: HTMLElement
@@ -511,7 +514,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     if (item) {
       store.setState('value', item.getAttribute(VALUE_ATTR))
     } else {
-      updateSelectedByChange(change)
+      updateSelectedByItem(change)
     }
   }
 
@@ -525,10 +528,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       last()
     } else if (e.altKey) {
       // Next group
-      updateSelectedToGroup(1)
+      updateSelectedByGroup(1)
     } else {
       // Next item
-      updateSelectedByChange(1)
+      updateSelectedByItem(1)
     }
   }
 
@@ -540,16 +543,16 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       updateSelectedToIndex(0)
     } else if (e.altKey) {
       // Previous group
-      updateSelectedToGroup(-1)
+      updateSelectedByGroup(-1)
     } else {
       // Previous item
-      updateSelectedByChange(-1)
+      updateSelectedByItem(-1)
     }
   }
 
   return (
     <Primitive.div
-      ref={mergeRefs([ref, forwardedRef])}
+      ref={forwardedRef}
       tabIndex={-1}
       {...etc}
       cmdk-root=""
@@ -766,11 +769,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
   const context = useCommand()
 
   const selectedItemId = React.useMemo(() => {
-    const item = context.commandRef.current?.querySelector(
+    const item = context.listInnerRef.current?.querySelector(
       `${ITEM_SELECTOR}[${VALUE_ATTR}="${encodeURIComponent(value)}"]`,
     )
     return item?.getAttribute('id')
-  }, [value, context.commandRef])
+  }, [])
 
   React.useEffect(() => {
     if (props.value != null) {
@@ -837,7 +840,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
 
   return (
     <Primitive.div
-      ref={mergeRefs([ref, forwardedRef])}
+      ref={mergeRefs([ref, forwardedRef, context.listInnerRef])}
       {...etc}
       cmdk-list=""
       role="listbox"
