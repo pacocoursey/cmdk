@@ -11,7 +11,7 @@ test.describe('basic behavior', async () => {
   })
 
   test('item value is derived from textContent', async ({ page }) => {
-    const item = page.locator(`[cmdk-item][data-value="item"]`)
+    const item = page.locator(`[cmdk-item][data-value="Item"]`)
     await expect(item).toHaveText('Item')
   })
 
