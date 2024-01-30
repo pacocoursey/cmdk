@@ -47,6 +47,15 @@ test.describe('basic behavior', async () => {
     await expect(remains).toHaveCount(1)
   })
 
+  test('items filter when searching by keywords', async ({ page }) => {
+    const input = page.locator(`[cmdk-input]`)
+    await input.type('key')
+    const removed = page.locator(`[cmdk-item][data-value="xxx"]`)
+    const remains = page.locator(`[cmdk-item][data-value="item"]`)
+    await expect(removed).toHaveCount(0)
+    await expect(remains).toHaveCount(1)
+  })
+
   test('empty component renders when there are no results', async ({ page }) => {
     const input = page.locator('[cmdk-input]')
     await input.type('z')

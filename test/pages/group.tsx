@@ -3,9 +3,14 @@ import * as React from 'react'
 
 const Page = () => {
   const [search, setSearch] = React.useState('')
+  const [forceMount, setForceMount] = React.useState(false)
 
   return (
     <div>
+      <button data-testid="forceMount" onClick={() => setForceMount(!forceMount)}>
+        Force mount Group Letters
+      </button>
+
       <Command>
         <Command.Input placeholder="Search…" value={search} onValueChange={setSearch} />
         <Command.List>
@@ -15,7 +20,7 @@ const Page = () => {
             <Command.Item>Chicken</Command.Item>
           </Command.Group>
 
-          <Command.Group heading="Letters">
+          <Command.Group forceMount={forceMount} heading="Letters">
             <Command.Item>A</Command.Item>
             <Command.Item>B</Command.Item>
             <Command.Item>Z</Command.Item>

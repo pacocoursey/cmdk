@@ -5,6 +5,7 @@ const Page = () => {
   const [unmount, setUnmount] = React.useState(false)
   const [mount, setMount] = React.useState(false)
   const [many, setMany] = React.useState(false)
+  const [forceMount, setForceMount] = React.useState(false)
 
   return (
     <div>
@@ -20,11 +21,15 @@ const Page = () => {
         Toggle many items
       </button>
 
+      <button data-testid="forceMount" onClick={() => setForceMount(!forceMount)}>
+        Force mount item A
+      </button>
+
       <Command>
         <Command.Input placeholder="Search…" />
         <Command.List>
           <Command.Empty>No results.</Command.Empty>
-          {!unmount && <Command.Item>A</Command.Item>}
+          {!unmount && <Command.Item forceMount={forceMount}>A</Command.Item>}
           {many && (
             <>
               <Command.Item>1</Command.Item>
