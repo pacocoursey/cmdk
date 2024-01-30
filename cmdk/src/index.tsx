@@ -194,10 +194,13 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     if (value !== undefined) {
       const v = value.trim().toLowerCase()
       state.current.value = v
-      schedule(6, scrollSelectedIntoView)
       store.emit()
     }
   }, [value])
+
+  useLayoutEffect(() => {
+    schedule(6, scrollSelectedIntoView)
+  }, [])
 
   const store: Store = React.useMemo(() => {
     return {
@@ -218,15 +221,16 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           sort()
           schedule(1, selectFirstItem)
         } else if (key === 'value') {
+          // opts is a boolean referring to whether it should NOT be scrolled into view
+          if (!opts) {
+            // Scroll the selected item into view
+            schedule(5, scrollSelectedIntoView)
+          }
           if (propsRef.current?.value !== undefined) {
             // If controlled, just call the callback instead of updating state internally
             const newValue = (value ?? '') as string
             propsRef.current.onValueChange?.(newValue)
             return
-            // opts is a boolean referring to whether it should NOT be scrolled into view
-          } else if (!opts) {
-            // Scroll the selected item into view
-            schedule(5, scrollSelectedIntoView)
           }
         }
 
