@@ -433,3 +433,24 @@ You can find global stylesheets to drop in as a starting point for styling. See 
 Written in 2019 by Paco ([@pacocoursey](https://twitter.com/pacocoursey)) to see if a composable combobox API was possible. Used for the Vercel command menu and autocomplete by Rauno ([@raunofreiberg](https://twitter.com/raunofreiberg)) in 2020. Re-written independently in 2022 with a simpler and more performant approach. Ideas and help from Shu ([@shuding\_](https://twitter.com/shuding_)).
 
 [use-descendants](https://github.com/pacocoursey/use-descendants) was extracted from the 2019 version.
+
+## Testing
+
+First, install dependencies and Playwright browsers:
+
+```bash
+pnpm install
+pnpm playwright install
+```
+
+Then ensure you've built the library:
+
+```bash
+pnpm build
+```
+
+Then run the tests using your local build against real browser engines:
+
+```bash
+pnpm test
+```
