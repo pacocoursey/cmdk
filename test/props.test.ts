@@ -16,29 +16,33 @@ test.describe('props', async () => {
 
   test('controlled value', async ({ page }) => {
     await page.goto('/props')
-    await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveAttribute('data-value', 'ant')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'ant')
     await page.locator(`data-testid=controlledValue`).click()
-    await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveAttribute('data-value', 'anteater')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'anteater')
   })
 
   test('keep controlled value if empty results', async ({ page }) => {
+    const input = await page.locator(`[cmdk-input]`)
+    const value = await page.locator(`[data-testid=value]`)
+
     await page.goto('/props')
-    await expect(page.locator(`[data-testid=value]`)).toHaveText('ant')
-    await page.locator(`[cmdk-input]`).fill('d')
-    await expect(page.locator(`[data-testid=value]`)).toHaveText('')
-    await page.locator(`[cmdk-input]`).fill('ant')
-    await expect(page.locator(`[data-testid=value]`)).toHaveText('ant')
+    await expect(value).toHaveText('ant')
+    await input.fill('d')
+    await expect(value).toHaveText('')
+    await input.clear()
+    await input.fill('ant')
+    await expect(value).toHaveText('ant')
   })
 
   test('controlled search', async ({ page }) => {
     await page.goto('/props')
-    await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveAttribute('data-value', 'ant')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'ant')
     await page.locator(`data-testid=controlledSearch`).click()
-    await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveAttribute('data-value', 'anteater')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'anteater')
   })
 
   test('keep focus on the provided initial value', async ({ page }) => {
     await page.goto('/props?initialValue=anteater')
-    await expect(page.locator(`[cmdk-item][aria-selected]`)).toHaveAttribute('data-value', 'anteater')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'anteater')
   })
 })
