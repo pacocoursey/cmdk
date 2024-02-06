@@ -8,6 +8,7 @@ import {
   VercelCMDK,
   VercelIcon,
   RaycastCMDK,
+  RaycastCMDKGrid,
   RaycastIcon,
   CopyIcon,
   FramerIcon,
@@ -63,7 +64,8 @@ export default function Index() {
           )}
           {theme === 'raycast' && (
             <CMDKWrapper key="raycast">
-              <RaycastCMDK />
+              {/* <RaycastCMDK /> */}
+              <RaycastCMDKGrid />
             </CMDKWrapper>
           )}
         </AnimatePresence>
@@ -164,25 +166,25 @@ function ThemeSwitcher() {
     function listener(e: KeyboardEvent) {
       const themeNames = themes.map((t) => t.key)
 
-      if (e.key === 'ArrowRight') {
-        const currentIndex = themeNames.indexOf(theme)
-        const nextIndex = currentIndex + 1
-        const nextItem = themeNames[nextIndex]
+      // if (e.key === 'ArrowRight') {
+      //   const currentIndex = themeNames.indexOf(theme)
+      //   const nextIndex = currentIndex + 1
+      //   const nextItem = themeNames[nextIndex]
 
-        if (nextItem) {
-          setTheme(nextItem)
-        }
-      }
+      //   if (nextItem) {
+      //     setTheme(nextItem)
+      //   }
+      // }
 
-      if (e.key === 'ArrowLeft') {
-        const currentIndex = themeNames.indexOf(theme)
-        const prevIndex = currentIndex - 1
-        const prevItem = themeNames[prevIndex]
+      // if (e.key === 'ArrowLeft') {
+      //   const currentIndex = themeNames.indexOf(theme)
+      //   const prevIndex = currentIndex - 1
+      //   const prevItem = themeNames[prevIndex]
 
-        if (prevItem) {
-          setTheme(prevItem)
-        }
-      }
+      //   if (prevItem) {
+      //     setTheme(prevItem)
+      //   }
+      // }
     }
 
     document.addEventListener('keydown', listener)

@@ -564,7 +564,11 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     const selected = getSelectedItem()
     const items = getValidItems()
     const index = items.findIndex((item) => item === selected)
-    updateSelectedToIndex(index - gridColumns)
+    const newIndex = index - gridColumns
+
+    if (newIndex >= 0) {
+      updateSelectedToIndex(newIndex)
+    }
   }
 
   const nextRow = (e: React.KeyboardEvent) => {
@@ -572,7 +576,14 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     const selected = getSelectedItem()
     const items = getValidItems()
     const index = items.findIndex((item) => item === selected)
-    updateSelectedToIndex(index + gridColumns)
+    const newIndex = index + gridColumns
+
+    // TODO: should go to the last item of uneven columns
+    // TODO: should handle grouping correctly
+
+    if (newIndex < items.length) {
+      updateSelectedToIndex(newIndex)
+    }
   }
 
   return (
