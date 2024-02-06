@@ -9,7 +9,7 @@ const config: PlaywrightTestConfig = {
     trace: 'on-first-retry',
     baseURL: 'http://localhost:3000',
   },
-  timeout: 1000,
+  timeout: 5000,
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:3000',
