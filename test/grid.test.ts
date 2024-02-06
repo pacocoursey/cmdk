@@ -12,12 +12,12 @@ test.describe('grid', async () => {
 
   test('arrow up/down changes selected item', async ({ page }) => {
     await page.locator(`[cmdk-input]`).press('ArrowDown')
-    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'c')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'C')
     await page.locator(`[cmdk-input]`).press('ArrowLeft')
-    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'b')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'B')
     await page.locator(`[cmdk-input]`).press('ArrowRight')
-    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'c')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'C')
     await page.locator(`[cmdk-input]`).press('ArrowUp')
-    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'a')
+    await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveAttribute('data-value', 'A')
   })
 })
