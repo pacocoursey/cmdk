@@ -22,16 +22,12 @@ test.describe('props', async () => {
   })
 
   test('keep controlled value if empty results', async ({ page }) => {
-    const input = await page.locator(`[cmdk-input]`)
-    const value = await page.locator(`[data-testid=value]`)
-
     await page.goto('/props')
-    await expect(value).toHaveText('ant')
-    await input.fill('d')
-    await expect(value).toHaveText('')
-    await input.clear()
-    await input.fill('ant')
-    await expect(value).toHaveText('ant')
+    await expect(page.locator(`[data-testid=value]`)).toHaveText('ant')
+    await page.locator(`[cmdk-input]`).fill('d')
+    await expect(page.locator(`[data-testid=value]`)).toHaveText('')
+    await page.locator(`[cmdk-input]`).fill('ant')
+    await expect(page.locator(`[data-testid=value]`)).toHaveText('ant')
   })
 
   test('controlled search', async ({ page }) => {

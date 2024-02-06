@@ -11,7 +11,7 @@ test.describe('basic behavior', async () => {
   })
 
   test('item value is derived from textContent', async ({ page }) => {
-    const item = page.locator(`[cmdk-item][data-value="item"]`)
+    const item = page.locator(`[cmdk-item][data-value="Item"]`)
     await expect(item).toHaveText('Item')
   })
 
@@ -21,7 +21,7 @@ test.describe('basic behavior', async () => {
   })
 
   test('item onSelect is called on click', async ({ page }) => {
-    const item = page.locator(`[cmdk-item][data-value="item"]`)
+    const item = page.locator(`[cmdk-item][data-value="Item"]`)
     const [message] = await Promise.all([page.waitForEvent('console'), item.click()])
     expect(message.text()).toEqual('Item selected')
   })
@@ -41,7 +41,7 @@ test.describe('basic behavior', async () => {
   test('items filter when searching', async ({ page }) => {
     const input = page.locator(`[cmdk-input]`)
     await input.type('x')
-    const removed = page.locator(`[cmdk-item][data-value="item"]`)
+    const removed = page.locator(`[cmdk-item][data-value="Item"]`)
     const remains = page.locator(`[cmdk-item][data-value="xxx"]`)
     await expect(removed).toHaveCount(0)
     await expect(remains).toHaveCount(1)
@@ -51,7 +51,7 @@ test.describe('basic behavior', async () => {
     const input = page.locator(`[cmdk-input]`)
     await input.type('key')
     const removed = page.locator(`[cmdk-item][data-value="xxx"]`)
-    const remains = page.locator(`[cmdk-item][data-value="item"]`)
+    const remains = page.locator(`[cmdk-item][data-value="Item"]`)
     await expect(removed).toHaveCount(0)
     await expect(remains).toHaveCount(1)
   })

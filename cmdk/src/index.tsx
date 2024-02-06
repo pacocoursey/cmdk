@@ -152,7 +152,6 @@ type Group = {
   forceMount?: boolean
 }
 
-const LIST_SELECTOR = `[cmdk-list-sizer=""]`
 const GROUP_SELECTOR = `[cmdk-group=""]`
 const GROUP_ITEMS_SELECTOR = `[cmdk-group-items=""]`
 const GROUP_HEADING_SELECTOR = `[cmdk-group-heading=""]`
@@ -383,7 +382,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     // Sort items within groups to bottom
     // Sort items outside of groups
     // Sort groups to bottom (pushes all non-grouped items to the top)
-    const listInsertionElement = listInnerRef.current.querySelector(LIST_SELECTOR)
+    const listInsertionElement = listInnerRef.current
 
     // Sort the items
     getValidItems()
@@ -413,7 +412,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }
 
   function selectFirstItem() {
-    const item = getValidItems().find((item) => !item.ariaDisabled)
+    const item = getValidItems().find((item) => item.getAttribute('aria-disabled') !== 'true')
     const value = item?.getAttribute(VALUE_ATTR)
     store.setState('value', value || undefined)
   }
@@ -649,7 +648,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
             case 'Enter': {
               // Check if IME composition is finished before triggering onSelect
               // This prevents unwanted triggering while user is still inputting text with IME
-              if (!e.nativeEvent.isComposing) {
+              // e.keyCode === 229 is for the Japanese IME and Safari.
+              // isComposing does not work with Japanese IME and Safari combination.
+              if (!e.nativeEvent.isComposing && e.keyCode !== 229) {
                 // Trigger item onSelect
                 e.preventDefault()
                 const item = getSelectedItem()
@@ -898,7 +899,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
       id={context.listId}
     >
       {SlottableWithNestedChildren(props, (child) => (
-        <div ref={mergeRefs([context.listInnerRef, height])} cmdk-list-sizer="">
+        <div ref={mergeRefs([height, context.listInnerRef])} cmdk-list-sizer="">
           {child}
         </div>
       ))}

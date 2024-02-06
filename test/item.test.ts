@@ -42,7 +42,7 @@ test.describe('item', async () => {
 
   test('selected does not change when mounting new items', async ({ page }) => {
     await page.locator(`data-testid=mount`).click()
-    await page.locator(`[cmdk-item][data-value="b"]`).click()
+    await page.locator(`[cmdk-item][data-value="B"]`).click()
     await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveText('B')
     await page.locator(`data-testid=many`).click()
     await expect(page.locator(`[cmdk-item][aria-selected="true"]`)).toHaveText('B')
