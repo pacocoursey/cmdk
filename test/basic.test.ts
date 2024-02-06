@@ -27,14 +27,14 @@ test.describe('basic behavior', async () => {
   })
 
   test('first item is selected by default', async ({ page }) => {
-    const item = page.locator(`[cmdk-item][aria-selected="true"]`)
+    const item = page.locator(`[cmdk-item][aria-selected]`)
     await expect(item).toHaveText('Item')
   })
 
   test('first item is selected when search changes', async ({ page }) => {
     const input = page.locator(`[cmdk-input]`)
     await input.type('x')
-    const selected = page.locator(`[cmdk-item][aria-selected="true"]`)
+    const selected = page.locator(`[cmdk-item][aria-selected]`)
     await expect(selected).toHaveText('Value')
   })
 
