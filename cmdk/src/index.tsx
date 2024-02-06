@@ -380,8 +380,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     // Sort the items
     getValidItems()
       .sort((a, b) => {
-        const valueA = a.getAttribute('id')
-        const valueB = b.getAttribute('id')
+        const valueA = a.getAttribute(VALUE_ATTR)
+        const valueB = b.getAttribute(VALUE_ATTR)
         return (scores.get(valueB) ?? 0) - (scores.get(valueA) ?? 0)
       })
       .forEach((item) => {
