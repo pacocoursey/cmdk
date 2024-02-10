@@ -163,6 +163,17 @@ const useStore = () => React.useContext(StoreContext)
 // @ts-ignore
 const GroupContext = React.createContext<Group>(undefined)
 
+const getId = (() => {
+  let i = 0
+  return () => `${i++}`
+})()
+const useIdCompatibility = () => {
+  React.useState(getId)
+  const [id] = React.useState(getId)
+  return id
+}
+const useId = React.useId ?? useIdCompatibility
+
 const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const state = useLazyRef<State>(() => ({
     /** Value of the search query. */
