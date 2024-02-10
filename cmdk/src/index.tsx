@@ -170,7 +170,7 @@ const getId = (() => {
 const useIdCompatibility = () => {
   React.useState(getId)
   const [id] = React.useState(getId)
-  return id
+  return 'cmdk' + id
 }
 const useId = React.useId ?? useIdCompatibility
 
