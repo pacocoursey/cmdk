@@ -399,7 +399,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     groups
       .sort((a, b) => b[1] - a[1])
       .forEach((group) => {
-        const element = listInnerRef.current.querySelector(`${GROUP_SELECTOR}[${VALUE_ATTR}="${group[0]}"]`)
+        const element = listInnerRef.current.querySelector(
+          `${GROUP_SELECTOR}[${VALUE_ATTR}="${encodeURIComponent(group[0])}"]`,
+        )
         element?.parentElement.appendChild(element)
       })
   }
