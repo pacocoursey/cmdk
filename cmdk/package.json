@@ -32,5 +32,16 @@
   "devDependencies": {
     "@types/react": "18.0.15"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "repository": {
+      "type": "git",
+      "url": "git+https://github.com/pacocoursey/cmdk.git"
+  },
+  "bugs": {
+      "url": "https://github.com/pacocoursey/cmdk/issues"
+  },
+  "homepage": "https://github.com/pacocoursey/cmdk#readme",
+  "author": {
+      "url": "https://github.com/pacocoursey"
+  },
 }
