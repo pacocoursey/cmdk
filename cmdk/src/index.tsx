@@ -923,6 +923,7 @@ const pkg = Object.assign(Command, {
 
 export { useCmdk as useCommandState }
 export { pkg as Command }
+export { defaultFilter }
 
 export { Command as CommandRoot }
 export { List as CommandList }
