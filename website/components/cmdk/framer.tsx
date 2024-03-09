@@ -2,7 +2,7 @@ import { Command } from 'cmdk'
 import React from 'react'
 
 export function FramerCMDK() {
-  const [value, setValue] = React.useState('button')
+  const [value, setValue] = React.useState('Button')
   return (
     <div className="framer">
       <Command value={value} onValueChange={(v) => setValue(v)}>
