@@ -17,7 +17,7 @@ export function FramerCMDK() {
                 <Item value="Button" subtitle="Trigger actions">
                   <ButtonIcon />
                 </Item>
-                <Item value="Input" subtitle="Retrive user input">
+                <Item value="Input" subtitle="Retrieve user input">
                   <InputIcon />
                 </Item>
                 <Item value="Radio" subtitle="Single choice input">
@@ -39,13 +39,13 @@ export function FramerCMDK() {
             </div>
             <hr cmdk-framer-separator="" />
             <div cmdk-framer-right="">
-              {value === 'button' && <Button />}
-              {value === 'input' && <Input />}
-              {value === 'badge' && <Badge />}
-              {value === 'radio' && <Radio />}
-              {value === 'avatar' && <Avatar />}
-              {value === 'slider' && <Slider />}
-              {value === 'container' && <Container />}
+              {value === 'Button' && <Button />}
+              {value === 'Input' && <Input />}
+              {value === 'Badge' && <Badge />}
+              {value === 'Radio' && <Radio />}
+              {value === 'Avatar' && <Avatar />}
+              {value === 'Slider' && <Slider />}
+              {value === 'Container' && <Container />}
             </div>
           </div>
         </Command.List>
