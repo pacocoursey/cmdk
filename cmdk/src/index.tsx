@@ -641,7 +641,6 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
  * the rendered item's `textContent`.
  */
 const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) => {
-  console.log('ItemProps', props);
   const id = React.useId()
   const ref = React.useRef<HTMLDivElement>(null)
   const groupContext = React.useContext(GroupContext)
