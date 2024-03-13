@@ -399,7 +399,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     groups
       .sort((a, b) => b[1] - a[1])
       .forEach((group) => {
-        const element = listInnerRef.current.querySelector(
+        const element = listInnerRef.current?.querySelector(
           `${GROUP_SELECTOR}[${VALUE_ATTR}="${encodeURIComponent(group[0])}"]`,
         )
         element?.parentElement.appendChild(element)
@@ -641,6 +641,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
  * the rendered item's `textContent`.
  */
 const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) => {
+  console.log('ItemProps', props);
   const id = React.useId()
   const ref = React.useRef<HTMLDivElement>(null)
   const groupContext = React.useContext(GroupContext)
