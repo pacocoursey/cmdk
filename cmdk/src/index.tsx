@@ -471,7 +471,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }
 
   function getValidItems() {
-    return Array.from((listInnerRef.current?.querySelectorAll(VALID_ITEM_SELECTOR)) || [])
+    return Array.from(listInnerRef.current?.querySelectorAll(VALID_ITEM_SELECTOR) || [])
   }
 
   /** Setters */
