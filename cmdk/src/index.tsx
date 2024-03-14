@@ -2,6 +2,7 @@ import * as RadixDialog from '@radix-ui/react-dialog'
 import * as React from 'react'
 import { commandScore } from './command-score'
 import { Primitive } from '@radix-ui/react-primitive'
+import { useId } from '@radix-ui/react-id'
 
 type Children = { children?: React.ReactNode }
 type DivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>
@@ -163,6 +164,16 @@ const useStore = () => React.useContext(StoreContext)
 // @ts-ignore
 const GroupContext = React.createContext<Group>(undefined)
 
+const getId = (() => {
+  let i = 0
+  return () => `${i++}`
+})()
+const useIdCompatibility = () => {
+  React.useState(getId)
+  const [id] = React.useState(getId)
+  return 'cmdk' + id
+}
+
 const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const state = useLazyRef<State>(() => ({
     /** Value of the search query. */
@@ -196,9 +207,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     ...etc
   } = props
 
-  const listId = React.useId()
-  const labelId = React.useId()
-  const inputId = React.useId()
+  const listId = useId()
+  const labelId = useId()
+  const inputId = useId()
 
   const listInnerRef = React.useRef<HTMLDivElement>(null)
 
@@ -641,7 +652,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
  * the rendered item's `textContent`.
  */
 const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) => {
-  const id = React.useId()
+  const id = useId()
   const ref = React.useRef<HTMLDivElement>(null)
   const groupContext = React.useContext(GroupContext)
   const context = useCommand()
@@ -707,10 +718,10 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
  */
 const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef) => {
   const { heading, children, forceMount, ...etc } = props
-  const id = React.useId()
+  const id = useId()
   const ref = React.useRef<HTMLDivElement>(null)
   const headingRef = React.useRef<HTMLDivElement>(null)
-  const headingId = React.useId()
+  const headingId = useId()
   const context = useCommand()
   const render = useCmdk((state) =>
     forceMount ? true : context.filter() === false ? true : !state.search ? true : state.filtered.groups.has(id),
