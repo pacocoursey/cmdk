@@ -410,7 +410,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     groups
       .sort((a, b) => b[1] - a[1])
       .forEach((group) => {
-        const element = listInnerRef.current.querySelector(`${GROUP_SELECTOR}[${VALUE_ATTR}="${group[0]}"]`)
+        const element = listInnerRef.current?.querySelector(
+          `${GROUP_SELECTOR}[${VALUE_ATTR}="${encodeURIComponent(group[0])}"]`,
+        )
         element?.parentElement.appendChild(element)
       })
   }
@@ -480,7 +482,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }
 
   function getValidItems() {
-    return Array.from(listInnerRef.current?.querySelectorAll(VALID_ITEM_SELECTOR))
+    return Array.from(listInnerRef.current?.querySelectorAll(VALID_ITEM_SELECTOR) || [])
   }
 
   /** Setters */
@@ -932,6 +934,7 @@ const pkg = Object.assign(Command, {
 
 export { useCmdk as useCommandState }
 export { pkg as Command }
+export { defaultFilter }
 
 export { Command as CommandRoot }
 export { List as CommandList }

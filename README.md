@@ -91,7 +91,7 @@ Render this to show the command menu inline, or use [Dialog](#dialog-cmdk-dialog
 
 > **Note**
 >
-> Values are always trimmed. Use `apple`, not `Apple`.
+> Values are always trimmed with the [trim()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/trim) method.
 
 ```tsx
 const [value, setValue] = React.useState('apple')
