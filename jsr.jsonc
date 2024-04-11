@@ -1,0 +1,24 @@
+{
+    "name": "@bureaudouble/cmdk",
+    "version": "0.0.1",
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "lib": [
+          "es2022",
+          "dom",
+          "dom.iterable",
+          "dom.asynciterable"
+        ]
+    },
+    "exclude": ["**/*", "!README.md", "!LICENSE.md", "!cmdk/src", "!jsr.jsonc"],
+    "imports": {
+        "react": "npm:react@^18.2.0",
+        "react-dom": "npm:react-dom@^18.2.0",
+        "@radix-ui/react-dialog": "jsr:@radix-ui-fork/react-dialog@0.0.5",
+        "@radix-ui/react-id": "jsr:@radix-ui-fork/react-id@0.0.5",
+        "@radix-ui/react-primitive": "jsr:@radix-ui-fork/react-primitive@0.0.5"  
+    },
+    "exports": {
+        ".": "./cmdk/src/index.tsx"
+    }
+}

@@ -1,6 +1,7 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
+// @deno-types="npm:@types/react@^18.2.0"
 import * as React from 'react'
-import { commandScore } from './command-score'
+import { commandScore } from './command-score.ts'
 import { Primitive } from '@radix-ui/react-primitive'
 import { useId } from '@radix-ui/react-id'
 
@@ -146,23 +147,23 @@ type Group = {
   forceMount?: boolean
 }
 
-const GROUP_SELECTOR = `[cmdk-group=""]`
-const GROUP_ITEMS_SELECTOR = `[cmdk-group-items=""]`
-const GROUP_HEADING_SELECTOR = `[cmdk-group-heading=""]`
-const ITEM_SELECTOR = `[cmdk-item=""]`
-const VALID_ITEM_SELECTOR = `${ITEM_SELECTOR}:not([aria-disabled="true"])`
-const SELECT_EVENT = `cmdk-item-select`
-const VALUE_ATTR = `data-value`
+const GROUP_SELECTOR: string = `[cmdk-group=""]`
+const GROUP_ITEMS_SELECTOR: string = `[cmdk-group-items=""]`
+const GROUP_HEADING_SELECTOR: string = `[cmdk-group-heading=""]`
+const ITEM_SELECTOR: string = `[cmdk-item=""]`
+const VALID_ITEM_SELECTOR: string = `${ITEM_SELECTOR}:not([aria-disabled="true"])`
+const SELECT_EVENT: string = `cmdk-item-select`
+const VALUE_ATTR: string = `data-value`
 const defaultFilter: CommandProps['filter'] = (value, search, keywords) => commandScore(value, search, keywords)
 
 // @ts-ignore
-const CommandContext = React.createContext<Context>(undefined)
-const useCommand = () => React.useContext(CommandContext)
+const CommandContext: React.Context<Context> = React.createContext<Context>(undefined)
+const useCommand = (): Context => React.useContext(CommandContext)
 // @ts-ignore
-const StoreContext = React.createContext<Store>(undefined)
-const useStore = () => React.useContext(StoreContext)
+const StoreContext: React.Context<Store> = React.createContext<Store>(undefined)
+const useStore = (): Store => React.useContext(StoreContext)
 // @ts-ignore
-const GroupContext = React.createContext<Group>(undefined)
+const GroupContext: React.Context<Group> = React.createContext<Group>(undefined)
 
 const getId = (() => {
   let i = 0
@@ -174,7 +175,8 @@ const useIdCompatibility = () => {
   return 'cmdk' + id
 }
 
-const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
+const Command: React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<HTMLDivElement>>
+= React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const state = useLazyRef<State>(() => ({
     /** Value of the search query. */
     search: '',
@@ -651,7 +653,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
  * Preferably pass a `value`, otherwise the value will be inferred from `children` or
  * the rendered item's `textContent`.
  */
-const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) => {
+const Item: React.ForwardRefExoticComponent<Omit<ItemProps, "ref"> & React.RefAttributes<HTMLDivElement>>
+= React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) => {
   const id = useId()
   const ref = React.useRef<HTMLDivElement>(null)
   const groupContext = React.useContext(GroupContext)
@@ -716,7 +719,8 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
  * Group command menu items together with a heading.
  * Grouped items are always shown together.
  */
-const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef) => {
+const Group: React.ForwardRefExoticComponent<Omit<GroupProps, "ref"> & React.RefAttributes<HTMLDivElement>>
+= React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef) => {
   const { heading, children, forceMount, ...etc } = props
   const id = useId()
   const ref = React.useRef<HTMLDivElement>(null)
@@ -761,7 +765,8 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
  * A visual and semantic separator between items or groups.
  * Visible when the search query is empty or `alwaysRender` is true, hidden otherwise.
  */
-const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>((props, forwardedRef) => {
+const Separator: React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<HTMLDivElement>>
+= React.forwardRef<HTMLDivElement, SeparatorProps>((props, forwardedRef) => {
   const { alwaysRender, ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const render = useCmdk((state) => !state.search)
@@ -774,7 +779,8 @@ const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>((props, forwa
  * Command menu input.
  * All props are forwarded to the underyling `input` element.
  */
-const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRef) => {
+const Input: React.ForwardRefExoticComponent<Omit<InputProps, "ref"> & React.RefAttributes<HTMLInputElement>>
+= React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRef) => {
   const { onValueChange, ...etc } = props
   const isControlled = props.value != null
   const store = useStore()
@@ -827,7 +833,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
  * Contains `Item`, `Group`, and `Separator`.
  * Use the `--cmdk-list-height` CSS variable to animate height based on the number of results.
  */
-const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) => {
+const List: React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<HTMLDivElement>>
+= React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) => {
   const { children, label = 'Suggestions', ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const height = React.useRef<HTMLDivElement>(null)
@@ -873,7 +880,8 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
 /**
  * Renders the command menu in a Radix Dialog.
  */
-const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRef) => {
+const Dialog: React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<HTMLDivElement>>
+= React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRef) => {
   const { open, onOpenChange, overlayClassName, contentClassName, container, ...etc } = props
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
@@ -890,7 +898,8 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRe
 /**
  * Automatically renders when there are no results for the search query.
  */
-const Empty = React.forwardRef<HTMLDivElement, EmptyProps>((props, forwardedRef) => {
+const Empty: React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<HTMLDivElement>>
+= React.forwardRef<HTMLDivElement, EmptyProps>((props, forwardedRef) => {
   const render = useCmdk((state) => state.filtered.count === 0)
 
   if (!render) return null
@@ -900,7 +909,8 @@ const Empty = React.forwardRef<HTMLDivElement, EmptyProps>((props, forwardedRef)
 /**
  * You should conditionally render this with `progress` while loading asynchronous items.
  */
-const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwardedRef) => {
+const Loading: React.ForwardRefExoticComponent<Omit<any, "ref"> & React.RefAttributes<HTMLDivElement>>
+= React.forwardRef<HTMLDivElement, LoadingProps>((props, forwardedRef) => {
   const { progress, children, label = 'Loading...', ...etc } = props
 
   return (
@@ -921,7 +931,17 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwarded
   )
 })
 
-const pkg = Object.assign(Command, {
+const pkg: typeof Command & {
+  List: typeof List;
+  Item: typeof Item;
+  Input: typeof Input;
+  Group: typeof Group;
+  Separator: typeof Separator;
+  Dialog: typeof Dialog;
+  Empty: typeof Empty;
+  Loading: typeof Loading;
+}
+= Object.assign(Command, {
   List,
   Item,
   Input,
@@ -972,7 +992,7 @@ function findPreviousSibling(el: Element, selector: string) {
   }
 }
 
-function useAsRef<T>(data: T) {
+function useAsRef<T>(data: T): React.MutableRefObject<T> {
   const ref = React.useRef<T>(data)
 
   useLayoutEffect(() => {
@@ -984,7 +1004,7 @@ function useAsRef<T>(data: T) {
 
 const useLayoutEffect = typeof window === 'undefined' ? React.useEffect : React.useLayoutEffect
 
-function useLazyRef<T>(fn: () => T) {
+function useLazyRef<T>(fn: () => T): React.MutableRefObject<T> {
   const ref = React.useRef<T>()
 
   if (ref.current === undefined) {
@@ -1010,7 +1030,7 @@ function mergeRefs<T = any>(refs: Array<React.MutableRefObject<T> | React.Legacy
 }
 
 /** Run a selector against the store state. */
-function useCmdk<T = any>(selector: (state: State) => T) {
+function useCmdk<T = any>(selector: (state: State) => T): T {
   const store = useStore()
   const cb = () => selector(store.snapshot())
   return React.useSyncExternalStore(store.subscribe, cb, cb)
@@ -1021,7 +1041,7 @@ function useValue(
   ref: React.RefObject<HTMLElement>,
   deps: (string | React.ReactNode | React.RefObject<HTMLElement>)[],
   aliases: string[] = [],
-) {
+): React.MutableRefObject<string> {
   const valueRef = React.useRef<string>()
   const context = useCommand()
 
@@ -1052,7 +1072,7 @@ function useValue(
 }
 
 /** Imperatively run a function on the next layout effect cycle. */
-const useScheduleLayoutEffect = () => {
+const useScheduleLayoutEffect = (): void => {
   const [s, ss] = React.useState<object>()
   const fns = useLazyRef(() => new Map<string | number, () => void>())
 
@@ -1080,7 +1100,7 @@ function renderChildren(children: React.ReactElement) {
 function SlottableWithNestedChildren(
   { asChild, children }: { asChild?: boolean; children?: React.ReactNode },
   render: (child: React.ReactNode) => JSX.Element,
-) {
+): React.JSX.Element {
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(renderChildren(children), { ref: (children as any).ref }, render(children.props.children))
   }
