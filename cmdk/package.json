@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@radix-ui/react-dialog": "1.0.5",
+    "@radix-ui/react-id": "^1.0.1",
     "@radix-ui/react-primitive": "1.0.3"
   },
   "devDependencies": {
@@ -35,13 +36,15 @@
   "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pacocoursey/cmdk.git"
+    "url": "git+https://github.com/pacocoursey/cmdk.git",
+    "directory": "cmdk"
   },
   "bugs": {
     "url": "https://github.com/pacocoursey/cmdk/issues"
   },
   "homepage": "https://github.com/pacocoursey/cmdk#readme",
   "author": {
+    "name": "Paco",
     "url": "https://github.com/pacocoursey"
   }
 }
