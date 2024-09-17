@@ -566,8 +566,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     <Primitive.div
       ref={forwardedRef}
       tabIndex={-1}
-      {...etc}
       cmdk-root=""
+      {...etc}
       onKeyDown={(e) => {
         etc.onKeyDown?.(e)
 
@@ -696,7 +696,6 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
   return (
     <Primitive.div
       ref={mergeRefs([ref, forwardedRef])}
-      {...etc}
       id={id}
       cmdk-item=""
       role="option"
@@ -704,6 +703,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       aria-selected={Boolean(selected)}
       data-disabled={Boolean(disabled)}
       data-selected={Boolean(selected)}
+      {...etc}
       onPointerMove={disabled || context.disablePointerSelection ? undefined : select}
       onClick={disabled ? undefined : onSelect}
     >
@@ -738,10 +738,10 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
   return (
     <Primitive.div
       ref={mergeRefs([ref, forwardedRef])}
-      {...etc}
       cmdk-group=""
       role="presentation"
       hidden={render ? undefined : true}
+      {...etc}
     >
       {heading && (
         <div ref={headingRef} cmdk-group-heading="" aria-hidden id={headingId}>
@@ -767,7 +767,7 @@ const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>((props, forwa
   const render = useCmdk((state) => !state.search)
 
   if (!alwaysRender && !render) return null
-  return <Primitive.div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-separator="" role="separator" />
+  return <Primitive.div ref={mergeRefs([ref, forwardedRef])} cmdk-separator="" role="separator" {...etc} />
 })
 
 /**
@@ -798,7 +798,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
   return (
     <Primitive.input
       ref={forwardedRef}
-      {...etc}
       cmdk-input=""
       autoComplete="off"
       autoCorrect="off"
@@ -811,6 +810,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
       aria-activedescendant={selectedItemId}
       id={context.inputId}
       type="text"
+      {...etc}
       value={isControlled ? props.value : search}
       onChange={(e) => {
         if (!isControlled) {
@@ -855,11 +855,11 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
   return (
     <Primitive.div
       ref={mergeRefs([ref, forwardedRef])}
-      {...etc}
       cmdk-list=""
       role="listbox"
       aria-label={label}
       id={context.listId}
+      {...etc}
     >
       {SlottableWithNestedChildren(props, (child) => (
         <div ref={mergeRefs([height, context.listInnerRef])} cmdk-list-sizer="">
@@ -894,7 +894,7 @@ const Empty = React.forwardRef<HTMLDivElement, EmptyProps>((props, forwardedRef)
   const render = useCmdk((state) => state.filtered.count === 0)
 
   if (!render) return null
-  return <Primitive.div ref={forwardedRef} {...props} cmdk-empty="" role="presentation" />
+  return <Primitive.div ref={forwardedRef} cmdk-empty="" role="presentation" {...props} />
 })
 
 /**
@@ -906,13 +906,13 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwarded
   return (
     <Primitive.div
       ref={forwardedRef}
-      {...etc}
       cmdk-loading=""
       role="progressbar"
       aria-valuenow={progress}
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label={label}
+      {...etc}
     >
       {SlottableWithNestedChildren(props, (child) => (
         <div aria-hidden>{child}</div>
