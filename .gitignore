@@ -12,6 +12,6 @@ yalc.lock
 .next/
 .yalc/
 build/
-dist/
+# dist/
 node_modules/
 .vercel
