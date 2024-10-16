@@ -49,6 +49,10 @@ type ItemProps = Children &
      * If no value is provided, it will be inferred from `children` or the rendered `textContent`. If your `textContent` changes between renders, you _must_ provide a stable, unique `value`.
      */
     value?: string
+    /**
+     * A searchable value for this item (e.g. a name).
+     */
+    searchableValue?: string
     /** Optional keywords to match against when filtering. */
     keywords?: string[]
     /** Whether this item is forcibly rendered regardless of filtering. */
@@ -117,7 +121,7 @@ type CommandProps = Children &
   }
 
 type Context = {
-  value: (id: string, value: string, keywords?: string[]) => void
+  value: (id: string, value: string, searchableValue?: string, keywords?: string[]) => void
   item: (id: string, groupId: string) => () => void
   group: (id: string) => () => void
   filter: () => boolean
@@ -191,7 +195,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }))
   const allItems = useLazyRef<Set<string>>(() => new Set()) // [...itemIds]
   const allGroups = useLazyRef<Map<string, Set<string>>>(() => new Map()) // groupId → [...itemIds]
-  const ids = useLazyRef<Map<string, { value: string; keywords?: string[] }>>(() => new Map()) // id → { value, keywords }
+  const ids = useLazyRef<Map<string, { value: string; searchableValue?: string; keywords?: string[] }>>(() => new Map()) // id → { value, searchableValue, keywords }
   const listeners = useLazyRef<Set<() => void>>(() => new Set()) // [...rerenders]
   const propsRef = useAsRef(props)
   const {
@@ -271,10 +275,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   const context: Context = React.useMemo(
     () => ({
-      // Keep id → {value, keywords} mapping up-to-date
-      value: (id, value, keywords) => {
+      // Keep id → {value, searchableValue, keywords} mapping up-to-date
+      value: (id, value, searchableValue, keywords) => {
         if (value !== ids.current.get(id)?.value) {
-          ids.current.set(id, { value, keywords })
+          ids.current.set(id, { value, searchableValue, keywords })
           state.current.filtered.items.set(id, score(value, keywords))
           schedule(2, () => {
             sort()
@@ -441,9 +445,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
     // Check which items should be included
     for (const id of allItems.current) {
-      const value = ids.current.get(id)?.value ?? ''
+      const searchableValue = ids.current.get(id)?.searchableValue || (ids.current.get(id)?.value ?? '')
       const keywords = ids.current.get(id)?.keywords ?? []
-      const rank = score(value, keywords)
+      const rank = score(searchableValue, keywords)
       state.current.filtered.items.set(id, rank)
       if (rank > 0) itemCount++
     }
@@ -665,7 +669,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
     }
   }, [forceMount])
 
-  const value = useValue(id, ref, [props.value, props.children, ref], props.keywords)
+  const value = useValue(id, ref, [props.value, props.children, ref], props.keywords, props.searchableValue || '')
 
   const store = useStore()
   const selected = useCmdk((state) => state.value && state.value === value.current)
@@ -1021,6 +1025,7 @@ function useValue(
   ref: React.RefObject<HTMLElement>,
   deps: (string | React.ReactNode | React.RefObject<HTMLElement>)[],
   aliases: string[] = [],
+  searchableValue?: string,
 ) {
   const valueRef = React.useRef<string>()
   const context = useCommand()
@@ -1043,7 +1048,7 @@ function useValue(
 
     const keywords = aliases.map((alias) => alias.trim())
 
-    context.value(id, value, keywords)
+    context.value(id, value, searchableValue, keywords)
     ref.current?.setAttribute(VALUE_ATTR, value)
     valueRef.current = value
   })
