@@ -1,5 +1,5 @@
 {
-  "name": "cmdk",
+  "name": "@ditioas/cmdk",
   "version": "1.0.0",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -36,13 +36,13 @@
   "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pacocoursey/cmdk.git",
+    "url": "git+https://github.com/@ditioas/cmdk.git",
     "directory": "cmdk"
   },
   "bugs": {
-    "url": "https://github.com/pacocoursey/cmdk/issues"
+    "url": "https://github.com/@ditioas/cmdk/issues"
   },
-  "homepage": "https://github.com/pacocoursey/cmdk#readme",
+  "homepage": "https://github.com/@ditioas/cmdk#readme",
   "author": {
     "name": "Paco",
     "url": "https://github.com/pacocoursey"
