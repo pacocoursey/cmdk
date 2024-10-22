@@ -22,8 +22,8 @@
     "dev": "tsup src --watch"
   },
   "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.1",
