@@ -28,7 +28,8 @@
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-id": "^1.1.0",
-    "@radix-ui/react-primitive": "^2.0.0"
+    "@radix-ui/react-primitive": "^2.0.0",
+    "use-sync-external-store": "^1.2.2"
   },
   "devDependencies": {
     "@types/react": "18.0.15"
