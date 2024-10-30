@@ -22,12 +22,12 @@
     "dev": "tsup src --watch"
   },
   "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react": "^18 || ^19 || ^19.0.0-rc",
+    "react-dom": "^18 || ^19 || ^19.0.0-rc"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.1",
-    "@radix-ui/react-id": "^1.0.1",
+    "@radix-ui/react-id": "^1.1.0",
     "@radix-ui/react-primitive": "^2.0.0",
     "use-sync-external-store": "^1.2.2"
   },
