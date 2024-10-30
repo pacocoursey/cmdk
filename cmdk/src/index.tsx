@@ -123,7 +123,7 @@ type Context = {
   group: (id: string) => () => void
   filter: () => boolean
   label: string
-  disablePointerSelection: boolean
+  getDisablePointerSelection: () => boolean
   // Ids
   listId: string
   labelId: string
@@ -343,7 +343,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         return propsRef.current.shouldFilter
       },
       label: label || props['aria-label'],
-      disablePointerSelection,
+      getDisablePointerSelection: () => {
+        return propsRef.current.disablePointerSelection
+      },
       listId,
       inputId,
       labelId,
@@ -705,7 +707,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       aria-selected={Boolean(selected)}
       data-disabled={Boolean(disabled)}
       data-selected={Boolean(selected)}
-      onPointerMove={disabled || context.disablePointerSelection ? undefined : select}
+      onPointerMove={disabled || context.getDisablePointerSelection() ? undefined : select}
       onClick={disabled ? undefined : onSelect}
     >
       {props.children}
