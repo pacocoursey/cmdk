@@ -415,9 +415,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     groups
       .sort((a, b) => b[1] - a[1])
       .forEach((group) => {
-        const element = listInnerRef.current?.querySelector(
-          `${GROUP_SELECTOR}[${VALUE_ATTR}="${encodeURIComponent(group[0])}"]`,
-        )
+        const element = listInnerRef.current?.querySelector(`#${group[0].replace(/:/g, '\\:')}`)
         element?.parentElement.appendChild(element)
       })
   }
@@ -747,6 +745,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
       cmdk-group=""
       role="presentation"
       hidden={render ? undefined : true}
+      id={id}
     >
       {heading && (
         <div ref={headingRef} cmdk-group-heading="" aria-hidden id={headingId}>
