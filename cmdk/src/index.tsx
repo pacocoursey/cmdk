@@ -34,6 +34,13 @@ type DialogProps = RadixDialog.DialogProps &
     /** Provide a custom element the Dialog should portal into. */
     container?: HTMLElement
   }
+
+type GridProps = ListProps &
+  Children &
+  DivProps & {
+    /** Amount of columns for the grid */
+    columns: number
+  }
 type ListProps = Children &
   DivProps & {
     /**
@@ -567,6 +574,36 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     }
   }
 
+  const gridEl = listInnerRef.current?.closest('[data-columns]')
+  const gridColumns = gridEl ? Number(gridEl.getAttribute('data-columns')) : undefined
+
+  const prevRow = (e: React.KeyboardEvent) => {
+    e.preventDefault()
+    const selected = getSelectedItem()
+    const items = getValidItems()
+    const index = items.findIndex((item) => item === selected)
+    const newIndex = index - gridColumns
+
+    if (newIndex >= 0) {
+      updateSelectedToIndex(newIndex)
+    }
+  }
+
+  const nextRow = (e: React.KeyboardEvent) => {
+    e.preventDefault()
+    const selected = getSelectedItem()
+    const items = getValidItems()
+    const index = items.findIndex((item) => item === selected)
+    const newIndex = index + gridColumns
+
+    // TODO: should go to the last item of uneven columns
+    // TODO: should handle grouping correctly
+
+    if (newIndex < items.length) {
+      updateSelectedToIndex(newIndex)
+    }
+  }
+
   return (
     <Primitive.div
       ref={forwardedRef}
@@ -578,28 +615,51 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
         if (!e.defaultPrevented) {
           switch (e.key) {
+            // emacs keybind next
             case 'n':
+            // vim keybind down
             case 'j': {
-              // vim keybind down
               if (vimBindings && e.ctrlKey) {
                 next(e)
               }
               break
             }
-            case 'ArrowDown': {
-              next(e)
+            case 'ArrowLeft': {
+              if (gridColumns) {
+                prev(e)
+              }
               break
             }
+            case 'ArrowRight': {
+              if (gridColumns) {
+                next(e)
+              }
+              break
+            }
+            case 'ArrowDown': {
+              if (gridColumns) {
+                nextRow(e)
+              } else {
+                next(e)
+              }
+              break
+            }
+            // emacs keybind previous
             case 'p':
+            // vim keybind up
             case 'k': {
-              // vim keybind up
               if (vimBindings && e.ctrlKey) {
                 prev(e)
               }
               break
             }
             case 'ArrowUp': {
-              prev(e)
+              if (gridColumns) {
+                prevRow(e)
+              } else {
+                prev(e)
+              }
+
               break
             }
             case 'Home': {
@@ -836,6 +896,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
   const { children, label = 'Suggestions', ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const height = React.useRef<HTMLDivElement>(null)
+
   const context = useCommand()
 
   React.useEffect(() => {
@@ -872,6 +933,20 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
         </div>
       ))}
     </Primitive.div>
+  )
+})
+
+/**
+ * Contains `Item`, `Group`, and `Separator`.
+ * Use the `--cmdk-list-height` CSS variable to animate height based on the number of results.
+ */
+const Grid = React.forwardRef<HTMLDivElement, GridProps>((props, forwardedRef) => {
+  const { children, columns, ...etc } = props
+
+  return (
+    <List {...etc} ref={forwardedRef} cmdk-grid="" data-columns={columns}>
+      {children}
+    </List>
   )
 })
 
@@ -928,6 +1003,7 @@ const Loading = React.forwardRef<HTMLDivElement, LoadingProps>((props, forwarded
 
 const pkg = Object.assign(Command, {
   List,
+  Grid,
   Item,
   Input,
   Group,
