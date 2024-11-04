@@ -22,8 +22,8 @@ test.describe('basic behavior', async () => {
 
   test('item onSelect is called on click', async ({ page }) => {
     const item = page.locator(`[cmdk-item][data-value="Item"]`)
-    const [message] = await Promise.all([page.waitForEvent('console'), item.click()])
-    expect(message.text()).toEqual('Item selected')
+    await item.click()
+    expect(await page.evaluate(() => (window as any).onSelect)).toEqual('Item selected')
   })
 
   test('first item is selected by default', async ({ page }) => {
