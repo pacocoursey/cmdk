@@ -1015,7 +1015,7 @@ function mergeRefs<T = any>(refs: Array<React.MutableRefObject<T> | React.Legacy
 }
 
 /** Run a selector against the store state. */
-function useCmdk<T = any>(selector: (state: State) => T) {
+function useCmdk<T = any>(selector: (state: State) => T): T {
   const store = useStore()
   const cb = () => selector(store.snapshot())
   return useSyncExternalStore(store.subscribe, cb, cb)
