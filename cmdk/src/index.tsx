@@ -136,6 +136,7 @@ type Context = {
 type State = {
   search: string
   value: string
+  selectedItemId?: string
   filtered: { count: number; items: Map<string, number>; groups: Set<string> }
 }
 type Store = {
@@ -183,6 +184,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     search: '',
     /** Currently selected item value. */
     value: props.value ?? props.defaultValue ?? '',
+    /** Currently selected item id. */
+    selectedItemId: undefined,
     filtered: {
       /** The count of all visible items. */
       count: 0,
@@ -250,6 +253,18 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           sort()
           schedule(1, selectFirstItem)
         } else if (key === 'value') {
+          // Force focus input or root so accessibility works
+          if (document.activeElement.hasAttribute('cmdk-input') || document.activeElement.hasAttribute('cmdk-root')) {
+            const input = document.getElementById(inputId)
+            if (input) input.focus()
+            else document.getElementById(listId)?.focus()
+          }
+
+          schedule(7, () => {
+            state.current.selectedItemId = getSelectedItem()?.id
+            store.emit()
+          })
+
           // opts is a boolean referring to whether it should NOT be scrolled into view
           if (!opts) {
             // Scroll the selected item into view
@@ -784,15 +799,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
   const isControlled = props.value != null
   const store = useStore()
   const search = useCmdk((state) => state.search)
-  const value = useCmdk((state) => state.value)
+  const selectedItemId = useCmdk((state) => state.selectedItemId)
   const context = useCommand()
-
-  const selectedItemId = React.useMemo(() => {
-    const item = context.listInnerRef.current?.querySelector(
-      `${ITEM_SELECTOR}[${VALUE_ATTR}="${encodeURIComponent(value)}"]`,
-    )
-    return item?.getAttribute('id')
-  }, [])
 
   React.useEffect(() => {
     if (props.value != null) {
@@ -836,6 +844,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
   const { children, label = 'Suggestions', ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const height = React.useRef<HTMLDivElement>(null)
+  const selectedItemId = useCmdk((state) => state.selectedItemId)
   const context = useCommand()
 
   React.useEffect(() => {
@@ -863,6 +872,8 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
       {...etc}
       cmdk-list=""
       role="listbox"
+      tabIndex={-1}
+      aria-activedescendant={selectedItemId}
       aria-label={label}
       id={context.listId}
     >
