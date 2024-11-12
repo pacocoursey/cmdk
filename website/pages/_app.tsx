@@ -3,6 +3,7 @@ import 'styles/globals.scss'
 import 'styles/cmdk/vercel.scss'
 import 'styles/cmdk/linear.scss'
 import 'styles/cmdk/raycast.scss'
+import 'styles/cmdk/raycast-grid.scss'
 import 'styles/cmdk/framer.scss'
 
 import type { AppProps } from 'next/app'
