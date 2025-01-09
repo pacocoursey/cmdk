@@ -221,7 +221,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   /** Controlled mode `value` handling. */
   useLayoutEffect(() => {
     if (value !== undefined) {
-      const v = value.trim()
+      const v = value.trim?.()
       state.current.value = v
       store.emit()
     }
