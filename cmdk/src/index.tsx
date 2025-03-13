@@ -117,6 +117,10 @@ type CommandProps = Children &
      * Set to `false` to disable ctrl+n/j/p/k shortcuts. Defaults to `true`.
      */
     vimBindings?: boolean
+    /**
+     * Determines which arrow keys are used for navigation. Default is 'vertical'.
+     */
+    arrowNavigationType?: 'vertical' | 'horizontal' | 'both'
   }
 
 type Context = {
@@ -207,6 +211,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     loop,
     disablePointerSelection = false,
     vimBindings = true,
+    arrowNavigationType = 'vertical',
     ...etc
   } = props
 
@@ -587,7 +592,15 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
               break
             }
             case 'ArrowDown': {
-              next(e)
+              if (['vertical', 'both'].includes(propsRef.current.arrowNavigationType)) {
+                next(e)
+              }
+              break
+            }
+            case 'ArrowRight': {
+              if (['horizontal', 'both'].includes(propsRef.current.arrowNavigationType)) {
+                next(e)
+              }
               break
             }
             case 'p':
@@ -599,7 +612,15 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
               break
             }
             case 'ArrowUp': {
-              prev(e)
+              if (['vertical', 'both'].includes(propsRef.current.arrowNavigationType)) {
+                prev(e)
+              }
+              break
+            }
+            case 'ArrowLeft': {
+              if (['horizontal', 'both'].includes(propsRef.current.arrowNavigationType)) {
+                prev(e)
+              }
               break
             }
             case 'Home': {
