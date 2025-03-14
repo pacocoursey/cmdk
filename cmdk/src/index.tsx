@@ -76,6 +76,7 @@ type InputProps = Omit<React.ComponentPropsWithoutRef<typeof Primitive.input>, '
    */
   onValueChange?: (search: string) => void
 }
+type CommandFilter = (value: string, search: string, keywords?: string[]) => number
 type CommandProps = Children &
   DivProps & {
     /**
@@ -92,7 +93,7 @@ type CommandProps = Children &
      * It should return a number between 0 and 1, with 1 being the best match and 0 being hidden entirely.
      * By default, uses the `command-score` library.
      */
-    filter?: (value: string, search: string, keywords?: string[]) => number
+    filter?: CommandFilter
     /**
      * Optional default item value when it is initially rendered.
      */
@@ -156,7 +157,7 @@ const ITEM_SELECTOR = `[cmdk-item=""]`
 const VALID_ITEM_SELECTOR = `${ITEM_SELECTOR}:not([aria-disabled="true"])`
 const SELECT_EVENT = `cmdk-item-select`
 const VALUE_ATTR = `data-value`
-const defaultFilter: CommandProps['filter'] = (value, search, keywords) => commandScore(value, search, keywords)
+const defaultFilter: CommandFilter = (value, search, keywords) => commandScore(value, search, keywords)
 
 // @ts-ignore
 const CommandContext = React.createContext<Context>(undefined)
