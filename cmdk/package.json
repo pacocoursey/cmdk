@@ -29,8 +29,7 @@
     "@radix-ui/react-compose-refs": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-id": "^1.1.0",
-    "@radix-ui/react-primitive": "^2.0.2",
-    "use-sync-external-store": "^1.2.2"
+    "@radix-ui/react-primitive": "^2.0.2"
   },
   "devDependencies": {
     "@types/react": "18.0.15"

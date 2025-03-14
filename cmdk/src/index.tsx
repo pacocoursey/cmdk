@@ -6,7 +6,6 @@ import { commandScore } from './command-score'
 import { Primitive } from '@radix-ui/react-primitive'
 import { useId } from '@radix-ui/react-id'
 import { composeRefs } from '@radix-ui/react-compose-refs'
-import { useSyncExternalStore } from 'use-sync-external-store/shim/index.js'
 
 type Children = { children?: React.ReactNode }
 type DivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>
@@ -1003,7 +1002,7 @@ function useLazyRef<T>(fn: () => T) {
 function useCmdk<T = any>(selector: (state: State) => T): T {
   const store = useStore()
   const cb = () => selector(store.snapshot())
-  return useSyncExternalStore(store.subscribe, cb, cb)
+  return React.useSyncExternalStore(store.subscribe, cb, cb)
 }
 
 function useValue(

@@ -47,9 +47,6 @@ importers:
       react-dom:
         specifier: ^18 || ^19 || ^19.0.0-rc
         version: 18.2.0(react@18.2.0)
-      use-sync-external-store:
-        specifier: ^1.2.2
-        version: 1.2.2(react@18.2.0)
     devDependencies:
       '@types/react':
         specifier: 18.0.15
@@ -2534,11 +2531,6 @@ packages:
       '@types/react':
         optional: true
 
-  use-sync-external-store@1.2.2:
-    resolution: {integrity: sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-
   v8-compile-cache@2.3.0:
     resolution: {integrity: sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==}
 
@@ -4994,10 +4986,6 @@ snapshots:
       tslib: 2.6.2
     optionalDependencies:
       '@types/react': 18.0.15
-
-  use-sync-external-store@1.2.2(react@18.2.0):
-    dependencies:
-      react: 18.2.0
 
   v8-compile-cache@2.3.0: {}
 
