@@ -118,6 +118,9 @@ type CommandProps = Children &
      * Set to `false` to disable ctrl+n/j/p/k shortcuts. Defaults to `true`.
      */
     vimBindings?: boolean
+
+    /** Keys for triggering an item */
+    triggerKeys?: string[]
   }
 
 type Context = {
@@ -198,6 +201,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     loop,
     disablePointerSelection = false,
     vimBindings = true,
+    triggerKeys = ['Enter'],
     ...etc
   } = props
 
@@ -617,19 +621,21 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
               last()
               break
             }
-            case 'Enter': {
-              // Check if IME composition is finished before triggering onSelect
-              // This prevents unwanted triggering while user is still inputting text with IME
-              // e.keyCode === 229 is for the Japanese IME and Safari.
-              // isComposing does not work with Japanese IME and Safari combination.
-              if (!e.nativeEvent.isComposing && e.keyCode !== 229) {
-                // Trigger item onSelect
-                e.preventDefault()
-                const item = getSelectedItem()
-                if (item) {
-                  const event = new Event(SELECT_EVENT)
-                  item.dispatchEvent(event)
-                }
+          }
+
+          // Trigger item onSelect with the specified triggerKeys
+          if (triggerKeys && triggerKeys.includes(e.key)) {
+            // Check if IME composition is finished before triggering onSelect
+            // This prevents unwanted triggering while user is still inputting text with IME
+            // e.keyCode === 229 is for the Japanese IME and Safari.
+            // isComposing does not work with Japanese IME and Safari combination.
+            if (!e.nativeEvent.isComposing && e.keyCode !== 229) {
+              // Trigger item onSelect
+              e.preventDefault()
+              const item = getSelectedItem()
+              if (item) {
+                const event = new Event(SELECT_EVENT)
+                item.dispatchEvent(event)
               }
             }
           }
