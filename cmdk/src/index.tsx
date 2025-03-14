@@ -160,24 +160,11 @@ const SELECT_EVENT = `cmdk-item-select`
 const VALUE_ATTR = `data-value`
 const defaultFilter: CommandFilter = (value, search, keywords) => commandScore(value, search, keywords)
 
-// @ts-ignore
 const CommandContext = React.createContext<Context>(undefined)
 const useCommand = () => React.useContext(CommandContext)
-// @ts-ignore
 const StoreContext = React.createContext<Store>(undefined)
 const useStore = () => React.useContext(StoreContext)
-// @ts-ignore
 const GroupContext = React.createContext<Group>(undefined)
-
-const getId = (() => {
-  let i = 0
-  return () => `${i++}`
-})()
-const useIdCompatibility = () => {
-  React.useState(getId)
-  const [id] = React.useState(getId)
-  return 'cmdk' + id
-}
 
 const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const state = useLazyRef<State>(() => ({
