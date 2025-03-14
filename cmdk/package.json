@@ -26,9 +26,10 @@
     "react-dom": "^18 || ^19 || ^19.0.0-rc"
   },
   "dependencies": {
-    "@radix-ui/react-dialog": "^1.1.2",
+    "@radix-ui/react-compose-refs": "^1.1.1",
+    "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-id": "^1.1.0",
-    "@radix-ui/react-primitive": "^2.0.0",
+    "@radix-ui/react-primitive": "^2.0.2",
     "use-sync-external-store": "^1.2.2"
   },
   "devDependencies": {

@@ -5,6 +5,7 @@ import * as React from 'react'
 import { commandScore } from './command-score'
 import { Primitive } from '@radix-ui/react-primitive'
 import { useId } from '@radix-ui/react-id'
+import { composeRefs } from '@radix-ui/react-compose-refs'
 import { useSyncExternalStore } from 'use-sync-external-store/shim/index.js'
 
 type Children = { children?: React.ReactNode }
@@ -703,7 +704,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 
   return (
     <Primitive.div
-      ref={mergeRefs([ref, forwardedRef])}
+      ref={composeRefs(ref, forwardedRef)}
       {...etc}
       id={id}
       cmdk-item=""
@@ -745,7 +746,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
 
   return (
     <Primitive.div
-      ref={mergeRefs([ref, forwardedRef])}
+      ref={composeRefs(ref, forwardedRef)}
       {...etc}
       cmdk-group=""
       role="presentation"
@@ -775,7 +776,7 @@ const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>((props, forwa
   const render = useCmdk((state) => !state.search)
 
   if (!alwaysRender && !render) return null
-  return <Primitive.div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-separator="" role="separator" />
+  return <Primitive.div ref={composeRefs(ref, forwardedRef)} {...etc} cmdk-separator="" role="separator" />
 })
 
 /**
@@ -856,7 +857,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
 
   return (
     <Primitive.div
-      ref={mergeRefs([ref, forwardedRef])}
+      ref={composeRefs(ref, forwardedRef)}
       {...etc}
       cmdk-list=""
       role="listbox"
@@ -866,7 +867,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
       id={context.listId}
     >
       {SlottableWithNestedChildren(props, (child) => (
-        <div ref={mergeRefs([height, context.listInnerRef])} cmdk-list-sizer="">
+        <div ref={composeRefs(height, context.listInnerRef)} cmdk-list-sizer="">
           {child}
         </div>
       ))}
@@ -996,21 +997,6 @@ function useLazyRef<T>(fn: () => T) {
   }
 
   return ref as React.MutableRefObject<T>
-}
-
-// ESM is still a nightmare with Next.js so I'm just gonna copy the package code in
-// https://github.com/gregberge/react-merge-refs
-// Copyright (c) 2020 Greg Bergé
-function mergeRefs<T = any>(refs: Array<React.MutableRefObject<T> | React.LegacyRef<T>>): React.RefCallback<T> {
-  return (value) => {
-    refs.forEach((ref) => {
-      if (typeof ref === 'function') {
-        ref(value)
-      } else if (ref != null) {
-        ;(ref as React.MutableRefObject<T | null>).current = value
-      }
-    })
-  }
 }
 
 /** Run a selector against the store state. */
