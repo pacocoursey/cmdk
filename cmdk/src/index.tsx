@@ -5,7 +5,7 @@ import * as React from 'react'
 import { commandScore } from './command-score'
 import { Primitive } from '@radix-ui/react-primitive'
 import { useId } from '@radix-ui/react-id'
-import { useSyncExternalStore } from 'use-sync-external-store/shim/index.js'
+import { composeRefs } from '@radix-ui/react-compose-refs'
 
 type Children = { children?: React.ReactNode }
 type DivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>
@@ -76,6 +76,7 @@ type InputProps = Omit<React.ComponentPropsWithoutRef<typeof Primitive.input>, '
    */
   onValueChange?: (search: string) => void
 }
+type CommandFilter = (value: string, search: string, keywords?: string[]) => number
 type CommandProps = Children &
   DivProps & {
     /**
@@ -92,7 +93,7 @@ type CommandProps = Children &
      * It should return a number between 0 and 1, with 1 being the best match and 0 being hidden entirely.
      * By default, uses the `command-score` library.
      */
-    filter?: (value: string, search: string, keywords?: string[]) => number
+    filter?: CommandFilter
     /**
      * Optional default item value when it is initially rendered.
      */
@@ -136,6 +137,7 @@ type Context = {
 type State = {
   search: string
   value: string
+  selectedItemId?: string
   filtered: { count: number; items: Map<string, number>; groups: Set<string> }
 }
 type Store = {
@@ -156,26 +158,13 @@ const ITEM_SELECTOR = `[cmdk-item=""]`
 const VALID_ITEM_SELECTOR = `${ITEM_SELECTOR}:not([aria-disabled="true"])`
 const SELECT_EVENT = `cmdk-item-select`
 const VALUE_ATTR = `data-value`
-const defaultFilter: CommandProps['filter'] = (value, search, keywords) => commandScore(value, search, keywords)
+const defaultFilter: CommandFilter = (value, search, keywords) => commandScore(value, search, keywords)
 
-// @ts-ignore
 const CommandContext = React.createContext<Context>(undefined)
 const useCommand = () => React.useContext(CommandContext)
-// @ts-ignore
 const StoreContext = React.createContext<Store>(undefined)
 const useStore = () => React.useContext(StoreContext)
-// @ts-ignore
 const GroupContext = React.createContext<Group>(undefined)
-
-const getId = (() => {
-  let i = 0
-  return () => `${i++}`
-})()
-const useIdCompatibility = () => {
-  React.useState(getId)
-  const [id] = React.useState(getId)
-  return 'cmdk' + id
-}
 
 const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const state = useLazyRef<State>(() => ({
@@ -183,6 +172,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     search: '',
     /** Currently selected item value. */
     value: props.value ?? props.defaultValue ?? '',
+    /** Currently selected item id. */
+    selectedItemId: undefined,
     filtered: {
       /** The count of all visible items. */
       count: 0,
@@ -250,6 +241,18 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           sort()
           schedule(1, selectFirstItem)
         } else if (key === 'value') {
+          // Force focus input or root so accessibility works
+          if (document.activeElement.hasAttribute('cmdk-input') || document.activeElement.hasAttribute('cmdk-root')) {
+            const input = document.getElementById(inputId)
+            if (input) input.focus()
+            else document.getElementById(listId)?.focus()
+          }
+
+          schedule(7, () => {
+            state.current.selectedItemId = getSelectedItem()?.id
+            store.emit()
+          })
+
           // opts is a boolean referring to whether it should NOT be scrolled into view
           if (!opts) {
             // Scroll the selected item into view
@@ -700,7 +703,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 
   return (
     <Primitive.div
-      ref={mergeRefs([ref, forwardedRef])}
+      ref={composeRefs(ref, forwardedRef)}
       {...etc}
       id={id}
       cmdk-item=""
@@ -742,7 +745,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
 
   return (
     <Primitive.div
-      ref={mergeRefs([ref, forwardedRef])}
+      ref={composeRefs(ref, forwardedRef)}
       {...etc}
       cmdk-group=""
       role="presentation"
@@ -772,7 +775,7 @@ const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>((props, forwa
   const render = useCmdk((state) => !state.search)
 
   if (!alwaysRender && !render) return null
-  return <Primitive.div ref={mergeRefs([ref, forwardedRef])} {...etc} cmdk-separator="" role="separator" />
+  return <Primitive.div ref={composeRefs(ref, forwardedRef)} {...etc} cmdk-separator="" role="separator" />
 })
 
 /**
@@ -784,15 +787,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, forwardedRe
   const isControlled = props.value != null
   const store = useStore()
   const search = useCmdk((state) => state.search)
-  const value = useCmdk((state) => state.value)
+  const selectedItemId = useCmdk((state) => state.selectedItemId)
   const context = useCommand()
-
-  const selectedItemId = React.useMemo(() => {
-    const item = context.listInnerRef.current?.querySelector(
-      `${ITEM_SELECTOR}[${VALUE_ATTR}="${encodeURIComponent(value)}"]`,
-    )
-    return item?.getAttribute('id')
-  }, [])
 
   React.useEffect(() => {
     if (props.value != null) {
@@ -836,6 +832,7 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
   const { children, label = 'Suggestions', ...etc } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const height = React.useRef<HTMLDivElement>(null)
+  const selectedItemId = useCmdk((state) => state.selectedItemId)
   const context = useCommand()
 
   React.useEffect(() => {
@@ -859,15 +856,17 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
 
   return (
     <Primitive.div
-      ref={mergeRefs([ref, forwardedRef])}
+      ref={composeRefs(ref, forwardedRef)}
       {...etc}
       cmdk-list=""
       role="listbox"
+      tabIndex={-1}
+      aria-activedescendant={selectedItemId}
       aria-label={label}
       id={context.listId}
     >
       {SlottableWithNestedChildren(props, (child) => (
-        <div ref={mergeRefs([height, context.listInnerRef])} cmdk-list-sizer="">
+        <div ref={composeRefs(height, context.listInnerRef)} cmdk-list-sizer="">
           {child}
         </div>
       ))}
@@ -999,26 +998,11 @@ function useLazyRef<T>(fn: () => T) {
   return ref as React.MutableRefObject<T>
 }
 
-// ESM is still a nightmare with Next.js so I'm just gonna copy the package code in
-// https://github.com/gregberge/react-merge-refs
-// Copyright (c) 2020 Greg Bergé
-function mergeRefs<T = any>(refs: Array<React.MutableRefObject<T> | React.LegacyRef<T>>): React.RefCallback<T> {
-  return (value) => {
-    refs.forEach((ref) => {
-      if (typeof ref === 'function') {
-        ref(value)
-      } else if (ref != null) {
-        ;(ref as React.MutableRefObject<T | null>).current = value
-      }
-    })
-  }
-}
-
 /** Run a selector against the store state. */
 function useCmdk<T = any>(selector: (state: State) => T): T {
   const store = useStore()
   const cb = () => selector(store.snapshot())
-  return useSyncExternalStore(store.subscribe, cb, cb)
+  return React.useSyncExternalStore(store.subscribe, cb, cb)
 }
 
 function useValue(
