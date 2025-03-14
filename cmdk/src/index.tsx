@@ -361,7 +361,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
 
   function score(value: string, keywords?: string[]) {
     const filter = propsRef.current?.filter ?? defaultFilter
-    return value ? filter(value, state.current.search, keywords) : 0
+    const search = state.current.search ?? ''
+    const sanitizedSearch = search.replace(/\s+/g, ' ').trim()
+    return value ? filter(value, sanitizedSearch, keywords) : 0
   }
 
   /** Sorts items by score, and groups by highest item score. */
