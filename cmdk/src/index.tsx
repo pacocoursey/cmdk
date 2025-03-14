@@ -1,8 +1,11 @@
+'use client'
+
 import * as RadixDialog from '@radix-ui/react-dialog'
 import * as React from 'react'
 import { commandScore } from './command-score'
 import { Primitive } from '@radix-ui/react-primitive'
 import { useId } from '@radix-ui/react-id'
+import { useSyncExternalStore } from 'use-sync-external-store/shim/index.js'
 
 type Children = { children?: React.ReactNode }
 type DivProps = React.ComponentPropsWithoutRef<typeof Primitive.div>
@@ -73,6 +76,7 @@ type InputProps = Omit<React.ComponentPropsWithoutRef<typeof Primitive.input>, '
    */
   onValueChange?: (search: string) => void
 }
+type CommandFilter = (value: string, search: string, keywords?: string[]) => number
 type CommandProps = Children &
   DivProps & {
     /**
@@ -89,7 +93,7 @@ type CommandProps = Children &
      * It should return a number between 0 and 1, with 1 being the best match and 0 being hidden entirely.
      * By default, uses the `command-score` library.
      */
-    filter?: (value: string, search: string, keywords?: string[]) => number
+    filter?: CommandFilter
     /**
      * Optional default item value when it is initially rendered.
      */
@@ -122,7 +126,7 @@ type Context = {
   group: (id: string) => () => void
   filter: () => boolean
   label: string
-  disablePointerSelection: boolean
+  getDisablePointerSelection: () => boolean
   // Ids
   listId: string
   labelId: string
@@ -154,7 +158,7 @@ const ITEM_SELECTOR = `[cmdk-item=""]`
 const VALID_ITEM_SELECTOR = `${ITEM_SELECTOR}:not([aria-disabled="true"])`
 const SELECT_EVENT = `cmdk-item-select`
 const VALUE_ATTR = `data-value`
-const defaultFilter: CommandProps['filter'] = (value, search, keywords) => commandScore(value, search, keywords)
+const defaultFilter: CommandFilter = (value, search, keywords) => commandScore(value, search, keywords)
 
 // @ts-ignore
 const CommandContext = React.createContext<Context>(undefined)
@@ -357,7 +361,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         return propsRef.current.shouldFilter
       },
       label: label || props['aria-label'],
-      disablePointerSelection,
+      getDisablePointerSelection: () => {
+        return propsRef.current.disablePointerSelection
+      },
       listId,
       inputId,
       labelId,
@@ -719,7 +725,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
       aria-selected={Boolean(selected)}
       data-disabled={Boolean(disabled)}
       data-selected={Boolean(selected)}
-      onPointerMove={disabled || context.disablePointerSelection ? undefined : select}
+      onPointerMove={disabled || context.getDisablePointerSelection() ? undefined : select}
       onClick={disabled ? undefined : onSelect}
     >
       {props.children}
@@ -1021,10 +1027,10 @@ function mergeRefs<T = any>(refs: Array<React.MutableRefObject<T> | React.Legacy
 }
 
 /** Run a selector against the store state. */
-function useCmdk<T = any>(selector: (state: State) => T) {
+function useCmdk<T = any>(selector: (state: State) => T): T {
   const store = useStore()
   const cb = () => selector(store.snapshot())
-  return React.useSyncExternalStore(store.subscribe, cb, cb)
+  return useSyncExternalStore(store.subscribe, cb, cb)
 }
 
 function useValue(
