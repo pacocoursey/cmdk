@@ -585,52 +585,54 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         // isComposing is for the CJK IME with Modern Browser [https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent/isComposing]
         const isComposing = e.nativeEvent.isComposing || e.keyCode === 229
 
-        if (!e.defaultPrevented || !isComposing) {
-          switch (e.key) {
-            case 'n':
-            case 'j': {
-              // vim keybind down
-              if (vimBindings && e.ctrlKey) {
-                next(e)
-              }
-              break
-            }
-            case 'ArrowDown': {
+        if (e.defaultPrevented || isComposing) {
+          return
+        }
+
+        switch (e.key) {
+          case 'n':
+          case 'j': {
+            // vim keybind down
+            if (vimBindings && e.ctrlKey) {
               next(e)
-              break
             }
-            case 'p':
-            case 'k': {
-              // vim keybind up
-              if (vimBindings && e.ctrlKey) {
-                prev(e)
-              }
-              break
-            }
-            case 'ArrowUp': {
+            break
+          }
+          case 'ArrowDown': {
+            next(e)
+            break
+          }
+          case 'p':
+          case 'k': {
+            // vim keybind up
+            if (vimBindings && e.ctrlKey) {
               prev(e)
-              break
             }
-            case 'Home': {
-              // First item
-              e.preventDefault()
-              updateSelectedToIndex(0)
-              break
-            }
-            case 'End': {
-              // Last item
-              e.preventDefault()
-              last()
-              break
-            }
-            case 'Enter': {
-              // Trigger item onSelect
-              e.preventDefault()
-              const item = getSelectedItem()
-              if (item) {
-                const event = new Event(SELECT_EVENT)
-                item.dispatchEvent(event)
-              }
+            break
+          }
+          case 'ArrowUp': {
+            prev(e)
+            break
+          }
+          case 'Home': {
+            // First item
+            e.preventDefault()
+            updateSelectedToIndex(0)
+            break
+          }
+          case 'End': {
+            // Last item
+            e.preventDefault()
+            last()
+            break
+          }
+          case 'Enter': {
+            // Trigger item onSelect
+            e.preventDefault()
+            const item = getSelectedItem()
+            if (item) {
+              const event = new Event(SELECT_EVENT)
+              item.dispatchEvent(event)
             }
           }
         }
