@@ -579,58 +579,60 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       onKeyDown={(e) => {
         etc.onKeyDown?.(e)
 
-        if (!e.defaultPrevented) {
-          switch (e.key) {
-            case 'n':
-            case 'j': {
-              // vim keybind down
-              if (vimBindings && e.ctrlKey) {
-                next(e)
-              }
-              break
-            }
-            case 'ArrowDown': {
+        // Check if IME composition is finished before triggering key binds
+        // This prevents unwanted triggering while user is still inputting text with IME
+        // e.keyCode === 229 is for the CJK IME with Legacy Browser [https://w3c.github.io/uievents/#determine-keydown-keyup-keyCode]
+        // isComposing is for the CJK IME with Modern Browser [https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent/isComposing]
+        const isComposing = e.nativeEvent.isComposing || e.keyCode === 229
+
+        if (e.defaultPrevented || isComposing) {
+          return
+        }
+
+        switch (e.key) {
+          case 'n':
+          case 'j': {
+            // vim keybind down
+            if (vimBindings && e.ctrlKey) {
               next(e)
-              break
             }
-            case 'p':
-            case 'k': {
-              // vim keybind up
-              if (vimBindings && e.ctrlKey) {
-                prev(e)
-              }
-              break
-            }
-            case 'ArrowUp': {
+            break
+          }
+          case 'ArrowDown': {
+            next(e)
+            break
+          }
+          case 'p':
+          case 'k': {
+            // vim keybind up
+            if (vimBindings && e.ctrlKey) {
               prev(e)
-              break
             }
-            case 'Home': {
-              // First item
-              e.preventDefault()
-              updateSelectedToIndex(0)
-              break
-            }
-            case 'End': {
-              // Last item
-              e.preventDefault()
-              last()
-              break
-            }
-            case 'Enter': {
-              // Check if IME composition is finished before triggering onSelect
-              // This prevents unwanted triggering while user is still inputting text with IME
-              // e.keyCode === 229 is for the Japanese IME and Safari.
-              // isComposing does not work with Japanese IME and Safari combination.
-              if (!e.nativeEvent.isComposing && e.keyCode !== 229) {
-                // Trigger item onSelect
-                e.preventDefault()
-                const item = getSelectedItem()
-                if (item) {
-                  const event = new Event(SELECT_EVENT)
-                  item.dispatchEvent(event)
-                }
-              }
+            break
+          }
+          case 'ArrowUp': {
+            prev(e)
+            break
+          }
+          case 'Home': {
+            // First item
+            e.preventDefault()
+            updateSelectedToIndex(0)
+            break
+          }
+          case 'End': {
+            // Last item
+            e.preventDefault()
+            last()
+            break
+          }
+          case 'Enter': {
+            // Trigger item onSelect
+            e.preventDefault()
+            const item = getSelectedItem()
+            if (item) {
+              const event = new Event(SELECT_EVENT)
+              item.dispatchEvent(event)
             }
           }
         }
