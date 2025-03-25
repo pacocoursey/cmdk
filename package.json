@@ -12,7 +12,7 @@
     "test": "playwright test"
   },
   "devDependencies": {
-    "@playwright/test": "1.41.1",
+    "@playwright/test": "1.51.0",
     "husky": "^8.0.1",
     "lint-staged": "15.2.0",
     "prettier": "2.7.1",
