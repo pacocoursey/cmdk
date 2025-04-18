@@ -118,6 +118,14 @@ type CommandProps = Children &
      * Set to `false` to disable ctrl+n/j/p/k shortcuts. Defaults to `true`.
      */
     vimBindings?: boolean
+    /**
+     * Set to `true` to enable async mode.
+     */
+    async?: boolean
+    /**
+     * Set to `true` to indicate that the command menu is currently fetching options.
+     */
+    fetchInProgress?: boolean
   }
 
 type Context = {
@@ -198,6 +206,8 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     loop,
     disablePointerSelection = false,
     vimBindings = true,
+    async = false,
+    fetchInProgress = false,
     ...etc
   } = props
 
@@ -217,6 +227,12 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
       store.emit()
     }
   }, [value])
+
+  useLayoutEffect(() => {
+    if (async && !fetchInProgress) {
+      schedule(1, selectFirstItem)
+    }
+  }, [async, fetchInProgress])
 
   useLayoutEffect(() => {
     schedule(6, scrollSelectedIntoView)
@@ -239,7 +255,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           // Filter synchronously before emitting back to children
           filterItems()
           sort()
-          schedule(1, selectFirstItem)
+          if (!async) {
+            schedule(1, selectFirstItem)
+          }
         } else if (key === 'value') {
           // Force focus input or root so accessibility works
           if (document.activeElement.hasAttribute('cmdk-input') || document.activeElement.hasAttribute('cmdk-root')) {
@@ -273,7 +291,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
         listeners.current.forEach((l) => l())
       },
     }
-  }, [])
+  }, [async])
 
   const context: Context = React.useMemo(
     () => ({
