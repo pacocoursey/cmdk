@@ -880,12 +880,13 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
  * Renders the command menu in a Radix Dialog.
  */
 const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRef) => {
-  const { open, onOpenChange, overlayClassName, contentClassName, container, ...etc } = props
+  const { open, onOpenChange, overlayClassName, contentClassName, container, title, ...etc } = props
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <RadixDialog.Portal container={container}>
         <RadixDialog.Overlay cmdk-overlay="" className={overlayClassName} />
         <RadixDialog.Content aria-label={props.label} cmdk-dialog="" className={contentClassName}>
+          {title && <RadixDialog.Title hidden>{title}</RadixDialog.Title>}
           <Command ref={forwardedRef} {...etc} />
         </RadixDialog.Content>
       </RadixDialog.Portal>
