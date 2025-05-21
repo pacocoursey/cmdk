@@ -61,6 +61,8 @@ type GroupProps = Children &
   Omit<DivProps, 'heading' | 'value'> & {
     /** Optional heading to render for this group. */
     heading?: React.ReactNode
+    /** Provide a className to the Heading content. */
+    headingClassName?: string
     /** If no heading is provided, you must provide a value that is unique for this group. */
     value?: string
     /** Whether this group is forcibly rendered regardless of filtering. */
@@ -727,7 +729,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
  * Grouped items are always shown together.
  */
 const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef) => {
-  const { heading, children, forceMount, ...etc } = props
+  const { heading, headingClassName, children, forceMount, ...etc } = props
   const id = useId()
   const ref = React.useRef<HTMLDivElement>(null)
   const headingRef = React.useRef<HTMLDivElement>(null)
@@ -754,7 +756,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
       hidden={render ? undefined : true}
     >
       {heading && (
-        <div ref={headingRef} cmdk-group-heading="" aria-hidden id={headingId}>
+        <div ref={headingRef} cmdk-group-heading="" className={headingClassName} aria-hidden id={headingId}>
           {heading}
         </div>
       )}
