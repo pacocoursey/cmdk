@@ -185,6 +185,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }))
   const allItems = useLazyRef<Set<string>>(() => new Set()) // [...itemIds]
   const allGroups = useLazyRef<Map<string, Set<string>>>(() => new Map()) // groupId → [...itemIds]
+  const groupsInitialOrder = useLazyRef<string[]>(() => []) // [...groupIds] in initial order
   const ids = useLazyRef<Map<string, { value: string; keywords?: string[] }>>(() => new Map()) // id → { value, keywords }
   const listeners = useLazyRef<Set<() => void>>(() => new Set()) // [...rerenders]
   const propsRef = useAsRef(props)
@@ -339,9 +340,18 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
           allGroups.current.set(id, new Set())
         }
 
+        if (groupsInitialOrder.current.indexOf(id) === -1) {
+          groupsInitialOrder.current.push(id)
+        }
+
         return () => {
           ids.current.delete(id)
           allGroups.current.delete(id)
+          // Remove from initial order tracking
+          const index = groupsInitialOrder.current.indexOf(id)
+          if (index > -1) {
+            groupsInitialOrder.current.splice(index, 1)
+          }
         }
       },
       filter: () => {
@@ -367,10 +377,24 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   /** Sorts items by score, and groups by highest item score. */
   function sort() {
     if (
-      !state.current.search ||
       // Explicitly false, because true | undefined is the default
       propsRef.current.shouldFilter === false
     ) {
+      return
+    }
+
+    // If no search query, restore initial group order
+    if (!state.current.search) {
+      const listInsertionElement = listInnerRef.current
+      if (!listInsertionElement) return
+
+      // Restore initial group order
+      groupsInitialOrder.current.forEach((groupId) => {
+        const element = listInsertionElement.querySelector(`#${groupId.replace(/:/g, '\\:')}`)
+        if (element?.parentElement) {
+          element.parentElement.appendChild(element)
+        }
+      })
       return
     }
 
@@ -418,9 +442,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     groups
       .sort((a, b) => b[1] - a[1])
       .forEach((group) => {
-        const element = listInnerRef.current?.querySelector(
-          `${GROUP_SELECTOR}[${VALUE_ATTR}="${encodeURIComponent(group[0])}"]`,
-        )
+        const element = listInnerRef.current?.querySelector(`#${group[0].replace(/:/g, '\\:')}`)
         element?.parentElement.appendChild(element)
       })
   }
@@ -429,6 +451,11 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     const item = getValidItems().find((item) => item.getAttribute('aria-disabled') !== 'true')
     const value = item?.getAttribute(VALUE_ATTR)
     store.setState('value', value || undefined)
+    
+    // Always ensure scroll happens after React render, whether search is active or cleared
+    requestAnimationFrame(() => {
+      scrollSelectedIntoView()
+    })
   }
 
   /** Filters the current items. */
@@ -752,6 +779,7 @@ const Group = React.forwardRef<HTMLDivElement, GroupProps>((props, forwardedRef)
       cmdk-group=""
       role="presentation"
       hidden={render ? undefined : true}
+      id={id}
     >
       {heading && (
         <div ref={headingRef} cmdk-group-heading="" aria-hidden id={headingId}>
