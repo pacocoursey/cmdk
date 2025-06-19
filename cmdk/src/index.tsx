@@ -451,7 +451,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     const item = getValidItems().find((item) => item.getAttribute('aria-disabled') !== 'true')
     const value = item?.getAttribute(VALUE_ATTR)
     store.setState('value', value || undefined)
-    
+
     // Always ensure scroll happens after React render, whether search is active or cleared
     requestAnimationFrame(() => {
       scrollSelectedIntoView()
