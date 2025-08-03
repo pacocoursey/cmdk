@@ -107,7 +107,6 @@
     --loader-color: var(--gray9);
     border: 0;
     width: 100%;
-    width: 100%;
     left: 0;
     height: 1px;
     background: var(--gray6);
@@ -147,7 +146,6 @@
     user-select: none;
     will-change: background, color;
     transition: all 150ms ease;
-    transition-property: none;
 
     &[data-selected='true'] {
       background: var(--gray4);
@@ -401,8 +399,6 @@
   }
 
   [cmdk-item] {
-    height: 40px;
-
     cursor: pointer;
     height: 40px;
     border-radius: 8px;
@@ -415,7 +411,6 @@
     user-select: none;
     will-change: background, color;
     transition: all 150ms ease;
-    transition-property: none;
 
     &[aria-selected='true'] {
       background: var(--gray5);
