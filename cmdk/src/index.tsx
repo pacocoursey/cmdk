@@ -33,6 +33,8 @@ type DialogProps = RadixDialog.DialogProps &
     contentClassName?: string
     /** Provide a custom element the Dialog should portal into. */
     container?: HTMLElement
+    /** Provide a hidden description text to the Dialog content */
+    description?: string
   }
 type ListProps = Children &
   DivProps & {
@@ -880,12 +882,14 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
  * Renders the command menu in a Radix Dialog.
  */
 const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRef) => {
-  const { open, onOpenChange, overlayClassName, contentClassName, container, ...etc } = props
+  const { open, onOpenChange, overlayClassName, contentClassName, container, title, description, ...etc } = props
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <RadixDialog.Portal container={container}>
         <RadixDialog.Overlay cmdk-overlay="" className={overlayClassName} />
         <RadixDialog.Content aria-label={props.label} cmdk-dialog="" className={contentClassName}>
+          {title && <RadixDialog.Title hidden>{title}</RadixDialog.Title>}
+          {description && <RadixDialog.Description hidden>{description}</RadixDialog.Description>}
           <Command ref={forwardedRef} {...etc} />
         </RadixDialog.Content>
       </RadixDialog.Portal>
