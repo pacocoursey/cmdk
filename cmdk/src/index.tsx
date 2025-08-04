@@ -95,6 +95,10 @@ type CommandProps = Children &
      */
     filter?: CommandFilter
     /**
+     * Optional default search value when it is initially rendered.
+     */
+    defaultSearch?: string
+    /**
      * Optional default item value when it is initially rendered.
      */
     defaultValue?: string
@@ -169,7 +173,7 @@ const GroupContext = React.createContext<Group>(undefined)
 const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwardedRef) => {
   const state = useLazyRef<State>(() => ({
     /** Value of the search query. */
-    search: '',
+    search: props.defaultSearch ?? '',
     /** Currently selected item value. */
     value: props.value ?? props.defaultValue ?? '',
     /** Currently selected item id. */
