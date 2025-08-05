@@ -70,3 +70,15 @@ test.describe('item advanced', async () => {
     await expect(page.locator(`[cmdk-item]`)).toHaveCount(2)
   })
 })
+
+test.describe('item shouldFilter false', async () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/item-no-filter')
+  })
+
+  test('items with shouldFilter set to false still show when filtering', async ({ page }) => {
+    await expect(page.locator(`[cmdk-item]`)).toHaveCount(3)
+    await page.locator(`[cmdk-input]`).type('A')
+    await expect(page.locator(`[cmdk-item]`)).toHaveCount(2)
+  })
+})

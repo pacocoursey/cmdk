@@ -56,6 +56,10 @@ type ItemProps = Children &
     keywords?: string[]
     /** Whether this item is forcibly rendered regardless of filtering. */
     forceMount?: boolean
+    /**
+     * Optionally set to `false` to turn off the automatic filtering and sorting for this item.
+     */
+    shouldFilter?: boolean
   }
 type GroupProps = Children &
   Omit<DivProps, 'heading' | 'value'> & {
@@ -121,7 +125,7 @@ type CommandProps = Children &
   }
 
 type Context = {
-  value: (id: string, value: string, keywords?: string[]) => void
+  value: (id: string, value: string, shouldFilter: boolean, keywords?: string[]) => void
   item: (id: string, groupId: string) => () => void
   group: (id: string) => () => void
   filter: () => boolean
@@ -185,7 +189,7 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   }))
   const allItems = useLazyRef<Set<string>>(() => new Set()) // [...itemIds]
   const allGroups = useLazyRef<Map<string, Set<string>>>(() => new Map()) // groupId → [...itemIds]
-  const ids = useLazyRef<Map<string, { value: string; keywords?: string[] }>>(() => new Map()) // id → { value, keywords }
+  const ids = useLazyRef<Map<string, { value: string; shouldFilter: boolean; keywords?: string[] }>>(() => new Map()) // id → { value, shouldFilter, keywords }
   const listeners = useLazyRef<Set<() => void>>(() => new Set()) // [...rerenders]
   const propsRef = useAsRef(props)
   const {
@@ -278,10 +282,10 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
   const context: Context = React.useMemo(
     () => ({
       // Keep id → {value, keywords} mapping up-to-date
-      value: (id, value, keywords) => {
+      value: (id, value, shouldFilter, keywords) => {
         if (value !== ids.current.get(id)?.value) {
-          ids.current.set(id, { value, keywords })
-          state.current.filtered.items.set(id, score(value, keywords))
+          ids.current.set(id, { value, shouldFilter, keywords })
+          state.current.filtered.items.set(id, score(value, shouldFilter, keywords))
           schedule(2, () => {
             sort()
             store.emit()
@@ -359,7 +363,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     [],
   )
 
-  function score(value: string, keywords?: string[]) {
+  function score(value: string, shouldFilter: boolean, keywords?: string[]): number {
+    if (!shouldFilter) return 1
+
     const filter = propsRef.current?.filter ?? defaultFilter
     return value ? filter(value, state.current.search, keywords) : 0
   }
@@ -451,7 +457,9 @@ const Command = React.forwardRef<HTMLDivElement, CommandProps>((props, forwarded
     for (const id of allItems.current) {
       const value = ids.current.get(id)?.value ?? ''
       const keywords = ids.current.get(id)?.keywords ?? []
-      const rank = score(value, keywords)
+      const shouldFilter = ids.current.get(id)?.shouldFilter ?? true
+
+      const rank = score(value, shouldFilter, keywords)
       state.current.filtered.items.set(id, rank)
       if (rank > 0) itemCount++
     }
@@ -675,7 +683,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
     }
   }, [forceMount])
 
-  const value = useValue(id, ref, [props.value, props.children, ref], props.keywords)
+  const value = useValue(id, ref, [props.value, props.children, ref], props.keywords, props.shouldFilter ?? true)
 
   const store = useStore()
   const selected = useCmdk((state) => state.value && state.value === value.current)
@@ -701,7 +709,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>((props, forwardedRef) =
 
   if (!render) return null
 
-  const { disabled, value: _, onSelect: __, forceMount: ___, keywords: ____, ...etc } = props
+  const { disabled, value: _, onSelect: __, forceMount: ___, keywords: ____, shouldFilter: _____, ...etc } = props
 
   return (
     <Primitive.div
@@ -1012,6 +1020,7 @@ function useValue(
   ref: React.RefObject<HTMLElement>,
   deps: (string | React.ReactNode | React.RefObject<HTMLElement>)[],
   aliases: string[] = [],
+  shouldFilter: boolean = true,
 ) {
   const valueRef = React.useRef<string>()
   const context = useCommand()
@@ -1034,7 +1043,7 @@ function useValue(
 
     const keywords = aliases.map((alias) => alias.trim())
 
-    context.value(id, value, keywords)
+    context.value(id, value, shouldFilter, keywords)
     ref.current?.setAttribute(VALUE_ATTR, value)
     valueRef.current = value
   })
