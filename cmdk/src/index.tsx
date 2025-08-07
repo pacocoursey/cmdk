@@ -26,13 +26,13 @@ type SeparatorProps = DivProps & {
   alwaysRender?: boolean
 }
 type DialogProps = RadixDialog.DialogProps &
+  Pick<RadixDialog.DialogPortalProps, 'container'> &
+  Pick<RadixDialog.DialogContentProps, 'onCloseAutoFocus' | 'onEscapeKeyDown'> &
   CommandProps & {
     /** Provide a className to the Dialog overlay. */
     overlayClassName?: string
     /** Provide a className to the Dialog content. */
     contentClassName?: string
-    /** Provide a custom element the Dialog should portal into. */
-    container?: HTMLElement
   }
 type ListProps = Children &
   DivProps & {
@@ -880,12 +880,27 @@ const List = React.forwardRef<HTMLDivElement, ListProps>((props, forwardedRef) =
  * Renders the command menu in a Radix Dialog.
  */
 const Dialog = React.forwardRef<HTMLDivElement, DialogProps>((props, forwardedRef) => {
-  const { open, onOpenChange, overlayClassName, contentClassName, container, ...etc } = props
+  const {
+    open,
+    onOpenChange,
+    overlayClassName,
+    contentClassName,
+    container,
+    onCloseAutoFocus,
+    onEscapeKeyDown,
+    ...etc
+  } = props
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <RadixDialog.Portal container={container}>
         <RadixDialog.Overlay cmdk-overlay="" className={overlayClassName} />
-        <RadixDialog.Content aria-label={props.label} cmdk-dialog="" className={contentClassName}>
+        <RadixDialog.Content
+          aria-label={props.label}
+          cmdk-dialog=""
+          className={contentClassName}
+          onCloseAutoFocus={onCloseAutoFocus}
+          onEscapeKeyDown={onEscapeKeyDown}
+        >
           <Command ref={forwardedRef} {...etc} />
         </RadixDialog.Content>
       </RadixDialog.Portal>
